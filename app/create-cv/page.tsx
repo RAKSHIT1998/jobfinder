@@ -178,7 +178,7 @@ export default function CreateCV() {
           {step === 1 && (
             <div>
               <h2 className="text-2xl font-bold mb-1">Personal Information</h2>
-              <p className="text-gray-400 text-sm mb-6">Tell us about yourself so we can build your profile.</p>
+              <p className="text-white/40 text-sm mb-6">Tell us about yourself so we can build your profile.</p>
               <div className="space-y-4">
                 <div>
                   <label className={labelClass}>Full Name *</label>
@@ -208,16 +208,16 @@ export default function CreateCV() {
           {step === 2 && (
             <div>
               <h2 className="text-2xl font-bold mb-1">Work Experience</h2>
-              <p className="text-gray-400 text-sm mb-6">Add your relevant work history.</p>
+              <p className="text-white/40 text-sm mb-6">Add your relevant work history.</p>
               <div className="space-y-6">
                 {cv.workExperiences.map((exp, idx) => (
                   <div key={idx} className="glass rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm font-medium text-gray-400">Experience {idx + 1}</span>
+                      <span className="text-sm font-medium text-white/40">Experience {idx + 1}</span>
                       {cv.workExperiences.length > 1 && (
                         <button
                           onClick={() => updateCv("workExperiences", cv.workExperiences.filter((_, i) => i !== idx))}
-                          className="text-red-400 hover:text-red-300 text-xs"
+                          className="text-red-400/70 hover:text-red-400 text-xs"
                         >
                           Remove
                         </button>
@@ -271,16 +271,16 @@ export default function CreateCV() {
           {step === 3 && (
             <div>
               <h2 className="text-2xl font-bold mb-1">Education</h2>
-              <p className="text-gray-400 text-sm mb-6">Add your educational background.</p>
+              <p className="text-white/40 text-sm mb-6">Add your educational background.</p>
               <div className="space-y-4">
                 {cv.education.map((edu, idx) => (
                   <div key={idx} className="glass rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-gray-400">Education {idx + 1}</span>
+                      <span className="text-sm font-medium text-white/40">Education {idx + 1}</span>
                       {cv.education.length > 1 && (
                         <button
                           onClick={() => updateCv("education", cv.education.filter((_, i) => i !== idx))}
-                          className="text-red-400 hover:text-red-300 text-xs"
+                          className="text-red-400/70 hover:text-red-400 text-xs"
                         >
                           Remove
                         </button>
@@ -318,10 +318,10 @@ export default function CreateCV() {
           {step === 4 && (
             <div>
               <h2 className="text-2xl font-bold mb-1">Skills</h2>
-              <p className="text-gray-400 text-sm mb-6">Select your technical and soft skills.</p>
+              <p className="text-white/40 text-sm mb-6">Select your technical and soft skills.</p>
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-300 mb-3">Technical Skills</h3>
+                  <h3 className="text-sm font-semibold text-white/60 mb-3">Technical Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {TECH_SKILL_OPTIONS.map((skill) => (
                       <button
@@ -329,8 +329,8 @@ export default function CreateCV() {
                         onClick={() => toggleSkill(skill, "techSkills")}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${
                           cv.techSkills.includes(skill)
-                            ? "bg-purple-500/20 border-purple-500 text-purple-300"
-                            : "bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-500"
+                            ? "bg-violet-500/20 border-violet-500/60 text-violet-300"
+                            : "glass text-white/40 hover:text-white/70"
                         }`}
                       >
                         {skill}
@@ -338,11 +338,11 @@ export default function CreateCV() {
                     ))}
                   </div>
                   {cv.techSkills.length > 0 && (
-                    <p className="text-xs text-purple-400 mt-2">{cv.techSkills.length} selected</p>
+                    <p className="text-xs text-violet-400 mt-2">{cv.techSkills.length} selected</p>
                   )}
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-300 mb-3">Soft Skills</h3>
+                  <h3 className="text-sm font-semibold text-white/60 mb-3">Soft Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {SOFT_SKILL_OPTIONS.map((skill) => (
                       <button
@@ -350,8 +350,8 @@ export default function CreateCV() {
                         onClick={() => toggleSkill(skill, "softSkills")}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${
                           cv.softSkills.includes(skill)
-                            ? "bg-blue-500/20 border-blue-500 text-blue-300"
-                            : "bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-500"
+                            ? "bg-cyan-500/20 border-cyan-500/60 text-cyan-300"
+                            : "glass text-white/40 hover:text-white/70"
                         }`}
                       >
                         {skill}
@@ -367,7 +367,7 @@ export default function CreateCV() {
           {step === 5 && (
             <div>
               <h2 className="text-2xl font-bold mb-1">Job Preferences</h2>
-              <p className="text-gray-400 text-sm mb-6">Tell us what you&apos;re looking for.</p>
+              <p className="text-white/40 text-sm mb-6">Tell us what you&apos;re looking for.</p>
               <div className="space-y-4">
                 <div>
                   <label className={labelClass}>Target Job Roles</label>
@@ -400,7 +400,7 @@ export default function CreateCV() {
                       />
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-white/30 mt-1">
                     ${parseInt(cv.salaryMin || "0").toLocaleString()} – ${parseInt(cv.salaryMax || "0").toLocaleString()} per year
                   </p>
                 </div>
@@ -413,8 +413,8 @@ export default function CreateCV() {
                         onClick={() => updateCv("workType", type)}
                         className={`flex-1 py-2.5 rounded-lg border text-sm font-medium capitalize transition-all ${
                           cv.workType === type
-                            ? "bg-purple-500/20 border-purple-500 text-purple-300"
-                            : "bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-500"
+                            ? "bg-violet-500/20 border-violet-500/60 text-violet-300"
+                            : "glass text-white/40 hover:text-white/70"
                         }`}
                       >
                         {type}
@@ -439,52 +439,52 @@ export default function CreateCV() {
           {step === 6 && (
             <div>
               <h2 className="text-2xl font-bold mb-1">Review Your CV</h2>
-              <p className="text-gray-400 text-sm mb-6">Everything look good? You can go back to edit.</p>
+              <p className="text-white/40 text-sm mb-6">Everything look good? You can go back to edit.</p>
               <div className="space-y-6 text-sm">
                 <div className="glass rounded-xl p-4">
-                  <h3 className="font-semibold text-purple-300 mb-3">Personal Info</h3>
-                  <div className="space-y-1 text-gray-300">
-                    <p><span className="text-gray-500">Name:</span> {cv.name || "—"}</p>
-                    <p><span className="text-gray-500">Email:</span> {cv.email || "—"}</p>
-                    <p><span className="text-gray-500">Phone:</span> {cv.phone || "—"}</p>
-                    <p><span className="text-gray-500">Location:</span> {cv.location || "—"}</p>
-                    <p><span className="text-gray-500">LinkedIn:</span> {cv.linkedin || "—"}</p>
+                  <h3 className="font-semibold text-violet-300 mb-3">Personal Info</h3>
+                  <div className="space-y-1 text-white/70">
+                    <p><span className="text-white/30">Name:</span> {cv.name || "—"}</p>
+                    <p><span className="text-white/30">Email:</span> {cv.email || "—"}</p>
+                    <p><span className="text-white/30">Phone:</span> {cv.phone || "—"}</p>
+                    <p><span className="text-white/30">Location:</span> {cv.location || "—"}</p>
+                    <p><span className="text-white/30">LinkedIn:</span> {cv.linkedin || "—"}</p>
                   </div>
                 </div>
                 <div className="glass rounded-xl p-4">
-                  <h3 className="font-semibold text-purple-300 mb-3">Work Experience</h3>
+                  <h3 className="font-semibold text-violet-300 mb-3">Work Experience</h3>
                   {cv.workExperiences.map((exp, i) => (
                     <div key={i} className="mb-3 last:mb-0">
                       <p className="text-white font-medium">{exp.role || "—"} at {exp.company || "—"}</p>
-                      <p className="text-gray-400">{exp.startDate} – {exp.endDate}</p>
+                      <p className="text-white/40">{exp.startDate} – {exp.endDate}</p>
                     </div>
                   ))}
                 </div>
                 <div className="glass rounded-xl p-4">
-                  <h3 className="font-semibold text-purple-300 mb-3">Education</h3>
+                  <h3 className="font-semibold text-violet-300 mb-3">Education</h3>
                   {cv.education.map((edu, i) => (
                     <div key={i} className="mb-3 last:mb-0">
                       <p className="text-white font-medium">{edu.degree || "—"}</p>
-                      <p className="text-gray-400">{edu.school || "—"} · {edu.year || "—"}</p>
+                      <p className="text-white/40">{edu.school || "—"} · {edu.year || "—"}</p>
                     </div>
                   ))}
                 </div>
                 <div className="glass rounded-xl p-4">
-                  <h3 className="font-semibold text-purple-300 mb-3">Skills</h3>
+                  <h3 className="font-semibold text-violet-300 mb-3">Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {[...cv.techSkills, ...cv.softSkills].map((s) => (
-                      <span key={s} className="bg-gray-700 text-gray-300 px-2 py-0.5 rounded text-xs">{s}</span>
+                      <span key={s} className="glass text-white/60 px-2 py-0.5 rounded-lg text-xs">{s}</span>
                     ))}
-                    {cv.techSkills.length === 0 && cv.softSkills.length === 0 && <span className="text-gray-500">No skills added</span>}
+                    {cv.techSkills.length === 0 && cv.softSkills.length === 0 && <span className="text-white/30">No skills added</span>}
                   </div>
                 </div>
                 <div className="glass rounded-xl p-4">
-                  <h3 className="font-semibold text-purple-300 mb-3">Job Preferences</h3>
-                  <div className="space-y-1 text-gray-300">
-                    <p><span className="text-gray-500">Roles:</span> {cv.targetRoles || "—"}</p>
-                    <p><span className="text-gray-500">Salary:</span> ${parseInt(cv.salaryMin || "0").toLocaleString()} – ${parseInt(cv.salaryMax || "0").toLocaleString()}</p>
-                    <p><span className="text-gray-500">Work type:</span> {cv.workType}</p>
-                    <p><span className="text-gray-500">Locations:</span> {cv.preferredLocations || "—"}</p>
+                  <h3 className="font-semibold text-violet-300 mb-3">Job Preferences</h3>
+                  <div className="space-y-1 text-white/70">
+                    <p><span className="text-white/30">Roles:</span> {cv.targetRoles || "—"}</p>
+                    <p><span className="text-white/30">Salary:</span> ${parseInt(cv.salaryMin || "0").toLocaleString()} – ${parseInt(cv.salaryMax || "0").toLocaleString()}</p>
+                    <p><span className="text-white/30">Work type:</span> {cv.workType}</p>
+                    <p><span className="text-white/30">Locations:</span> {cv.preferredLocations || "—"}</p>
                   </div>
                 </div>
               </div>
