@@ -5,9 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
-  { href: "/dashboard", label: "Overview", icon: "📊" },
-  { href: "/dashboard/jobs", label: "Jobs", icon: "💼" },
-  { href: "/dashboard/meetings", label: "Meetings", icon: "📅" },
+  { href: "/dashboard", label: "Overview", icon: "⚡" },
+  { href: "/dashboard/jobs", label: "Jobs", icon: "💼", badge: "47" },
+  { href: "/dashboard/meetings", label: "Meetings", icon: "📅", badge: "4" },
+  { href: "/dashboard/ai-coach", label: "AI Coach", icon: "🧠" },
+  { href: "/dashboard/cover-letter", label: "Cover Letters", icon: "✍️" },
+  { href: "/dashboard/skills", label: "Skills Gap", icon: "📊" },
+  { href: "/dashboard/salary", label: "Salary Intel", icon: "💰" },
+  { href: "/dashboard/tracker", label: "App Tracker", icon: "🎯" },
   { href: "/dashboard/cv", label: "My CV", icon: "📄" },
 ];
 
@@ -16,22 +21,36 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex">
+    <div className="min-h-screen text-white flex" style={{ background: "#050508" }}>
+      {/* Fixed blob background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="animate-blob absolute top-0 right-0 w-96 h-96 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(80px)" }} />
+        <div className="animate-blob animation-delay-4000 absolute bottom-0 left-0 w-72 h-72 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #0891b2, transparent)", filter: "blur(80px)" }} />
+      </div>
+
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 border-r border-gray-800 transform transition-transform md:translate-x-0 md:static md:block ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="flex items-center gap-2 p-6 border-b border-gray-800">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">J</span>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 flex flex-col transform transition-transform duration-300 md:translate-x-0 md:static md:z-auto ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        style={{ backdropFilter: "blur(40px) saturate(180%)", background: "rgba(255,255,255,0.03)", borderRight: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <div className="flex items-center gap-2.5 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center">
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
           </div>
-          <span className="text-white font-bold">JobFinder AI</span>
+          <span className="font-bold text-white text-base">JobFinder<span className="gradient-text">AI</span></span>
         </div>
 
-        <div className="p-4">
-          <div className="flex items-center gap-2 mb-4 px-2">
-            <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-            <span className="text-xs text-green-400 font-medium">Agent Active</span>
+        <div className="px-3 py-4 flex-1 overflow-y-auto">
+          <div className="flex items-center gap-2 mb-4 px-3">
+            <div className="relative">
+              <div className="w-2 h-2 rounded-full bg-emerald-400" />
+              <div className="absolute inset-0 w-2 h-2 rounded-full bg-emerald-400 animate-ping opacity-60" />
+            </div>
+            <span className="text-xs text-emerald-400 font-semibold">Agent Active · 247 jobs today</span>
           </div>
-          <nav className="space-y-1">
+
+          <nav className="space-y-0.5">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -39,16 +58,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   key={item.href}
                   href={item.href}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${
                     isActive
-                      ? "bg-purple-500/20 text-purple-300 border border-purple-500/30"
-                      : "text-gray-400 hover:text-white hover:bg-gray-800"
+                      ? "bg-violet-500/20 text-violet-200 border border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
+                      : "text-white/40 hover:text-white/80 hover:bg-white/5"
                   }`}
                 >
-                  <span>{item.icon}</span>
-                  {item.label}
-                  {item.label === "Jobs" && (
-                    <span className="ml-auto bg-purple-500/20 text-purple-300 text-xs px-1.5 py-0.5 rounded-full">47</span>
+                  <span className="text-base">{item.icon}</span>
+                  <span className="flex-1">{item.label}</span>
+                  {item.badge && (
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full font-semibold ${isActive ? "bg-violet-500/30 text-violet-300" : "bg-white/8 text-white/40"}`}>
+                      {item.badge}
+                    </span>
                   )}
                 </Link>
               );
@@ -56,39 +77,34 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </nav>
         </div>
 
-        <div className="absolute bottom-6 left-4 right-4">
-          <Link
-            href="/"
-            className="flex items-center gap-2 px-3 py-2 rounded-lg text-gray-500 hover:text-gray-300 text-sm transition-colors"
-          >
-            ← Back to home
+        <div className="px-4 pb-6 pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <Link href="/" className="flex items-center gap-2 px-3 py-2 rounded-xl text-white/30 hover:text-white/60 text-sm transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to home
           </Link>
         </div>
       </aside>
 
-      {/* Mobile overlay */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top bar */}
-        <header className="bg-gray-900/50 border-b border-gray-800 px-6 py-4 flex items-center gap-4">
-          <button
-            className="md:hidden text-gray-400 hover:text-white"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
+      <div className="flex-1 flex flex-col min-w-0 relative z-10">
+        <header className="px-6 py-4 flex items-center gap-4" style={{ backdropFilter: "blur(20px)", background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <button className="md:hidden text-white/40 hover:text-white" onClick={() => setSidebarOpen(!sidebarOpen)}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
           <div className="ml-auto flex items-center gap-3">
-            <span className="text-sm text-gray-400">Welcome back</span>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-sm font-bold">
+            <div className="glass rounded-full px-3 py-1.5 flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs text-white/50">AI Running</span>
+            </div>
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center text-white text-sm font-bold">
               U
             </div>
           </div>

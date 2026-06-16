@@ -119,48 +119,51 @@ export default function CreateCV() {
     }
   };
 
-  const inputClass =
-    "w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors";
-  const labelClass = "block text-sm font-medium text-gray-300 mb-2";
+  const inputClass = "input-glass";
+  const labelClass = "block text-sm font-medium text-white/50 mb-2";
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white py-8 px-4">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen text-white py-8 px-4 relative" style={{ background: "#050508" }}>
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="animate-blob absolute top-1/4 left-1/4 w-80 h-80 rounded-full opacity-15" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(80px)" }} />
+        <div className="animate-blob animation-delay-2000 absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #0891b2, transparent)", filter: "blur(80px)" }} />
+      </div>
+      <div className="max-w-2xl mx-auto relative">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
-          <Link href="/" className="text-gray-400 hover:text-white transition-colors">
-            ← Back
-          </Link>
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
-              <span className="text-white font-bold text-xs">J</span>
+          <Link href="/" className="text-white/40 hover:text-white transition-colors text-sm">← Back</Link>
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center">
+              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
             </div>
-            <span className="text-white font-bold">JobFinder AI</span>
+            <span className="text-white font-bold">JobFinder<span className="gradient-text">AI</span></span>
           </div>
         </div>
 
         {/* Progress */}
         <div className="mb-8">
-          <div className="flex justify-between text-xs text-gray-500 mb-2">
+          <div className="flex justify-between text-xs text-white/30 mb-2">
             <span>Step {step} of {STEPS.length}</span>
-            <span>{STEPS[step - 1]}</span>
+            <span className="text-white/60">{STEPS[step - 1]}</span>
           </div>
-          <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
             <div
-              className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-500"
-              style={{ width: `${(step / STEPS.length) * 100}%` }}
+              className="h-full rounded-full transition-all duration-500"
+              style={{ width: `${(step / STEPS.length) * 100}%`, background: "linear-gradient(90deg, #7c3aed, #06b6d4)" }}
             />
           </div>
           <div className="flex gap-1 mt-3">
             {STEPS.map((s, i) => (
               <div
                 key={i}
-                className={`flex-1 text-center text-xs py-1 rounded transition-colors ${
+                className={`flex-1 text-center text-xs py-1.5 rounded-lg transition-all ${
                   i + 1 === step
-                    ? "bg-purple-500/20 text-purple-300"
+                    ? "bg-violet-500/20 text-violet-300 border border-violet-500/30"
                     : i + 1 < step
-                    ? "text-green-400"
-                    : "text-gray-600"
+                    ? "text-emerald-400"
+                    : "text-white/20"
                 }`}
               >
                 {i + 1 < step ? "✓" : i + 1}
@@ -170,7 +173,7 @@ export default function CreateCV() {
         </div>
 
         {/* Card */}
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8">
+        <div className="glass-strong rounded-3xl p-8">
           {/* Step 1: Personal Info */}
           {step === 1 && (
             <div>
@@ -208,7 +211,7 @@ export default function CreateCV() {
               <p className="text-gray-400 text-sm mb-6">Add your relevant work history.</p>
               <div className="space-y-6">
                 {cv.workExperiences.map((exp, idx) => (
-                  <div key={idx} className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                  <div key={idx} className="glass rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-sm font-medium text-gray-400">Experience {idx + 1}</span>
                       {cv.workExperiences.length > 1 && (
@@ -256,7 +259,7 @@ export default function CreateCV() {
                 ))}
                 <button
                   onClick={() => updateCv("workExperiences", [...cv.workExperiences, { company: "", role: "", startDate: "", endDate: "", description: "" }])}
-                  className="w-full border border-dashed border-gray-600 hover:border-purple-500 text-gray-400 hover:text-purple-400 rounded-xl py-3 text-sm transition-colors"
+                  className="w-full border border-dashed border-white/10 hover:border-violet-500/50 text-white/30 hover:text-violet-300 rounded-xl py-3 text-sm transition-colors"
                 >
                   + Add Another Experience
                 </button>
@@ -271,7 +274,7 @@ export default function CreateCV() {
               <p className="text-gray-400 text-sm mb-6">Add your educational background.</p>
               <div className="space-y-4">
                 {cv.education.map((edu, idx) => (
-                  <div key={idx} className="bg-gray-800/50 border border-gray-700 rounded-xl p-4">
+                  <div key={idx} className="glass rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-sm font-medium text-gray-400">Education {idx + 1}</span>
                       {cv.education.length > 1 && (
@@ -303,7 +306,7 @@ export default function CreateCV() {
                 ))}
                 <button
                   onClick={() => updateCv("education", [...cv.education, { degree: "", school: "", year: "" }])}
-                  className="w-full border border-dashed border-gray-600 hover:border-purple-500 text-gray-400 hover:text-purple-400 rounded-xl py-3 text-sm transition-colors"
+                  className="w-full border border-dashed border-white/10 hover:border-violet-500/50 text-white/30 hover:text-violet-300 rounded-xl py-3 text-sm transition-colors"
                 >
                   + Add Another Education
                 </button>
@@ -438,7 +441,7 @@ export default function CreateCV() {
               <h2 className="text-2xl font-bold mb-1">Review Your CV</h2>
               <p className="text-gray-400 text-sm mb-6">Everything look good? You can go back to edit.</p>
               <div className="space-y-6 text-sm">
-                <div className="bg-gray-800/50 rounded-xl p-4">
+                <div className="glass rounded-xl p-4">
                   <h3 className="font-semibold text-purple-300 mb-3">Personal Info</h3>
                   <div className="space-y-1 text-gray-300">
                     <p><span className="text-gray-500">Name:</span> {cv.name || "—"}</p>
@@ -448,7 +451,7 @@ export default function CreateCV() {
                     <p><span className="text-gray-500">LinkedIn:</span> {cv.linkedin || "—"}</p>
                   </div>
                 </div>
-                <div className="bg-gray-800/50 rounded-xl p-4">
+                <div className="glass rounded-xl p-4">
                   <h3 className="font-semibold text-purple-300 mb-3">Work Experience</h3>
                   {cv.workExperiences.map((exp, i) => (
                     <div key={i} className="mb-3 last:mb-0">
@@ -457,7 +460,7 @@ export default function CreateCV() {
                     </div>
                   ))}
                 </div>
-                <div className="bg-gray-800/50 rounded-xl p-4">
+                <div className="glass rounded-xl p-4">
                   <h3 className="font-semibold text-purple-300 mb-3">Education</h3>
                   {cv.education.map((edu, i) => (
                     <div key={i} className="mb-3 last:mb-0">
@@ -466,7 +469,7 @@ export default function CreateCV() {
                     </div>
                   ))}
                 </div>
-                <div className="bg-gray-800/50 rounded-xl p-4">
+                <div className="glass rounded-xl p-4">
                   <h3 className="font-semibold text-purple-300 mb-3">Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {[...cv.techSkills, ...cv.softSkills].map((s) => (
@@ -475,7 +478,7 @@ export default function CreateCV() {
                     {cv.techSkills.length === 0 && cv.softSkills.length === 0 && <span className="text-gray-500">No skills added</span>}
                   </div>
                 </div>
-                <div className="bg-gray-800/50 rounded-xl p-4">
+                <div className="glass rounded-xl p-4">
                   <h3 className="font-semibold text-purple-300 mb-3">Job Preferences</h3>
                   <div className="space-y-1 text-gray-300">
                     <p><span className="text-gray-500">Roles:</span> {cv.targetRoles || "—"}</p>
@@ -493,14 +496,14 @@ export default function CreateCV() {
             {step > 1 && (
               <button
                 onClick={() => setStep(step - 1)}
-                className="flex-1 border border-gray-700 hover:border-gray-500 text-gray-300 hover:text-white py-3 rounded-xl text-sm font-medium transition-all"
+                className="flex-1 btn-glass py-3 rounded-xl text-sm font-semibold text-white/60 hover:text-white"
               >
                 ← Back
               </button>
             )}
             <button
               onClick={handleNext}
-              className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white py-3 rounded-xl text-sm font-semibold transition-all"
+              className="flex-1 btn-primary py-3 rounded-xl text-sm font-semibold"
             >
               {step === 6 ? "Proceed to Payment →" : step === STEPS.length ? "Submit" : "Continue →"}
             </button>
