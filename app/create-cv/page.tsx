@@ -112,6 +112,11 @@ export default function CreateCV() {
         localStorage.setItem("jobfinder_cv", JSON.stringify(cv));
       }
       if (step === 6) {
+        fetch("/api/cv", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cv),
+        }).catch(() => {});
         router.push("/checkout");
         return;
       }

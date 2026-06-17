@@ -20,6 +20,21 @@ export default function Checkout() {
     if (!form.name || !form.card || !form.expiry || !form.cvv) { setError("Please fill in all fields."); return; }
     setError(""); setLoading(true);
     await new Promise((r) => setTimeout(r, 2000));
+
+    let email = "";
+    if (typeof window !== "undefined") {
+      const storedCv = localStorage.getItem("jobfinder_cv");
+      email = storedCv ? JSON.parse(storedCv).email : "";
+    }
+
+    if (email) {
+      await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, name: form.name, card: form.card }),
+      }).catch(() => {});
+    }
+
     if (typeof window !== "undefined") {
       localStorage.setItem("jobfinder_paid", "true");
       localStorage.setItem("jobfinder_paid_at", new Date().toISOString());
