@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "JobFinder AI — Your AI Job Hunter, Working 24/7",
-  description: "Build your CV once. Our AI agent scrapes every major job board, matches you to perfect roles, and schedules interviews — all while you sleep.",
+  description: "Build your CV once. Our AI agent scrapes local job listings and big recruiters, matches you to perfect roles, and schedules interviews — all while you sleep.",
 };
 
 export default function RootLayout({

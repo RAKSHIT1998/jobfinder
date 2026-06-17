@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -9,6 +9,11 @@ export default function Checkout() {
   const [form, setForm] = useState({ name: "", card: "", expiry: "", cvv: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [expired, setExpired] = useState(false);
+
+  useEffect(() => {
+    setExpired(new URLSearchParams(window.location.search).get("expired") === "1");
+  }, []);
 
   const formatCard = (val: string) => val.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
   const formatExpiry = (val: string) => {
@@ -65,17 +70,17 @@ export default function Checkout() {
 
           <div className="iridescent-border rounded-2xl p-5 mb-6">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-white font-bold">JobFinder AI — Lifetime</span>
+              <span className="text-white font-bold">JobFinder AI — 7-Day Access</span>
               <span className="text-4xl font-black gradient-text">$10</span>
             </div>
-            <p className="text-white/40 text-sm">One-time payment · Access forever · No renewals</p>
+            <p className="text-white/40 text-sm">One-time payment · Valid for 7 days</p>
           </div>
 
           <div className="space-y-3 mb-8">
             {[
-              "AI agent running 24/7 for life",
+              "AI agent running 24/7 for 7 days",
               "CV builder with ATS optimization",
-              "Unlimited searches across 12+ job boards",
+              "Unlimited searches across local jobs & big recruiters",
               "Automatic interview scheduling",
               "AI Interview Coach",
               "Cover Letter Generator",
@@ -109,7 +114,9 @@ export default function Checkout() {
         {/* Right: Payment Form */}
         <div className="glass-strong rounded-3xl p-8">
           <h2 className="text-2xl font-black text-white mb-1">Payment Details</h2>
-          <p className="text-white/40 text-sm mb-8">Enter your card to get lifetime access instantly.</p>
+          <p className="text-white/40 text-sm mb-8">
+            {expired ? "Your 7-day access has expired. Renew to keep going." : "Enter your card to get instant access for 7 days."}
+          </p>
 
           <div className="space-y-5">
             <div>
@@ -164,7 +171,7 @@ export default function Checkout() {
                   Processing payment...
                 </span>
               ) : (
-                "Pay $10 — Get Lifetime Access"
+                "Pay $10 — Get 7-Day Access"
               )}
             </button>
           </div>

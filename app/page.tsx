@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const features = [
-  { icon: "⚡", title: "AI Job Scraping 24/7", desc: "Our agent scrapes 12+ job boards non-stop, finding roles that match your exact profile before anyone else sees them." },
+  { icon: "⚡", title: "AI Job Scraping 24/7", desc: "Our agent scrapes local job listings and big recruiters non-stop, finding roles that match your exact profile before anyone else sees them." },
   { icon: "🎯", title: "97% Match Accuracy", desc: "Deep skill analysis matches you to roles where you have the highest chance of getting hired." },
   { icon: "📄", title: "ATS-Optimized CV", desc: "AI builds your CV with the exact keywords each company's ATS system looks for." },
   { icon: "📅", title: "Auto Interview Scheduling", desc: "AI contacts recruiters and schedules interviews on your behalf. You just show up." },
@@ -15,7 +15,7 @@ const features = [
 
 const steps = [
   { num: "01", title: "Build Your CV", desc: "Fill out our 7-step smart form in 5 minutes. AI extracts your skills, experiences, and career goals." },
-  { num: "02", title: "AI Hunts Jobs", desc: "Your personal agent scans 12+ boards around the clock, scoring thousands of jobs against your profile." },
+  { num: "02", title: "AI Hunts Jobs", desc: "Your personal agent scans local job listings and big recruiters around the clock, scoring thousands of jobs against your profile." },
   { num: "03", title: "Get Hired", desc: "Interviews get auto-scheduled. AI coaches you. You show up, impress them, and land the job." },
 ];
 
@@ -65,13 +65,13 @@ export default function Home() {
           </h1>
 
           <p className="text-xl text-white/40 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Build your CV once. AI scrapes every job board, matches you to perfect roles,
+            Build your CV once. AI scrapes local job listings and big recruiters, matches you to perfect roles,
             schedules interviews, and coaches you to get hired — all 24/7.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link href="/create-cv" className="btn-primary text-base font-bold px-8 py-4 rounded-2xl inline-block">
-              Start Finding Jobs — $10 one-time
+              Start Finding Jobs — $10/week
             </Link>
             <Link href="#how-it-works" className="btn-glass text-base font-semibold px-8 py-4 rounded-2xl inline-block">
               See How It Works
@@ -84,8 +84,8 @@ export default function Home() {
               { val: "2,847", label: "Jobs found today" },
               { val: "143", label: "Interviews booked" },
               { val: "91%", label: "Match accuracy" },
-              { val: "12+", label: "Job boards" },
-              { val: "$10", label: "One-time forever" },
+              { val: "12+", label: "Sources scraped" },
+              { val: "$10", label: "Per week" },
             ].map((s) => (
               <div key={s.label} className="glass rounded-2xl px-5 py-3 text-center">
                 <div className="text-2xl font-black gradient-text">{s.val}</div>
@@ -135,7 +135,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <p className="text-cyan-400 font-semibold text-sm mb-3 tracking-widest uppercase">Features</p>
             <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">Everything to get you hired</h2>
-            <p className="text-white/40 text-lg">8 AI-powered tools in one $10 package.</p>
+            <p className="text-white/40 text-lg">8 AI-powered tools for $10/week.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -155,7 +155,7 @@ export default function Home() {
         <div className="max-w-lg mx-auto text-center">
           <p className="text-pink-400 font-semibold text-sm mb-3 tracking-widest uppercase">Pricing</p>
           <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">One price. Everything included.</h2>
-          <p className="text-white/40 text-lg mb-12">No subscriptions. No hidden fees. No nonsense.</p>
+          <p className="text-white/40 text-lg mb-12">No hidden fees. No nonsense.</p>
 
           <div className="iridescent-border rounded-3xl p-px">
             <div className="glass-strong rounded-3xl p-10 relative overflow-hidden">
@@ -163,19 +163,19 @@ export default function Home() {
 
               <div className="relative">
                 <div className="inline-block glass rounded-full px-4 py-1.5 text-sm text-violet-300 font-semibold mb-6">
-                  ✨ Lifetime Access
+                  ✨ 7-Day Access
                 </div>
 
                 <div className="mb-2">
                   <span className="text-7xl font-black gradient-text">$10</span>
                 </div>
-                <p className="text-white/40 mb-8">One-time. Access forever. Period.</p>
+                <p className="text-white/40 mb-8">Full access for 7 days. Renew anytime.</p>
 
                 <ul className="text-left space-y-3 mb-10">
                   {[
-                    "AI agent running 24/7 for life",
+                    "AI agent running 24/7 for 7 days",
                     "CV builder with ATS optimization",
-                    "Unlimited job searches across 12+ boards",
+                    "Unlimited job searches across local jobs & big recruiters",
                     "Automatic interview scheduling",
                     "AI Interview Coach",
                     "Cover Letter Generator",
@@ -195,9 +195,9 @@ export default function Home() {
                 </ul>
 
                 <Link href="/create-cv" className="btn-primary w-full block text-center py-4 rounded-2xl text-base font-bold">
-                  Get Started for $10
+                  Get 7 Days for $10
                 </Link>
-                <p className="text-white/25 text-xs mt-4">Secure payment · Instant access · Cancel anytime</p>
+                <p className="text-white/25 text-xs mt-4">Secure payment · Instant access · Renew anytime</p>
               </div>
             </div>
           </div>
@@ -248,10 +248,10 @@ export default function Home() {
               <span className="gradient-text">Let AI do it.</span>
             </h2>
             <p className="text-white/40 text-lg mb-8 relative">
-              One payment. Lifetime access. Your AI career agent starts working in minutes.
+              One payment. 7 days of full access. Your AI career agent starts working in minutes.
             </p>
             <Link href="/create-cv" className="btn-primary inline-block text-lg font-bold px-10 py-4 rounded-2xl relative">
-              Build Your CV — Get Started for $10
+              Build Your CV — Get 7 Days for $10
             </Link>
           </div>
         </div>

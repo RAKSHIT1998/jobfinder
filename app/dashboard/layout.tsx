@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { hasActiveAccess, hasEverPaid } from "@/lib/access";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: "⚡" },
@@ -18,7 +19,19 @@ const navItems = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [authorized, setAuthorized] = useState(false);
+
+  useEffect(() => {
+    if (hasActiveAccess()) {
+      setAuthorized(true);
+      return;
+    }
+    router.replace(hasEverPaid() ? "/checkout?expired=1" : "/checkout");
+  }, [router]);
+
+  if (!authorized) return null;
 
   return (
     <div className="min-h-screen text-white flex" style={{ background: "#050508" }}>
