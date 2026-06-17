@@ -40,7 +40,15 @@ export default function Checkout() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, phone, name }),
       });
-      const data = await res.json();
+      const raw = await res.text();
+      let data: { error?: string; paymentSessionId?: string } = {};
+      if (raw) {
+        try {
+          data = JSON.parse(raw) as { error?: string; paymentSessionId?: string };
+        } catch {
+          throw new Error("Checkout server returned an invalid response. Please refresh and try again.");
+        }
+      }
 
       if (!res.ok || !data.paymentSessionId) {
         throw new Error(data.error || "Could not start checkout.");

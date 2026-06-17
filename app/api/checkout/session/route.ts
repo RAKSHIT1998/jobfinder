@@ -41,8 +41,16 @@ export async function POST(req: NextRequest) {
       paymentSessionId: response.data.payment_session_id,
     });
   } catch (error) {
+    const cashfreeError =
+      typeof error === "object" &&
+      error !== null &&
+      "response" in error &&
+      typeof (error as { response?: { data?: { message?: string } } }).response?.data?.message === "string"
+        ? (error as { response: { data: { message: string } } }).response.data.message
+        : null;
     const message =
-      error instanceof Error ? error.message : "Could not create your Cashfree order.";
+      cashfreeError ||
+      (error instanceof Error ? error.message : "Could not create your Cashfree order.");
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
