@@ -86,7 +86,7 @@ export default async function AdminUserDetail({ params }: PageProps) {
             {payments.map((p) => (
               <div key={p.id} className="glass rounded-xl p-3 flex items-center justify-between text-sm">
                 <span className="text-emerald-300 font-semibold">{formatInr(p.amount_cents / 100, 2)}</span>
-                <span className="text-white/40">{p.card_last4 ? `Card ending ${p.card_last4}` : "Paid via Stripe"}</span>
+                <span className="text-white/40">{p.card_last4 ? `Card ending ${p.card_last4}` : "Paid via Cashfree"}</span>
                 <span className="text-white/25 text-xs">{p.created_at}</span>
               </div>
             ))}

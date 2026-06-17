@@ -1,7 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { load } from "@cashfreepayments/cashfree-js";
 import { ACCESS_PRICE_INR, formatInr } from "@/lib/currency";
+
+const cashfreeMode =
+  process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ? "production" : "sandbox";
 
 export default function Checkout() {
   const [loading, setLoading] = useState(false);
@@ -17,20 +21,40 @@ export default function Checkout() {
     setLoading(true);
 
     let email = "";
+    let phone = "";
+    let name = "";
+
     if (typeof window !== "undefined") {
       const storedCv = localStorage.getItem("jobfinder_cv");
-      email = storedCv ? JSON.parse(storedCv).email : "";
+      if (storedCv) {
+        const parsed = JSON.parse(storedCv) as { email?: string; phone?: string; name?: string };
+        email = parsed.email || "";
+        phone = parsed.phone || "";
+        name = parsed.name || "";
+      }
     }
 
     try {
       const res = await fetch("/api/checkout/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, phone, name }),
       });
       const data = await res.json();
-      if (!res.ok || !data.url) throw new Error(data.error || "Could not start checkout.");
-      window.location.href = data.url;
+
+      if (!res.ok || !data.paymentSessionId) {
+        throw new Error(data.error || "Could not start checkout.");
+      }
+
+      const cashfree = await load({ mode: cashfreeMode });
+      if (!cashfree) {
+        throw new Error("Cashfree checkout failed to load.");
+      }
+
+      cashfree.checkout({
+        paymentSessionId: data.paymentSessionId,
+        redirectTarget: "_self",
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not start checkout.");
       setLoading(false);
@@ -94,14 +118,14 @@ export default function Checkout() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            256-bit SSL - PCI compliant - instant access
+            Cashfree hosted checkout - instant access after successful payment
           </div>
         </div>
 
         <div className="glass-strong rounded-3xl p-8 flex flex-col">
           <h2 className="text-2xl font-black text-white mb-1">Secure Checkout</h2>
           <p className="text-white/40 text-sm mb-8">
-            {expired ? "Your 7-day access has expired. Renew to keep going." : "You'll be redirected to Stripe to pay - we never see or store your card details."}
+            {expired ? "Your 7-day access has expired. Renew to keep going." : "You'll be redirected to Cashfree to pay - we never see or store your card details."}
           </p>
 
           <div className="flex-1 flex flex-col items-center justify-center gap-6 py-8">
@@ -110,7 +134,7 @@ export default function Checkout() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-            <p className="text-white/30 text-xs text-center max-w-xs">Powered by Stripe - Card, Apple Pay, and Google Pay supported on the next screen.</p>
+            <p className="text-white/30 text-xs text-center max-w-xs">Powered by Cashfree - UPI, cards, netbanking, and wallets are handled on the next screen.</p>
           </div>
 
           {error && (
@@ -130,7 +154,7 @@ export default function Checkout() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                Redirecting to Stripe...
+                Opening Cashfree...
               </span>
             ) : (
               `Pay ${formatInr(ACCESS_PRICE_INR)} - Get 7-Day Access`

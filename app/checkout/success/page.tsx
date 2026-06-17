@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -9,13 +9,13 @@ export default function CheckoutSuccess() {
   const [status, setStatus] = useState<"verifying" | "failed">("verifying");
 
   useEffect(() => {
-    const sessionId = new URLSearchParams(window.location.search).get("session_id");
-    if (!sessionId) {
+    const orderId = new URLSearchParams(window.location.search).get("order_id");
+    if (!orderId) {
       setStatus("failed");
       return;
     }
 
-    fetch(`/api/checkout/verify?session_id=${encodeURIComponent(sessionId)}`)
+    fetch(`/api/checkout/verify?order_id=${encodeURIComponent(orderId)}`)
       .then((res) => res.json())
       .then((data) => {
         if (!data.paid) {
@@ -53,8 +53,8 @@ export default function CheckoutSuccess() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h1 className="text-xl font-black text-white mb-2">We couldn&apos;t confirm payment</h1>
-            <p className="text-white/40 text-sm mb-6">No charge appears to have gone through. You can try again.</p>
+            <h1 className="text-xl font-black text-white mb-2">We couldn't confirm payment</h1>
+            <p className="text-white/40 text-sm mb-6">No successful Cashfree payment was confirmed yet. You can try again.</p>
             <Link href="/checkout" className="btn-primary inline-block px-6 py-3 rounded-2xl text-sm font-bold">Back to Checkout</Link>
           </>
         )}

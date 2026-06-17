@@ -18,7 +18,7 @@ export default function RefundPolicy() {
         <p>
           Use the <a href="/contact" className="text-violet-400 hover:text-violet-300">Contact Us</a> page with
           the email address you paid with. We process refunds back to your original payment method through
-          Stripe - it typically takes 5-10 business days to appear, depending on your bank.
+          Cashfree - it typically takes 5-10 business days to appear, depending on your bank.
         </p>
       </section>
 

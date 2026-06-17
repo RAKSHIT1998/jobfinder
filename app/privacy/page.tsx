@@ -1,6 +1,6 @@
 import LegalPage from "@/components/LegalPage";
 
-export const metadata = { title: "Privacy Policy — JobFinder AI" };
+export const metadata = { title: "Privacy Policy - JobFinder AI" };
 
 export default function PrivacyPolicy() {
   return (
@@ -10,7 +10,7 @@ export default function PrivacyPolicy() {
         <p>
           When you build a CV with us, we collect what you enter into the form: your name, email, phone,
           location, work history, education, skills, and target role. When you pay for access, our payment
-          processor (Stripe) handles your card details directly — we never see or store your full card
+          processor (Cashfree) handles your card details directly - we never see or store your full card
           number, only the payment confirmation. If you use the Application Tracker or Interview Prep, we
           store the companies, roles, statuses, and interview details you add.
         </p>
@@ -20,7 +20,7 @@ export default function PrivacyPolicy() {
         <h2>How we use it</h2>
         <p>
           Your CV data is used to rank live job postings against your skills, run the Skills Gap and Salary
-          Intelligence analysis, and — if you use those features — generate cover letters and interview
+          Intelligence analysis, and - if you use those features - generate cover letters and interview
           questions tailored to you. We don&apos;t sell your data, and we don&apos;t share it with job boards or
           employers without you choosing to apply.
         </p>
@@ -29,10 +29,10 @@ export default function PrivacyPolicy() {
       <section>
         <h2>Third parties we send data to</h2>
         <p>
-          <strong>Stripe</strong> processes payments. <strong>Anthropic (Claude API)</strong> receives your CV
+          <strong>Cashfree</strong> processes payments. <strong>Anthropic (Claude API)</strong> receives your CV
           content and the job details you provide only when you use the Cover Letter Generator or AI
           Interview Coach, in order to generate that content. We query public job board APIs (Arbeitnow, The
-          Muse, RemoteOK, Jobicy) to fetch live postings — clicking &quot;View Listing&quot; or &quot;Apply&quot; sends
+          Muse, RemoteOK, Jobicy) to fetch live postings - clicking &quot;View Listing&quot; or &quot;Apply&quot; sends
           you to their site directly; we don&apos;t share your CV with them.
         </p>
       </section>
@@ -50,7 +50,7 @@ export default function PrivacyPolicy() {
         <h2>Your rights</h2>
         <p>
           You can request a copy of your data or ask us to delete your account and everything tied to it at
-          any time — see Contact Us. We&apos;ll act on deletion requests promptly.
+          any time - see Contact Us. We&apos;ll act on deletion requests promptly.
         </p>
       </section>
 

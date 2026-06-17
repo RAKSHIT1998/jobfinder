@@ -32,7 +32,8 @@ function init(): Database.Database {
       amount_cents INTEGER NOT NULL,
       status TEXT NOT NULL,
       card_last4 TEXT,
-      stripe_session_id TEXT,
+      payment_provider TEXT,
+      payment_ref TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -58,7 +59,8 @@ function init(): Database.Database {
   `);
 
   for (const migration of [
-    "ALTER TABLE payments ADD COLUMN stripe_session_id TEXT",
+    "ALTER TABLE payments ADD COLUMN payment_provider TEXT",
+    "ALTER TABLE payments ADD COLUMN payment_ref TEXT",
     "ALTER TABLE applications ADD COLUMN interview_at TEXT",
     "ALTER TABLE applications ADD COLUMN notes TEXT",
   ]) {
@@ -100,12 +102,19 @@ export function upsertUser(email: string, name?: string): UserRow {
   return db.prepare("SELECT * FROM users WHERE id = ?").get(info.lastInsertRowid) as UserRow;
 }
 
-export function recordStripePayment(params: { sessionId: string; amountCents: number; email: string }): void {
+export function recordPayment(params: {
+  amountCents: number;
+  email: string;
+  provider: string;
+  referenceId: string;
+}): void {
   const db = getDb();
-  const existing = db.prepare("SELECT id FROM payments WHERE stripe_session_id = ?").get(params.sessionId);
+  const existing = db
+    .prepare("SELECT id FROM payments WHERE payment_provider = ? AND payment_ref = ?")
+    .get(params.provider, params.referenceId);
   if (existing) return;
   const user = upsertUser(params.email);
   db.prepare(
-    "INSERT INTO payments (user_id, amount_cents, status, stripe_session_id) VALUES (?, ?, 'paid', ?)"
-  ).run(user.id, params.amountCents, params.sessionId);
+    "INSERT INTO payments (user_id, amount_cents, status, payment_provider, payment_ref) VALUES (?, ?, 'paid', ?, ?)"
+  ).run(user.id, params.amountCents, params.provider, params.referenceId);
 }
