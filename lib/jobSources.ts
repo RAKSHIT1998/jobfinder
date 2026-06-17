@@ -1,3 +1,5 @@
+import { formatInr, usdToInr } from "./currency";
+
 export interface JobListing {
   id: string;
   title: string;
@@ -122,7 +124,7 @@ async function fetchRemoteOkJobs(): Promise<JobListing[]> {
     .map((j) => {
       const salaryNote =
         j.salary_min > 0 || j.salary_max > 0
-          ? ` Salary: $${j.salary_min.toLocaleString()} - $${j.salary_max.toLocaleString()}.`
+          ? ` Salary: ${formatInr(usdToInr(j.salary_min))} - ${formatInr(usdToInr(j.salary_max))}.`
           : "";
       return {
         id: `remoteok:${j.slug}`,

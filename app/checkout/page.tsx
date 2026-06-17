@@ -58,7 +58,7 @@ export default function Checkout() {
           <div className="iridescent-border rounded-2xl p-5 mb-6">
             <div className="flex items-center justify-between mb-1">
               <span className="text-white font-bold">JobFinder AI — 7-Day Access</span>
-              <span className="text-4xl font-black gradient-text">$10</span>
+              <span className="text-4xl font-black gradient-text">{formatInr(ACCESS_PRICE_INR)}</span>
             </div>
             <p className="text-white/40 text-sm">One-time payment · Valid for 7 days</p>
           </div>
@@ -87,7 +87,7 @@ export default function Checkout() {
 
           <div className="pt-4 border-t border-white/5 flex items-center justify-between">
             <span className="text-white/40">Total</span>
-            <span className="text-xl font-black text-white">$10.00 USD</span>
+            <span className="text-xl font-black text-white">{formatInr(ACCESS_PRICE_INR, 2)}</span>
           </div>
 
           <div className="mt-5 flex items-center gap-2 text-white/25 text-xs">

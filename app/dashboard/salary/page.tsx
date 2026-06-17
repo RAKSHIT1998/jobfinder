@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { formatInrCompact, usdToInr } from "@/lib/currency";
 
 interface SalaryIntel {
   analyzedCount: number;
@@ -16,11 +17,11 @@ const negotiationScript = [
   { step: "Express excitement first", tip: "'I'm really excited about this offer and the team. I'm very much looking forward to joining.' Never sound desperate or disappointed." },
   { step: "Ask for time", tip: "'I want to give this the consideration it deserves — can I have 48-72 hours?' This is normal and expected." },
   { step: "Research and counter", tip: "Use the real range above plus sites like levels.fyi and Glassdoor. Counter 10-20% above base, and negotiate equity, signing bonus, and remote policy too." },
-  { step: "The counter script", tip: "\"I'm very excited about [Company]. Based on my experience and what similar roles are paying right now, I was expecting something closer to $X. Is there flexibility?\" Then stop talking." },
+  { step: "The counter script", tip: "\"I'm very excited about [Company]. Based on my experience and what similar roles are paying right now, I was expecting something closer to INR X. Is there flexibility?\" Then stop talking." },
   { step: "If they say no", tip: "Ask: 'Is there flexibility on signing bonus, equity, or remote days?' Total comp matters, not just base." },
 ];
 
-const fmt = (n: number) => `$${Math.round(n / 1000)}k`;
+const fmt = (n: number) => formatInrCompact(usdToInr(n));
 
 export default function Salary() {
   const [email, setEmail] = useState<string | null>(null);

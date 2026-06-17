@@ -80,7 +80,7 @@ export default async function Home() {
             {[
               { val: jobCount !== null ? String(jobCount) : "—", label: "Live postings right now" },
               { val: String(sourceCount), label: "Real job sources" },
-              { val: "$10", label: "Per week" },
+              { val: formatInr(ACCESS_PRICE_INR), label: "Per week" },
             ].map((s) => (
               <div key={s.label} className="glass rounded-2xl px-5 py-3 text-center">
                 <div className="text-2xl font-black gradient-text">{s.val}</div>
@@ -121,7 +121,7 @@ export default async function Home() {
           <div className="text-center mb-16">
             <p className="text-cyan-400 font-semibold text-sm mb-3 tracking-widest uppercase">Features</p>
             <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">Everything to get you hired</h2>
-            <p className="text-white/40 text-lg">8 AI-powered tools for $10/week.</p>
+            <p className="text-white/40 text-lg">8 AI-powered tools for {formatInr(ACCESS_PRICE_INR)}/week.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -153,7 +153,7 @@ export default async function Home() {
                 </div>
 
                 <div className="mb-2">
-                  <span className="text-7xl font-black gradient-text">$10</span>
+                  <span className="text-7xl font-black gradient-text">{formatInr(ACCESS_PRICE_INR)}</span>
                 </div>
                 <p className="text-white/40 mb-8">Full access for 7 days. Renew anytime.</p>
 
@@ -180,7 +180,7 @@ export default async function Home() {
                 </ul>
 
                 <Link href="/create-cv" className="btn-primary w-full block text-center py-4 rounded-2xl text-base font-bold">
-                  Get 7 Days for $10
+                  Get 7 Days for {formatInr(ACCESS_PRICE_INR)}
                 </Link>
                 <p className="text-white/25 text-xs mt-4">Secure payment · Instant access · Renew anytime</p>
               </div>

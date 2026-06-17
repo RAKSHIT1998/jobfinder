@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     line_items: [
       {
         price_data: {
-          currency: "usd",
+          currency: "inr",
           unit_amount: ACCESS_PRICE_CENTS,
           product_data: {
             name: "JobFinder AI — 7-Day Access",

@@ -31,7 +31,7 @@ export default function Navbar() {
             Dashboard
           </Link>
           <Link href="/create-cv" className="btn-primary text-sm font-semibold px-5 py-2.5 rounded-xl">
-            Get Started — $10
+            Get Started - INR 830
           </Link>
         </div>
 
@@ -67,7 +67,7 @@ export default function Navbar() {
             className="block btn-primary text-center text-sm font-semibold px-5 py-3 rounded-xl mt-2"
             onClick={() => setOpen(false)}
           >
-            Get Started — $10
+            Get Started - INR 830
           </Link>
         </div>
       )}

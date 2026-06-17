@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { ACCESS_PRICE_PAISE } from "./currency";
 
 let stripeClient: Stripe | undefined;
 
@@ -11,4 +12,4 @@ export function getStripe(): Stripe {
   return stripeClient;
 }
 
-export const ACCESS_PRICE_CENTS = 1000;
+export const ACCESS_PRICE_CENTS = ACCESS_PRICE_PAISE;

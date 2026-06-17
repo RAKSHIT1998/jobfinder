@@ -22,7 +22,7 @@ export default async function AdminOverview() {
     { label: "Total Users", value: totalUsers, color: "#a78bfa" },
     { label: "CVs Created", value: totalCvs, color: "#60a5fa" },
     { label: "Paid Customers", value: totalPayments, color: "#34d399" },
-    { label: "Revenue", value: `$${(revenueCents / 100).toLocaleString()}`, color: "#fbbf24" },
+    { label: "Revenue", value: formatInr(revenueCents / 100), color: "#fbbf24" },
     { label: "Applications Tracked", value: totalApplications, color: "#f472b6" },
     { label: "Conversion Rate", value: `${conversionRate}%`, color: "#22d3ee" },
   ];

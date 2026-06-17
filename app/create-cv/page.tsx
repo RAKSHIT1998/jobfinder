@@ -75,8 +75,8 @@ export default function CreateCV() {
     techSkills: [],
     softSkills: [],
     targetRoles: "",
-    salaryMin: "80000",
-    salaryMax: "150000",
+    salaryMin: "800000",
+    salaryMax: "1500000",
     workType: "remote",
     preferredLocations: "",
   });
@@ -384,13 +384,13 @@ export default function CreateCV() {
                   />
                 </div>
                 <div>
-                  <label className={labelClass}>Salary Range (Annual USD)</label>
+                  <label className={labelClass}>Salary Range (Annual INR)</label>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <input
                         className={inputClass}
                         type="number"
-                        placeholder="Min: 80000"
+                        placeholder="Min: 800000"
                         value={cv.salaryMin}
                         onChange={(e) => updateCv("salaryMin", e.target.value)}
                       />
@@ -399,7 +399,7 @@ export default function CreateCV() {
                       <input
                         className={inputClass}
                         type="number"
-                        placeholder="Max: 150000"
+                        placeholder="Max: 1500000"
                         value={cv.salaryMax}
                         onChange={(e) => updateCv("salaryMax", e.target.value)}
                       />
