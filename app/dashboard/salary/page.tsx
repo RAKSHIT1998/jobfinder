@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { formatInrCompact, usdToInr } from "@/lib/currency";
+import { useCountry } from "@/lib/useCountry";
 
 interface SalaryIntel {
   analyzedCount: number;
@@ -10,6 +10,7 @@ interface SalaryIntel {
   min: number | null;
   max: number | null;
   median: number | null;
+  currency: string;
 }
 
 const negotiationScript = [
@@ -21,9 +22,8 @@ const negotiationScript = [
   { step: "If they say no", tip: "Ask: 'Is there flexibility on signing bonus, equity, or remote days?' Total comp matters, not just base." },
 ];
 
-const fmt = (n: number) => formatInrCompact(usdToInr(n));
-
 export default function Salary() {
+  const { country } = useCountry();
   const [email, setEmail] = useState<string | null>(null);
   const [data, setData] = useState<SalaryIntel | null>(null);
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,8 @@ export default function Salary() {
       setLoading(false);
       return;
     }
-    fetch(`/api/salary?email=${encodeURIComponent(cvEmail)}`)
+    setLoading(true);
+    fetch(`/api/salary?email=${encodeURIComponent(cvEmail)}&currency=${country.currency}`)
       .then((r) => r.json())
       .then((d) => {
         if (d.error) throw new Error(d.error);
@@ -45,7 +46,10 @@ export default function Salary() {
       })
       .catch((err) => setError(err instanceof Error ? err.message : "Could not analyze salary data."))
       .finally(() => setLoading(false));
-  }, []);
+  }, [country.currency]);
+
+  const fmt = (n: number) =>
+    new Intl.NumberFormat(undefined, { style: "currency", currency: data?.currency || "USD", maximumFractionDigits: 0 }).format(n);
 
   if (!email) {
     return (
