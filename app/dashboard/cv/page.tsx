@@ -140,7 +140,7 @@ export default function MyCVPage() {
           {[
             { label: "Target Roles", value: cv.targetRoles },
             { label: "Work Type", value: cv.workType },
-            { label: "Salary Range", value: `$${parseInt(cv.salaryMin||"0").toLocaleString()} – $${parseInt(cv.salaryMax||"0").toLocaleString()}` },
+            { label: "Salary Range", value: `${formatInr(parseInt(cv.salaryMin||"0"))} - ${formatInr(parseInt(cv.salaryMax||"0"))}` },
             { label: "Locations", value: cv.preferredLocations },
           ].map((f) => (
             <div key={f.label} className="glass rounded-xl p-3">

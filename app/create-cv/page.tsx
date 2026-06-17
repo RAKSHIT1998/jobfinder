@@ -406,7 +406,7 @@ export default function CreateCV() {
                     </div>
                   </div>
                   <p className="text-xs text-white/30 mt-1">
-                    ${parseInt(cv.salaryMin || "0").toLocaleString()} – ${parseInt(cv.salaryMax || "0").toLocaleString()} per year
+                    {formatInr(parseInt(cv.salaryMin || "0"))} - {formatInr(parseInt(cv.salaryMax || "0"))} per year
                   </p>
                 </div>
                 <div>
@@ -487,7 +487,7 @@ export default function CreateCV() {
                   <h3 className="font-semibold text-violet-300 mb-3">Job Preferences</h3>
                   <div className="space-y-1 text-white/70">
                     <p><span className="text-white/30">Roles:</span> {cv.targetRoles || "—"}</p>
-                    <p><span className="text-white/30">Salary:</span> ${parseInt(cv.salaryMin || "0").toLocaleString()} – ${parseInt(cv.salaryMax || "0").toLocaleString()}</p>
+                    <p><span className="text-white/30">Salary:</span> {formatInr(parseInt(cv.salaryMin || "0"))} - {formatInr(parseInt(cv.salaryMax || "0"))}</p>
                     <p><span className="text-white/30">Work type:</span> {cv.workType}</p>
                     <p><span className="text-white/30">Locations:</span> {cv.preferredLocations || "—"}</p>
                   </div>
