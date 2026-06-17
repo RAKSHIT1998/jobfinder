@@ -1,4 +1,5 @@
 import { getDb } from "@/lib/db";
+import { formatInr } from "@/lib/currency";
 
 export default async function AdminOverview() {
   const db = getDb();

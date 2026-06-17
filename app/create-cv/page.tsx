@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { formatInr } from "@/lib/currency";
 
 interface WorkExperience {
   company: string;

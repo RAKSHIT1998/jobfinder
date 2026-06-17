@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getDb } from "@/lib/db";
+import { formatInr } from "@/lib/currency";
 import DeleteUserButton from "./DeleteUserButton";
 
 interface PageProps {

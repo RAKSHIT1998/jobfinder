@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { formatInr } from "@/lib/currency";
 
 interface CVData {
   name: string;
