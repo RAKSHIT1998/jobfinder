@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { cookies } from "next/headers";
 
 const SECRET = process.env.ADMIN_SESSION_SECRET || "jobfinder-dev-secret-change-me";
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 export const ADMIN_COOKIE = "jobfinder_admin_session";
 const MAX_AGE_SECONDS = 60 * 60 * 8; // 8 hours
@@ -10,8 +11,8 @@ function sign(value: string): string {
   return crypto.createHmac("sha256", SECRET).update(value).digest("hex");
 }
 
-export function checkAdminPassword(password: string): boolean {
-  return password === ADMIN_PASSWORD;
+export function checkAdminCredentials(username: string, password: string): boolean {
+  return username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
 }
 
 export function createSessionToken(): string {
