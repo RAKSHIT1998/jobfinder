@@ -1,56 +1,56 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { ACCESS_PRICE_INR, formatInr } from "@/lib/currency";
 import { fetchAllJobs } from "@/lib/jobSources";
 
 export const revalidate = 900;
 
 const features = [
-  { icon: "⚡", title: "Live Job Scanning", desc: "We pull live postings from Arbeitnow, The Muse, RemoteOK, and Jobicy, then score every one against your exact skills." },
-  { icon: "🎯", title: "Real Match Scoring", desc: "Our matching algorithm weighs skill overlap in the title, tags, and description — no fabricated accuracy numbers, just a transparent score." },
-  { icon: "📄", title: "CV Builder", desc: "Build a structured CV in minutes that powers every other feature — matching, cover letters, and interview prep." },
-  { icon: "📅", title: "Interview Prep", desc: "Log your real interview dates and download a calendar invite. We don't auto-contact recruiters on your behalf." },
-  { icon: "🧠", title: "AI Interview Coach", desc: "Real questions generated for the specific role you're interviewing for, with real feedback on the answers you type." },
-  { icon: "💰", title: "Salary Intelligence", desc: "We extract real disclosed pay from live postings matching your profile — and tell you honestly when there isn't enough data." },
-  { icon: "✍️", title: "Cover Letter Generator", desc: "AI writes a letter from your actual CV and the job description you give it — not a fill-in-the-blank template." },
-  { icon: "📊", title: "Skills Gap Analysis", desc: "See which in-demand skills show up across live postings matching you that aren't on your CV yet." },
+  { icon: "Live", title: "Live Job Scanning", desc: "We pull live postings from Arbeitnow, The Muse, RemoteOK, and Jobicy, then score every one against your exact skills." },
+  { icon: "Match", title: "Real Match Scoring", desc: "Our matching algorithm weighs skill overlap in the title, tags, and description - no fabricated accuracy numbers, just a transparent score." },
+  { icon: "CV", title: "CV Builder", desc: "Build a structured CV in minutes that powers every other feature - matching, cover letters, and interview prep." },
+  { icon: "Prep", title: "Interview Prep", desc: "Log your real interview dates and download a calendar invite. We don't auto-contact recruiters on your behalf." },
+  { icon: "Coach", title: "AI Interview Coach", desc: "Real questions generated for the specific role you're interviewing for, with real feedback on the answers you type." },
+  { icon: "Pay", title: "Salary Intelligence", desc: "We extract real disclosed pay from live postings matching your profile - and tell you honestly when there isn't enough data." },
+  { icon: "Write", title: "Cover Letter Generator", desc: "AI writes a letter from your actual CV and the job description you give it - not a fill-in-the-blank template." },
+  { icon: "Skills", title: "Skills Gap Analysis", desc: "See which in-demand skills show up across live postings matching you that aren't on your CV yet." },
 ];
 
 const steps = [
   { num: "01", title: "Build Your CV", desc: "Fill out our 7-step smart form in 5 minutes. AI extracts your skills, experiences, and career goals." },
-  { num: "02", title: "We Scan Live Postings", desc: "Real job data from multiple live sources, scored against your actual profile — no canned results." },
+  { num: "02", title: "We Scan Live Postings", desc: "Real job data from multiple live sources, scored against your actual profile - no canned results." },
   { num: "03", title: "Apply With Confidence", desc: "Track applications, prep for real interviews, and generate tailored cover letters as you go." },
 ];
 
 export default async function Home() {
   let jobCount: number | null = null;
   let sourceCount = 4;
+
   try {
     const jobs = await fetchAllJobs();
     jobCount = jobs.length;
     sourceCount = new Set(jobs.map((j) => j.source)).size;
   } catch {
-    // Live sources unreachable at build/request time — fall back to no count rather than a fake one.
+    // Fall back to no count rather than a fake one if the live sources are unreachable.
   }
 
   return (
     <div className="min-h-screen" style={{ background: "#050508" }}>
       <Navbar />
 
-      {/* Blob background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="animate-blob animation-delay-0 absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-20" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(80px)" }} />
         <div className="animate-blob animation-delay-2000 absolute top-1/3 right-1/4 w-80 h-80 rounded-full opacity-15" style={{ background: "radial-gradient(circle, #0891b2, transparent)", filter: "blur(80px)" }} />
         <div className="animate-blob animation-delay-4000 absolute bottom-1/4 left-1/3 w-72 h-72 rounded-full opacity-15" style={{ background: "radial-gradient(circle, #db2777, transparent)", filter: "blur(80px)" }} />
       </div>
 
-      {/* Hero */}
       <section className="relative pt-36 pb-24 px-4">
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-sm text-white/60 mb-8">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>
-              Live right now — <span className="text-emerald-400 font-semibold">{jobCount !== null ? `${jobCount} real postings` : "scanning real sources"}</span>
+              Live right now - <span className="text-emerald-400 font-semibold">{jobCount !== null ? `${jobCount} real postings` : "scanning real sources"}</span>
             </span>
           </div>
 
@@ -63,22 +63,21 @@ export default async function Home() {
 
           <p className="text-xl text-white/40 mb-10 max-w-2xl mx-auto leading-relaxed">
             Build your CV once. We scan live postings from multiple real job sources, score them against your
-            actual skills, and help you track every application — no fabricated results.
+            actual skills, and help you track every application - no fabricated results.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link href="/create-cv" className="btn-primary text-base font-bold px-8 py-4 rounded-2xl inline-block">
-              Start Finding Jobs — $10/week
+              Start Finding Jobs - {formatInr(ACCESS_PRICE_INR)}/week
             </Link>
             <Link href="#how-it-works" className="btn-glass text-base font-semibold px-8 py-4 rounded-2xl inline-block">
               See How It Works
             </Link>
           </div>
 
-          {/* Stat pills */}
           <div className="flex flex-wrap justify-center gap-3 mb-16">
             {[
-              { val: jobCount !== null ? String(jobCount) : "—", label: "Live postings right now" },
+              { val: jobCount !== null ? String(jobCount) : "-", label: "Live postings right now" },
               { val: String(sourceCount), label: "Real job sources" },
               { val: formatInr(ACCESS_PRICE_INR), label: "Per week" },
             ].map((s) => (
@@ -91,7 +90,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* How it works */}
       <section id="how-it-works" className="relative py-24 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -107,7 +105,7 @@ export default async function Home() {
                 <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
                 <p className="text-white/40 text-sm leading-relaxed">{step.desc}</p>
                 {i < 2 && (
-                  <div className="hidden md:block absolute top-1/2 -right-3 z-10 text-white/20 text-2xl">→</div>
+                  <div className="hidden md:block absolute top-1/2 -right-3 z-10 text-white/20 text-2xl">-&gt;</div>
                 )}
               </div>
             ))}
@@ -115,7 +113,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Features */}
       <section id="features" className="relative py-24 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -136,7 +133,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Pricing */}
       <section id="pricing" className="relative py-24 px-4">
         <div className="max-w-lg mx-auto text-center">
           <p className="text-pink-400 font-semibold text-sm mb-3 tracking-widest uppercase">Pricing</p>
@@ -149,7 +145,7 @@ export default async function Home() {
 
               <div className="relative">
                 <div className="inline-block glass rounded-full px-4 py-1.5 text-sm text-violet-300 font-semibold mb-6">
-                  ✨ 7-Day Access
+                  7-Day Access
                 </div>
 
                 <div className="mb-2">
@@ -182,14 +178,13 @@ export default async function Home() {
                 <Link href="/create-cv" className="btn-primary w-full block text-center py-4 rounded-2xl text-base font-bold">
                   Get 7 Days for {formatInr(ACCESS_PRICE_INR)}
                 </Link>
-                <p className="text-white/25 text-xs mt-4">Secure payment · Instant access · Renew anytime</p>
+                <p className="text-white/25 text-xs mt-4">Secure payment - instant access - renew anytime</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
       <section className="relative py-24 px-4">
         <div className="max-w-3xl mx-auto text-center">
           <div className="glass-strong rounded-3xl p-12 relative overflow-hidden">
@@ -202,7 +197,7 @@ export default async function Home() {
               One payment. 7 days of full access. Your AI career agent starts working in minutes.
             </p>
             <Link href="/create-cv" className="btn-primary inline-block text-lg font-bold px-10 py-4 rounded-2xl relative">
-              Build Your CV — Get 7 Days for $10
+              Build Your CV - Get 7 Days for {formatInr(ACCESS_PRICE_INR)}
             </Link>
           </div>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { ACCESS_PRICE_INR, formatInr } from "@/lib/currency";
 
 export default function Checkout() {
   const [loading, setLoading] = useState(false);
@@ -44,7 +45,6 @@ export default function Checkout() {
       </div>
 
       <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 relative">
-        {/* Left: Order Summary */}
         <div className="glass-strong rounded-3xl p-8">
           <div className="flex items-center gap-2.5 mb-8">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center">
@@ -57,10 +57,10 @@ export default function Checkout() {
 
           <div className="iridescent-border rounded-2xl p-5 mb-6">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-white font-bold">JobFinder AI — 7-Day Access</span>
+              <span className="text-white font-bold">JobFinder AI - 7-Day Access</span>
               <span className="text-4xl font-black gradient-text">{formatInr(ACCESS_PRICE_INR)}</span>
             </div>
-            <p className="text-white/40 text-sm">One-time payment · Valid for 7 days</p>
+            <p className="text-white/40 text-sm">One-time payment - valid for 7 days</p>
           </div>
 
           <div className="space-y-3 mb-8">
@@ -94,15 +94,14 @@ export default function Checkout() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            256-bit SSL · PCI compliant · Instant access
+            256-bit SSL - PCI compliant - instant access
           </div>
         </div>
 
-        {/* Right: Payment */}
         <div className="glass-strong rounded-3xl p-8 flex flex-col">
           <h2 className="text-2xl font-black text-white mb-1">Secure Checkout</h2>
           <p className="text-white/40 text-sm mb-8">
-            {expired ? "Your 7-day access has expired. Renew to keep going." : "You'll be redirected to Stripe to pay — we never see or store your card details."}
+            {expired ? "Your 7-day access has expired. Renew to keep going." : "You'll be redirected to Stripe to pay - we never see or store your card details."}
           </p>
 
           <div className="flex-1 flex flex-col items-center justify-center gap-6 py-8">
@@ -111,7 +110,7 @@ export default function Checkout() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-            <p className="text-white/30 text-xs text-center max-w-xs">Powered by Stripe · Card, Apple Pay, and Google Pay supported on the next screen.</p>
+            <p className="text-white/30 text-xs text-center max-w-xs">Powered by Stripe - Card, Apple Pay, and Google Pay supported on the next screen.</p>
           </div>
 
           {error && (
@@ -134,7 +133,7 @@ export default function Checkout() {
                 Redirecting to Stripe...
               </span>
             ) : (
-              "Pay $10 — Get 7-Day Access"
+              `Pay ${formatInr(ACCESS_PRICE_INR)} - Get 7-Day Access`
             )}
           </button>
 
