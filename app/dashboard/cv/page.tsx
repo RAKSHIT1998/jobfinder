@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { formatInr } from "@/lib/currency";
 
@@ -22,7 +23,22 @@ interface CVData {
 }
 
 export default function MyCVPage() {
+  const router = useRouter();
   const [cv, setCv] = useState<CVData | null>(null);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      await fetch("/api/account", { method: "DELETE" });
+    } finally {
+      localStorage.removeItem("jobfinder_cv");
+      localStorage.removeItem("jobfinder_paid");
+      localStorage.removeItem("jobfinder_paid_at");
+      router.push("/");
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -151,6 +167,38 @@ export default function MyCVPage() {
           ))}
         </div>
       </Section>
+
+      <div className="glass rounded-2xl p-6 border border-red-500/20">
+        <h2 className="text-sm font-semibold text-red-400/80 uppercase tracking-widest mb-2">Danger Zone</h2>
+        <p className="text-white/40 text-sm mb-4">
+          Permanently delete your account, CV, applications, and payment history. This can&apos;t be undone.
+        </p>
+        {!confirmingDelete ? (
+          <button
+            onClick={() => setConfirmingDelete(true)}
+            className="btn-glass px-4 py-2 rounded-xl text-sm font-semibold text-red-400 hover:text-red-300"
+          >
+            Delete My Account
+          </button>
+        ) : (
+          <div className="flex items-center gap-3">
+            <span className="text-white/50 text-sm">Are you sure? This is permanent.</span>
+            <button
+              onClick={handleDeleteAccount}
+              disabled={deleting}
+              className="px-4 py-2 rounded-xl bg-red-500/20 border border-red-500/30 text-red-300 text-sm font-semibold disabled:opacity-50"
+            >
+              {deleting ? "Deleting..." : "Yes, delete everything"}
+            </button>
+            <button
+              onClick={() => setConfirmingDelete(false)}
+              className="btn-glass px-4 py-2 rounded-xl text-sm font-semibold text-white/50"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

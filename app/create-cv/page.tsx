@@ -65,6 +65,7 @@ const SOFT_SKILL_OPTIONS = [
 export default function CreateCV() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [password, setPassword] = useState("");
   const [cv, setCv] = useState<CVData>({
     name: "",
     email: "",
@@ -116,7 +117,7 @@ export default function CreateCV() {
         fetch("/api/cv", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(cv),
+          body: JSON.stringify({ ...cv, password }),
         }).catch(() => {});
         router.push("/checkout");
         return;
@@ -193,6 +194,11 @@ export default function CreateCV() {
                 <div>
                   <label className={labelClass}>Email Address *</label>
                   <input className={inputClass} type="email" placeholder="john@example.com" value={cv.email} onChange={(e) => updateCv("email", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelClass}>Password *</label>
+                  <input className={inputClass} type="password" placeholder="At least 8 characters" value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <p className="text-xs text-white/30 mt-1">You&apos;ll use this to log back in without rebuilding your CV.</p>
                 </div>
                 <div>
                   <label className={labelClass}>Phone Number</label>

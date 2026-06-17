@@ -41,6 +41,13 @@ export function analyzeSalary(rankedJobs: ScoredJob[]): SalaryIntel {
   let disclosedCount = 0;
 
   for (const job of pool) {
+    // Prefer a source's own structured salary field over regex-guessing its
+    // free text — RemoteOK gives real numeric fields for some postings.
+    if (job.salaryUsd) {
+      disclosedCount++;
+      allFigures.push(job.salaryUsd.min, job.salaryUsd.max);
+      continue;
+    }
     const found = extractSalaryFigures(`${job.title} ${job.description}`);
     if (found.length > 0) {
       disclosedCount++;

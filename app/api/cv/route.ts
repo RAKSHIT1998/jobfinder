@@ -1,23 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb, upsertUser } from "@/lib/db";
+import { getDb, upsertUser, getUserByEmail, setUserPassword } from "@/lib/db";
+import { hashPassword, setSessionCookie } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { email, name } = body;
+  const { email, name, password, ...cvFields } = body;
   if (!email) {
     return NextResponse.json({ error: "email is required" }, { status: 400 });
   }
 
   const user = upsertUser(email, name);
+
+  if (password) {
+    const existingUser = getUserByEmail(email);
+    if (!existingUser?.password_hash) {
+      setUserPassword(user.id, hashPassword(password));
+    }
+    await setSessionCookie(user.id);
+  }
+
   const db = getDb();
   const existing = db.prepare("SELECT id FROM cvs WHERE user_id = ?").get(user.id);
+  const cvJson = JSON.stringify({ email, name, ...cvFields });
   if (existing) {
-    db.prepare("UPDATE cvs SET data = ?, updated_at = datetime('now') WHERE user_id = ?").run(
-      JSON.stringify(body),
-      user.id
-    );
+    db.prepare("UPDATE cvs SET data = ?, updated_at = datetime('now') WHERE user_id = ?").run(cvJson, user.id);
   } else {
-    db.prepare("INSERT INTO cvs (user_id, data) VALUES (?, ?)").run(user.id, JSON.stringify(body));
+    db.prepare("INSERT INTO cvs (user_id, data) VALUES (?, ?)").run(user.id, cvJson);
   }
 
   return NextResponse.json({ ok: true });

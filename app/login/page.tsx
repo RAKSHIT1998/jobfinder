@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-export default function AdminLogin() {
+export default function Login() {
   const router = useRouter();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -14,17 +15,32 @@ export default function AdminLogin() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-    setLoading(false);
-    if (!res.ok) {
-      setError("Invalid username or password.");
-      return;
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not log in.");
+
+      if (data.cv) {
+        localStorage.setItem("jobfinder_cv", JSON.stringify(data.cv));
+      }
+      if (data.paid) {
+        localStorage.setItem("jobfinder_paid", "true");
+        localStorage.setItem("jobfinder_paid_at", data.paidAt);
+      } else {
+        localStorage.removeItem("jobfinder_paid");
+        localStorage.removeItem("jobfinder_paid_at");
+      }
+
+      router.push(data.paid ? "/dashboard" : "/checkout");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not log in.");
+      setLoading(false);
     }
-    router.push("/admin");
   };
 
   return (
@@ -41,19 +57,19 @@ export default function AdminLogin() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <span className="text-white font-bold">JobFinder<span className="gradient-text">AI</span> Admin</span>
+          <span className="text-white font-bold">JobFinder<span className="gradient-text">AI</span></span>
         </div>
 
-        <h1 className="text-2xl font-black text-white mb-1">Admin Console</h1>
-        <p className="text-white/40 text-sm mb-6">Sign in to manage users, CVs and payments.</p>
+        <h1 className="text-2xl font-black text-white mb-1">Welcome back</h1>
+        <p className="text-white/40 text-sm mb-6">Log in to pick up right where you left off.</p>
 
-        <label className="block text-sm font-medium text-white/50 mb-2">Username</label>
+        <label className="block text-sm font-medium text-white/50 mb-2">Email</label>
         <input
-          type="text"
+          type="email"
           className="input-glass mb-4"
           placeholder="you@example.com"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           autoFocus
         />
 
@@ -74,11 +90,16 @@ export default function AdminLogin() {
 
         <button
           type="submit"
-          disabled={loading || !username || !password}
+          disabled={loading || !email || !password}
           className="btn-primary w-full py-3.5 rounded-2xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed mt-6"
         >
-          {loading ? "Signing in..." : "Sign In"}
+          {loading ? "Logging in..." : "Log In"}
         </button>
+
+        <p className="text-white/30 text-xs text-center mt-5">
+          New here?{" "}
+          <Link href="/create-cv" className="text-violet-400 hover:text-violet-300">Build your CV</Link>
+        </p>
       </form>
     </div>
   );

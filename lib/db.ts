@@ -10,12 +10,14 @@ function init(): Database.Database {
   const dbPath = process.env.DB_PATH || path.join(process.cwd(), "data.db");
   const db = new Database(dbPath);
   db.pragma("journal_mode = WAL");
+  db.pragma("foreign_keys = ON");
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       email TEXT UNIQUE NOT NULL,
       name TEXT,
+      password_hash TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -63,6 +65,7 @@ function init(): Database.Database {
     "ALTER TABLE payments ADD COLUMN payment_ref TEXT",
     "ALTER TABLE applications ADD COLUMN interview_at TEXT",
     "ALTER TABLE applications ADD COLUMN notes TEXT",
+    "ALTER TABLE users ADD COLUMN password_hash TEXT",
   ]) {
     try {
       db.exec(migration);
@@ -117,4 +120,41 @@ export function recordPayment(params: {
   db.prepare(
     "INSERT INTO payments (user_id, amount_cents, status, payment_provider, payment_ref) VALUES (?, ?, 'paid', ?, ?)"
   ).run(user.id, params.amountCents, params.provider, params.referenceId);
+}
+
+export interface UserWithAuth extends UserRow {
+  password_hash: string | null;
+}
+
+export function getUserByEmail(email: string): UserWithAuth | undefined {
+  const db = getDb();
+  return db.prepare("SELECT * FROM users WHERE email = ?").get(email) as UserWithAuth | undefined;
+}
+
+export function getUserById(id: number): UserRow | undefined {
+  const db = getDb();
+  return db.prepare("SELECT * FROM users WHERE id = ?").get(id) as UserRow | undefined;
+}
+
+export function setUserPassword(userId: number, passwordHash: string): void {
+  const db = getDb();
+  db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(passwordHash, userId);
+}
+
+export function deleteUserAccount(userId: number): void {
+  const db = getDb();
+  db.prepare("DELETE FROM users WHERE id = ?").run(userId);
+}
+
+export function getLatestPayment(userId: number): { created_at: string } | undefined {
+  const db = getDb();
+  return db
+    .prepare("SELECT created_at FROM payments WHERE user_id = ? AND status = 'paid' ORDER BY created_at DESC LIMIT 1")
+    .get(userId) as { created_at: string } | undefined;
+}
+
+export function getCv(userId: number): string | undefined {
+  const db = getDb();
+  const row = db.prepare("SELECT data FROM cvs WHERE user_id = ?").get(userId) as { data: string } | undefined;
+  return row?.data;
 }

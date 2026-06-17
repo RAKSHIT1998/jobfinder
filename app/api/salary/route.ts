@@ -3,9 +3,11 @@ import { getDb } from "@/lib/db";
 import { fetchAllJobs } from "@/lib/jobSources";
 import { rankJobs, type CVProfile } from "@/lib/matching";
 import { analyzeSalary } from "@/lib/salary";
+import { convertCurrency } from "@/lib/exchangeRates";
 
 export async function GET(req: NextRequest) {
   const email = req.nextUrl.searchParams.get("email");
+  const currency = (req.nextUrl.searchParams.get("currency") || "USD").toUpperCase();
   if (!email) return NextResponse.json({ error: "email is required" }, { status: 400 });
 
   const db = getDb();
@@ -28,5 +30,25 @@ export async function GET(req: NextRequest) {
 
   const ranked = rankJobs(cv, jobs);
   const result = analyzeSalary(ranked);
-  return NextResponse.json(result);
+
+  if (result.min === null || result.max === null || result.median === null) {
+    return NextResponse.json({ ...result, currency: "USD" });
+  }
+
+  if (currency === "USD") {
+    return NextResponse.json({ ...result, currency: "USD" });
+  }
+
+  const [min, max, median] = await Promise.all([
+    convertCurrency(result.min, "USD", currency),
+    convertCurrency(result.max, "USD", currency),
+    convertCurrency(result.median, "USD", currency),
+  ]);
+
+  if (min === null || max === null || median === null) {
+    // Currency not covered by the exchange rate provider — fall back to USD.
+    return NextResponse.json({ ...result, currency: "USD" });
+  }
+
+  return NextResponse.json({ ...result, min: Math.round(min), max: Math.round(max), median: Math.round(median), currency });
 }

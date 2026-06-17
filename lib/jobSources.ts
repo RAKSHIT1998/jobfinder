@@ -1,5 +1,3 @@
-import { formatInr, usdToInr } from "./currency";
-
 export interface JobListing {
   id: string;
   title: string;
@@ -11,6 +9,8 @@ export interface JobListing {
   tags: string[];
   description: string;
   postedAt: string | null;
+  /** Structured salary in USD, when the source provides real numeric fields rather than free text. */
+  salaryUsd?: { min: number; max: number };
 }
 
 function stripHtml(html: string): string {
@@ -122,10 +122,7 @@ async function fetchRemoteOkJobs(): Promise<JobListing[]> {
   return data
     .filter((j) => j.id)
     .map((j) => {
-      const salaryNote =
-        j.salary_min > 0 || j.salary_max > 0
-          ? ` Salary: ${formatInr(usdToInr(j.salary_min))} - ${formatInr(usdToInr(j.salary_max))}.`
-          : "";
+      const hasSalary = j.salary_min > 0 || j.salary_max > 0;
       return {
         id: `remoteok:${j.slug}`,
         title: j.position,
@@ -135,7 +132,8 @@ async function fetchRemoteOkJobs(): Promise<JobListing[]> {
         url: j.url,
         source: "RemoteOK",
         tags: j.tags || [],
-        description: stripHtml(j.description || "") + salaryNote,
+        description: stripHtml(j.description || ""),
+        salaryUsd: hasSalary ? { min: j.salary_min, max: j.salary_max } : undefined,
         postedAt: j.date || null,
       };
     });

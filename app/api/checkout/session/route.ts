@@ -12,9 +12,9 @@ export async function POST(req: NextRequest) {
 
   const orderId = createCashfreeOrderId();
   const origin = req.nextUrl.origin;
-  const cashfree = getCashfree();
 
   try {
+    const cashfree = getCashfree();
     const response = await cashfree.PGCreateOrder(
       {
         order_amount: ACCESS_PRICE_PAISE / 100,

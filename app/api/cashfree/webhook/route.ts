@@ -27,9 +27,9 @@ export async function POST(req: NextRequest) {
   }
 
   const rawBody = await req.text();
-  const cashfree = getCashfree();
 
   try {
+    const cashfree = getCashfree();
     cashfree.PGVerifyWebhookSignature(signature, rawBody, timestamp);
   } catch {
     return NextResponse.json({ error: "Invalid webhook signature" }, { status: 400 });
