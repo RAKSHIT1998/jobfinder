@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { load } from "@cashfreepayments/cashfree-js";
 import { ACCESS_PRICE_INR, formatInr } from "@/lib/currency";
+import CountrySelector from "@/components/CountrySelector";
+import LocalizedPrice from "@/components/LocalizedPrice";
 
 const cashfreeMode =
   process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ? "production" : "sandbox";
@@ -92,7 +94,13 @@ export default function Checkout() {
               <span className="text-white font-bold">JobFinder AI - 7-Day Access</span>
               <span className="text-4xl font-black gradient-text">{formatInr(ACCESS_PRICE_INR)}</span>
             </div>
-            <p className="text-white/40 text-sm">One-time payment - valid for 7 days</p>
+            <div className="flex items-center justify-between">
+              <p className="text-white/40 text-sm">One-time payment - valid for 7 days</p>
+              <p className="text-white/30 text-xs"><LocalizedPrice /></p>
+            </div>
+          </div>
+          <div className="flex justify-end mb-2">
+            <CountrySelector />
           </div>
 
           <div className="space-y-3 mb-8">

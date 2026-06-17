@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CountrySelector from "@/components/CountrySelector";
+import LocalizedPrice from "@/components/LocalizedPrice";
 import { ACCESS_PRICE_INR, formatInr } from "@/lib/currency";
 import { fetchAllJobs } from "@/lib/jobSources";
 
@@ -144,13 +146,17 @@ export default async function Home() {
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 opacity-20 pointer-events-none" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(40px)" }} />
 
               <div className="relative">
-                <div className="inline-block glass rounded-full px-4 py-1.5 text-sm text-violet-300 font-semibold mb-6">
-                  7-Day Access
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <div className="inline-block glass rounded-full px-4 py-1.5 text-sm text-violet-300 font-semibold">
+                    7-Day Access
+                  </div>
+                  <CountrySelector />
                 </div>
 
                 <div className="mb-2">
                   <span className="text-7xl font-black gradient-text">{formatInr(ACCESS_PRICE_INR)}</span>
                 </div>
+                <p className="text-white/40 text-sm mb-2"><LocalizedPrice /></p>
                 <p className="text-white/40 mb-8">Full access for 7 days. Renew anytime.</p>
 
                 <ul className="text-left space-y-3 mb-10">
