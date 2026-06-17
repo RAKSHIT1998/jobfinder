@@ -1,7 +1,7 @@
 const INR_LOCALE = "en-IN";
 const USD_TO_INR = 83;
 
-export const ACCESS_PRICE_INR = 830;
+export const ACCESS_PRICE_INR = 1000;
 export const ACCESS_PRICE_PAISE = ACCESS_PRICE_INR * 100;
 
 export function formatInr(amount: number, fractionDigits = 0): string {
