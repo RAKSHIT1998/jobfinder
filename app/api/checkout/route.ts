@@ -1,22 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb, upsertUser } from "@/lib/db";
-
-export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { email, name, card } = body;
-  if (!email || !card) {
-    return NextResponse.json({ error: "email and card are required" }, { status: 400 });
-  }
-
-  const user = upsertUser(email, name);
-  const db = getDb();
-  const last4 = String(card).replace(/\D/g, "").slice(-4);
-  db.prepare(
-    "INSERT INTO payments (user_id, amount_cents, status, card_last4) VALUES (?, ?, ?, ?)"
-  ).run(user.id, 1000, "paid", last4);
-
-  return NextResponse.json({ ok: true });
-}
+import { getDb } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const email = req.nextUrl.searchParams.get("email");

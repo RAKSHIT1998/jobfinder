@@ -32,6 +32,7 @@ function init(): Database.Database {
       amount_cents INTEGER NOT NULL,
       status TEXT NOT NULL,
       card_last4 TEXT,
+      stripe_session_id TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -45,6 +46,12 @@ function init(): Database.Database {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
+
+  try {
+    db.exec("ALTER TABLE payments ADD COLUMN stripe_session_id TEXT");
+  } catch {
+    // already present on databases created before this column existed
+  }
 
   return db;
 }
@@ -75,4 +82,14 @@ export function upsertUser(email: string, name?: string): UserRow {
   }
   const info = db.prepare("INSERT INTO users (email, name) VALUES (?, ?)").run(email, name ?? null);
   return db.prepare("SELECT * FROM users WHERE id = ?").get(info.lastInsertRowid) as UserRow;
+}
+
+export function recordStripePayment(params: { sessionId: string; amountCents: number; email: string }): void {
+  const db = getDb();
+  const existing = db.prepare("SELECT id FROM payments WHERE stripe_session_id = ?").get(params.sessionId);
+  if (existing) return;
+  const user = upsertUser(params.email);
+  db.prepare(
+    "INSERT INTO payments (user_id, amount_cents, status, stripe_session_id) VALUES (?, ?, 'paid', ?)"
+  ).run(user.id, params.amountCents, params.sessionId);
 }

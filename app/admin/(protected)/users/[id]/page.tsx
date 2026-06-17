@@ -29,7 +29,7 @@ export default async function AdminUserDetail({ params }: PageProps) {
   const cv: CVData | null = cvRow ? JSON.parse(cvRow.data) : null;
   const payments = db
     .prepare("SELECT * FROM payments WHERE user_id = ? ORDER BY created_at DESC")
-    .all(id) as Array<{ id: number; amount_cents: number; status: string; card_last4: string; created_at: string }>;
+    .all(id) as Array<{ id: number; amount_cents: number; status: string; card_last4: string | null; created_at: string }>;
   const applications = db
     .prepare("SELECT * FROM applications WHERE user_id = ? ORDER BY created_at DESC")
     .all(id) as Array<{ id: number; company: string; role: string; status: string; created_at: string }>;
@@ -85,7 +85,7 @@ export default async function AdminUserDetail({ params }: PageProps) {
             {payments.map((p) => (
               <div key={p.id} className="glass rounded-xl p-3 flex items-center justify-between text-sm">
                 <span className="text-emerald-300 font-semibold">${(p.amount_cents / 100).toFixed(2)}</span>
-                <span className="text-white/40">Card ending {p.card_last4}</span>
+                <span className="text-white/40">{p.card_last4 ? `Card ending ${p.card_last4}` : "Paid via Stripe"}</span>
                 <span className="text-white/25 text-xs">{p.created_at}</span>
               </div>
             ))}

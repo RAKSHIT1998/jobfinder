@@ -1,12 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 export default function Checkout() {
-  const router = useRouter();
-  const [form, setForm] = useState({ name: "", card: "", expiry: "", cvv: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [expired, setExpired] = useState(false);
@@ -15,16 +11,9 @@ export default function Checkout() {
     setExpired(new URLSearchParams(window.location.search).get("expired") === "1");
   }, []);
 
-  const formatCard = (val: string) => val.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
-  const formatExpiry = (val: string) => {
-    const c = val.replace(/\D/g, "").slice(0, 4);
-    return c.length > 2 ? c.slice(0, 2) + "/" + c.slice(2) : c;
-  };
-
   const handlePay = async () => {
-    if (!form.name || !form.card || !form.expiry || !form.cvv) { setError("Please fill in all fields."); return; }
-    setError(""); setLoading(true);
-    await new Promise((r) => setTimeout(r, 2000));
+    setError("");
+    setLoading(true);
 
     let email = "";
     if (typeof window !== "undefined") {
@@ -32,22 +21,20 @@ export default function Checkout() {
       email = storedCv ? JSON.parse(storedCv).email : "";
     }
 
-    if (email) {
-      await fetch("/api/checkout", {
+    try {
+      const res = await fetch("/api/checkout/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name: form.name, card: form.card }),
-      }).catch(() => {});
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.url) throw new Error(data.error || "Could not start checkout.");
+      window.location.href = data.url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not start checkout.");
+      setLoading(false);
     }
-
-    if (typeof window !== "undefined") {
-      localStorage.setItem("jobfinder_paid", "true");
-      localStorage.setItem("jobfinder_paid_at", new Date().toISOString());
-    }
-    router.push("/dashboard");
   };
-
-  const labelClass = "block text-sm font-medium text-white/50 mb-2";
 
   return (
     <div className="min-h-screen text-white flex items-center justify-center px-4 py-16 relative" style={{ background: "#050508" }}>
@@ -111,74 +98,49 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* Right: Payment Form */}
-        <div className="glass-strong rounded-3xl p-8">
-          <h2 className="text-2xl font-black text-white mb-1">Payment Details</h2>
+        {/* Right: Payment */}
+        <div className="glass-strong rounded-3xl p-8 flex flex-col">
+          <h2 className="text-2xl font-black text-white mb-1">Secure Checkout</h2>
           <p className="text-white/40 text-sm mb-8">
-            {expired ? "Your 7-day access has expired. Renew to keep going." : "Enter your card to get instant access for 7 days."}
+            {expired ? "Your 7-day access has expired. Renew to keep going." : "You'll be redirected to Stripe to pay — we never see or store your card details."}
           </p>
 
-          <div className="space-y-5">
-            <div>
-              <label className={labelClass}>Cardholder Name</label>
-              <input className="input-glass" placeholder="John Doe" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <div className="flex-1 flex flex-col items-center justify-center gap-6 py-8">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center">
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
             </div>
-
-            <div>
-              <label className={labelClass}>Card Number</label>
-              <div className="relative">
-                <input
-                  className="input-glass pr-12"
-                  placeholder="1234 5678 9012 3456"
-                  value={form.card}
-                  onChange={(e) => setForm({ ...form, card: formatCard(e.target.value) })}
-                  maxLength={19}
-                />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <div className="w-8 h-5 bg-blue-600/80 rounded text-white font-black flex items-center justify-center" style={{ fontSize: "7px", letterSpacing: "0.5px" }}>VISA</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className={labelClass}>Expiry</label>
-                <input className="input-glass" placeholder="MM/YY" value={form.expiry} onChange={(e) => setForm({ ...form, expiry: formatExpiry(e.target.value) })} maxLength={5} />
-              </div>
-              <div>
-                <label className={labelClass}>CVV</label>
-                <input className="input-glass" placeholder="•••" value={form.cvv} onChange={(e) => setForm({ ...form, cvv: e.target.value.replace(/\D/g, "").slice(0, 4) })} maxLength={4} type="password" />
-              </div>
-            </div>
-
-            {error && (
-              <div className="glass rounded-xl px-4 py-3 text-red-400 text-sm border border-red-500/20">
-                {error}
-              </div>
-            )}
-
-            <button
-              onClick={handlePay}
-              disabled={loading}
-              className="btn-primary w-full py-4 rounded-2xl text-base font-bold disabled:opacity-50 disabled:cursor-not-allowed mt-2"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  Processing payment...
-                </span>
-              ) : (
-                "Pay $10 — Get 7-Day Access"
-              )}
-            </button>
+            <p className="text-white/30 text-xs text-center max-w-xs">Powered by Stripe · Card, Apple Pay, and Google Pay supported on the next screen.</p>
           </div>
+
+          {error && (
+            <div className="glass rounded-xl px-4 py-3 text-red-400 text-sm border border-red-500/20 mb-4">
+              {error}
+            </div>
+          )}
+
+          <button
+            onClick={handlePay}
+            disabled={loading}
+            className="btn-primary w-full py-4 rounded-2xl text-base font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Redirecting to Stripe...
+              </span>
+            ) : (
+              "Pay $10 — Get 7-Day Access"
+            )}
+          </button>
 
           <p className="text-white/20 text-xs text-center mt-6">
             By purchasing you agree to our{" "}
-            <Link href="#" className="text-violet-400 hover:text-violet-300">Terms of Service</Link>.
+            <span className="text-violet-400">Terms of Service</span>.
             30-day money back guarantee, no questions asked.
           </p>
         </div>
