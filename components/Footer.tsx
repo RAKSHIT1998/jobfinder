@@ -53,10 +53,7 @@ export default function Footer() {
 
         <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-white/25 text-sm">© 2026 JobFinder AI. All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <p className="text-white/25 text-xs">One-time payment · Lifetime access · 30-day money back guarantee</p>
-            <Link href="/admin/login" className="text-white/15 hover:text-white/40 text-xs transition-colors">Admin</Link>
-          </div>
+          <p className="text-white/25 text-xs">One-time payment · Lifetime access · 30-day money back guarantee</p>
         </div>
       </div>
     </footer>
