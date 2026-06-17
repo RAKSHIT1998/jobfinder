@@ -1,89 +1,156 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 
-const allJobs = [
-  { company: "Google", role: "Senior Software Engineer", location: "Remote", salary: "$150k-200k", match: 97, source: "Indeed", type: "remote", color: "#4285F4" },
-  { company: "Anthropic", role: "AI Engineer", location: "Hybrid SF", salary: "$160k-220k", match: 96, source: "LinkedIn", type: "hybrid", color: "#d97706" },
-  { company: "Stripe", role: "Full Stack Developer", location: "Hybrid SF", salary: "$130k-170k", match: 94, source: "LinkedIn", type: "hybrid", color: "#635bff" },
-  { company: "Linear", role: "Software Engineer", location: "Remote", salary: "$130k-160k", match: 93, source: "Remote.co", type: "remote", color: "#5e6ad2" },
-  { company: "Vercel", role: "Frontend Engineer", location: "Remote", salary: "$120k-160k", match: 92, source: "Glassdoor", type: "remote", color: "#ffffff" },
-  { company: "Shopify", role: "Backend Developer", location: "Remote", salary: "$125k-155k", match: 90, source: "Indeed", type: "remote", color: "#96bf48" },
-  { company: "Figma", role: "Software Engineer", location: "Hybrid NYC", salary: "$140k-180k", match: 88, source: "LinkedIn", type: "hybrid", color: "#a259ff" },
-  { company: "Airbnb", role: "React Developer", location: "Hybrid SF", salary: "$130k-165k", match: 87, source: "Glassdoor", type: "hybrid", color: "#ff5a5f" },
-  { company: "GitHub", role: "Platform Engineer", location: "Remote", salary: "$135k-175k", match: 85, source: "Remote.co", type: "remote", color: "#6e40c9" },
-  { company: "Notion", role: "Full Stack Engineer", location: "Remote", salary: "$120k-150k", match: 84, source: "AngelList", type: "remote", color: "#ffffff" },
-];
+interface ScoredJob {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  remote: boolean;
+  url: string;
+  source: string;
+  tags: string[];
+  description: string;
+  match: number;
+}
+
+const sourceStyle: Record<string, string> = {
+  Arbeitnow: "bg-violet-600/15 text-violet-300 border-violet-600/25",
+  "The Muse": "bg-cyan-600/15 text-cyan-300 border-cyan-600/25",
+  RemoteOK: "bg-emerald-600/15 text-emerald-300 border-emerald-600/25",
+  Jobicy: "bg-amber-600/15 text-amber-300 border-amber-600/25",
+};
 
 const matchBadge = (match: number) => {
-  if (match >= 95) return "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
-  if (match >= 90) return "text-cyan-400 bg-cyan-500/10 border-cyan-500/30";
-  if (match >= 85) return "text-violet-400 bg-violet-500/10 border-violet-500/30";
+  if (match >= 40) return "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
+  if (match >= 20) return "text-cyan-400 bg-cyan-500/10 border-cyan-500/30";
+  if (match >= 10) return "text-violet-400 bg-violet-500/10 border-violet-500/30";
   return "text-amber-400 bg-amber-500/10 border-amber-500/30";
 };
 
-const sourceStyle: Record<string, string> = {
-  LinkedIn: "bg-blue-600/15 text-blue-300 border-blue-600/25",
-  Indeed: "bg-orange-500/15 text-orange-300 border-orange-500/25",
-  Glassdoor: "bg-emerald-600/15 text-emerald-300 border-emerald-600/25",
-  "Remote.co": "bg-violet-600/15 text-violet-300 border-violet-600/25",
-  AngelList: "bg-white/8 text-white/50 border-white/10",
-};
-
 export default function Jobs() {
-  const [filter, setFilter] = useState("all");
-  const [appliedMap, setAppliedMap] = useState<Record<number, boolean>>(
-    Object.fromEntries(allJobs.map((_, i) => [i, i === 2 || i === 7]))
-  );
+  const [email, setEmail] = useState<string | null>(null);
+  const [jobs, setJobs] = useState<ScoredJob[]>([]);
+  const [sourcedFrom, setSourcedFrom] = useState<string[]>([]);
+  const [appliedKeys, setAppliedKeys] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [filter, setFilter] = useState<"all" | "remote" | "onsite">("all");
 
-  const filtered = filter === "all" ? allJobs : allJobs.filter((j) => j.type === filter);
+  const load = useCallback((userEmail: string) => {
+    setLoading(true);
+    setError("");
+    Promise.all([
+      fetch(`/api/jobs?email=${encodeURIComponent(userEmail)}`).then((r) => r.json()),
+      fetch(`/api/applications?email=${encodeURIComponent(userEmail)}`).then((r) => r.json()),
+    ])
+      .then(([jobsData, appsData]) => {
+        if (jobsData.error) throw new Error(jobsData.error);
+        setJobs(jobsData.jobs || []);
+        setSourcedFrom(jobsData.sourcedFrom || []);
+        const applied = new Set<string>(
+          (appsData.applications || []).map((a: { company: string; role: string }) => `${a.company}|${a.role}`)
+        );
+        setAppliedKeys(applied);
+      })
+      .catch((err) => setError(err instanceof Error ? err.message : "Could not load jobs."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("jobfinder_cv") : null;
+    const cvEmail = stored ? JSON.parse(stored).email : null;
+    setEmail(cvEmail);
+    if (cvEmail) load(cvEmail);
+    else setLoading(false);
+  }, [load]);
+
+  const handleApply = async (job: ScoredJob) => {
+    window.open(job.url, "_blank", "noopener,noreferrer");
+    if (!email) return;
+    const key = `${job.company}|${job.title}`;
+    if (appliedKeys.has(key)) return;
+    setAppliedKeys((prev) => new Set(prev).add(key));
+    await fetch("/api/applications", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, company: job.company, role: job.title, status: "Applied" }),
+    }).catch(() => {});
+  };
+
+  if (!email) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4 text-center">
+        <p className="text-white/50">Build your CV first so we know what to match jobs against.</p>
+        <Link href="/create-cv" className="btn-primary px-6 py-3 rounded-2xl text-sm font-bold">Build Your CV</Link>
+      </div>
+    );
+  }
+
+  const filtered = jobs.filter((j) => filter === "all" || (filter === "remote" ? j.remote : !j.remote));
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div>
-        <h1 className="text-3xl font-black text-white">AI-Found Jobs</h1>
-        <p className="text-white/40 text-sm mt-1">{allJobs.length} jobs matching your profile · Refreshed 2 minutes ago</p>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-3xl font-black text-white">Jobs Matching Your CV</h1>
+          <p className="text-white/40 text-sm mt-1">
+            {loading ? "Scanning live job sources..." : `${jobs.length} real jobs ranked against your skills · Sourced from ${sourcedFrom.join(", ")}`}
+          </p>
+        </div>
+        <button onClick={() => email && load(email)} disabled={loading} className="btn-glass px-4 py-2 rounded-xl text-sm font-semibold text-white/60 disabled:opacity-50">
+          {loading ? "Scanning..." : "↻ Rescan"}
+        </button>
       </div>
 
-      {/* Filters */}
-      <div className="glass rounded-2xl p-1.5 inline-flex gap-1">
-        {[
-          { key: "all", label: `All (${allJobs.length})` },
-          { key: "remote", label: `Remote (${allJobs.filter(j => j.type === "remote").length})` },
-          { key: "hybrid", label: `Hybrid (${allJobs.filter(j => j.type === "hybrid").length})` },
-          { key: "onsite", label: "Onsite (0)" },
-        ].map((f) => (
-          <button
-            key={f.key}
-            onClick={() => setFilter(f.key)}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-              filter === f.key
-                ? "bg-violet-500/25 text-violet-200 border border-violet-500/30"
-                : "text-white/40 hover:text-white/70"
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
+      {error && (
+        <div className="glass rounded-2xl p-5 text-red-400 text-sm border border-red-500/20">
+          Couldn&apos;t fetch live jobs right now: {error}
+        </div>
+      )}
 
-      {/* Job cards */}
+      {!loading && !error && jobs.length === 0 && (
+        <div className="glass rounded-2xl p-8 text-center text-white/40 text-sm">
+          No live postings matched your profile this scan. Try adding more skills to your CV and rescan.
+        </div>
+      )}
+
+      {!loading && jobs.length > 0 && (
+        <div className="glass rounded-2xl p-1.5 inline-flex gap-1">
+          {[
+            { key: "all" as const, label: `All (${jobs.length})` },
+            { key: "remote" as const, label: `Remote (${jobs.filter((j) => j.remote).length})` },
+            { key: "onsite" as const, label: `Onsite (${jobs.filter((j) => !j.remote).length})` },
+          ].map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                filter === f.key ? "bg-violet-500/25 text-violet-200 border border-violet-500/30" : "text-white/40 hover:text-white/70"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="space-y-3">
-        {filtered.map((job, idx) => {
-          const globalIdx = allJobs.indexOf(job);
-          const isApplied = appliedMap[globalIdx];
+        {filtered.map((job) => {
+          const isApplied = appliedKeys.has(`${job.company}|${job.title}`);
           return (
-            <div key={idx} className="glass glass-hover rounded-2xl p-5 transition-all">
+            <div key={job.id} className="glass glass-hover rounded-2xl p-5 transition-all">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-black shrink-0"
-                  style={{ background: `${job.color}15`, border: `1px solid ${job.color}25`, color: job.color }}>
-                  {job.company[0]}
+                <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-black shrink-0 bg-violet-500/15 border border-violet-500/25 text-violet-300">
+                  {job.company[0]?.toUpperCase() || "?"}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div>
-                      <h3 className="text-white font-bold">{job.role}</h3>
+                      <h3 className="text-white font-bold">{job.title}</h3>
                       <p className="text-white/40 text-sm">{job.company}</p>
                     </div>
                     <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-sm font-black ${matchBadge(job.match)}`}>
@@ -91,35 +158,33 @@ export default function Jobs() {
                     </div>
                   </div>
 
+                  <p className="text-white/40 text-sm mt-2 line-clamp-2">{job.description.slice(0, 180)}{job.description.length > 180 ? "..." : ""}</p>
+
                   <div className="flex flex-wrap gap-2 mt-3">
                     <span className="text-sm text-white/50">📍 {job.location}</span>
-                    <span className="text-sm text-emerald-400 font-semibold">💰 {job.salary}</span>
                     <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold border ${sourceStyle[job.source] || "bg-white/5 text-white/40 border-white/10"}`}>
                       {job.source}
                     </span>
                     <span className={`px-2 py-0.5 rounded-lg text-xs font-semibold border capitalize ${
-                      job.type === "remote" ? "bg-violet-500/15 text-violet-300 border-violet-500/25" :
-                      "bg-cyan-500/15 text-cyan-300 border-cyan-500/25"
+                      job.remote ? "bg-violet-500/15 text-violet-300 border-violet-500/25" : "bg-cyan-500/15 text-cyan-300 border-cyan-500/25"
                     }`}>
-                      {job.type}
+                      {job.remote ? "remote" : "onsite"}
                     </span>
                   </div>
                 </div>
               </div>
 
               <div className="flex gap-3 mt-4 pt-4 border-t border-white/5">
-                <button className="flex-1 btn-glass py-2.5 rounded-xl text-sm font-semibold text-white/60 hover:text-white">
-                  View Details
-                </button>
+                <a href={job.url} target="_blank" rel="noopener noreferrer" className="flex-1 btn-glass py-2.5 rounded-xl text-sm font-semibold text-white/60 hover:text-white text-center">
+                  View Listing ↗
+                </a>
                 <button
-                  onClick={() => setAppliedMap((p) => ({ ...p, [globalIdx]: !p[globalIdx] }))}
+                  onClick={() => handleApply(job)}
                   className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                    isApplied
-                      ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400"
-                      : "btn-primary"
+                    isApplied ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400" : "btn-primary"
                   }`}
                 >
-                  {isApplied ? "✓ Applied" : "Apply Now"}
+                  {isApplied ? "✓ Applied" : "Apply Now ↗"}
                 </button>
               </div>
             </div>

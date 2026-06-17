@@ -15,11 +15,11 @@ export default function Footer() {
               <span className="font-bold text-white text-lg">JobFinder<span className="gradient-text">AI</span></span>
             </div>
             <p className="text-white/40 text-sm leading-relaxed max-w-xs">
-              Your AI-powered career agent working 24/7 to find, match, and schedule interviews for your dream job.
+              Real live job matching, application tracking, and AI-assisted prep — built on real data, not a demo.
             </p>
             <div className="flex items-center gap-2 mt-4">
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-emerald-400 text-xs font-medium">Agent running — 2,847 jobs found today</span>
+              <span className="text-emerald-400 text-xs font-medium">Live job matching — Arbeitnow, The Muse, RemoteOK, Jobicy</span>
             </div>
           </div>
 
@@ -42,9 +42,14 @@ export default function Footer() {
           <div>
             <h4 className="text-white/80 font-semibold mb-4 text-sm">Legal</h4>
             <ul className="space-y-3">
-              {["Privacy Policy", "Terms of Service", "Contact Us", "Refund Policy"].map((l) => (
-                <li key={l}>
-                  <Link href="#" className="text-white/40 hover:text-white text-sm transition-colors">{l}</Link>
+              {[
+                { href: "/privacy", label: "Privacy Policy" },
+                { href: "/terms", label: "Terms of Service" },
+                { href: "/contact", label: "Contact Us" },
+                { href: "/refund-policy", label: "Refund Policy" },
+              ].map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="text-white/40 hover:text-white text-sm transition-colors">{l.label}</Link>
                 </li>
               ))}
             </ul>

@@ -1,43 +1,38 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { fetchAllJobs } from "@/lib/jobSources";
+
+export const revalidate = 900;
 
 const features = [
-  { icon: "⚡", title: "AI Job Scraping 24/7", desc: "Our agent scrapes local job listings and big recruiters non-stop, finding roles that match your exact profile before anyone else sees them." },
-  { icon: "🎯", title: "97% Match Accuracy", desc: "Deep skill analysis matches you to roles where you have the highest chance of getting hired." },
-  { icon: "📄", title: "ATS-Optimized CV", desc: "AI builds your CV with the exact keywords each company's ATS system looks for." },
-  { icon: "📅", title: "Auto Interview Scheduling", desc: "AI contacts recruiters and schedules interviews on your behalf. You just show up." },
-  { icon: "🧠", title: "AI Interview Coach", desc: "Practice with our AI coach that knows what each company asks. Get ready to crush it." },
-  { icon: "💰", title: "Salary Intelligence", desc: "Know your market value before negotiating. AI gives you data-backed salary targets." },
-  { icon: "✍️", title: "Cover Letter Generator", desc: "Personalized cover letters for each role in seconds, tailored to the job description." },
-  { icon: "📊", title: "Skills Gap Analysis", desc: "See exactly what skills to learn to unlock higher-paying roles at top companies." },
+  { icon: "⚡", title: "Live Job Scanning", desc: "We pull live postings from Arbeitnow, The Muse, RemoteOK, and Jobicy, then score every one against your exact skills." },
+  { icon: "🎯", title: "Real Match Scoring", desc: "Our matching algorithm weighs skill overlap in the title, tags, and description — no fabricated accuracy numbers, just a transparent score." },
+  { icon: "📄", title: "CV Builder", desc: "Build a structured CV in minutes that powers every other feature — matching, cover letters, and interview prep." },
+  { icon: "📅", title: "Interview Prep", desc: "Log your real interview dates and download a calendar invite. We don't auto-contact recruiters on your behalf." },
+  { icon: "🧠", title: "AI Interview Coach", desc: "Real questions generated for the specific role you're interviewing for, with real feedback on the answers you type." },
+  { icon: "💰", title: "Salary Intelligence", desc: "We extract real disclosed pay from live postings matching your profile — and tell you honestly when there isn't enough data." },
+  { icon: "✍️", title: "Cover Letter Generator", desc: "AI writes a letter from your actual CV and the job description you give it — not a fill-in-the-blank template." },
+  { icon: "📊", title: "Skills Gap Analysis", desc: "See which in-demand skills show up across live postings matching you that aren't on your CV yet." },
 ];
 
 const steps = [
   { num: "01", title: "Build Your CV", desc: "Fill out our 7-step smart form in 5 minutes. AI extracts your skills, experiences, and career goals." },
-  { num: "02", title: "AI Hunts Jobs", desc: "Your personal agent scans local job listings and big recruiters around the clock, scoring thousands of jobs against your profile." },
-  { num: "03", title: "Get Hired", desc: "Interviews get auto-scheduled. AI coaches you. You show up, impress them, and land the job." },
+  { num: "02", title: "We Scan Live Postings", desc: "Real job data from multiple live sources, scored against your actual profile — no canned results." },
+  { num: "03", title: "Apply With Confidence", desc: "Track applications, prep for real interviews, and generate tailored cover letters as you go." },
 ];
 
-const testimonials = [
-  { name: "Sarah Chen", role: "Software Engineer at Google", avatar: "SC", text: "Got 3 interviews in my first week. The AI found roles I'd have never found manually. Landed Google in 3 weeks." },
-  { name: "Marcus Johnson", role: "Full Stack Dev at Stripe", avatar: "MJ", text: "Paid $10 on Tuesday, had my first interview by Thursday. The match scores are scary accurate." },
-  { name: "Priya Patel", role: "Frontend Engineer at Vercel", avatar: "PP", text: "The auto-scheduling is mind-blowing. Zero cold emails. Everything handled. Offer in 2 weeks." },
-  { name: "David Kim", role: "AI Engineer at Anthropic", avatar: "DK", text: "The interview coach prepped me perfectly. I knew exactly what they'd ask. Best $10 I ever spent." },
-];
+export default async function Home() {
+  let jobCount: number | null = null;
+  let sourceCount = 4;
+  try {
+    const jobs = await fetchAllJobs();
+    jobCount = jobs.length;
+    sourceCount = new Set(jobs.map((j) => j.source)).size;
+  } catch {
+    // Live sources unreachable at build/request time — fall back to no count rather than a fake one.
+  }
 
-const liveActivity = [
-  "🤖 Agent found Senior Engineer at Google · 97% match",
-  "📅 Interview scheduled with Stripe recruiter for tomorrow",
-  "🎯 New role at Anthropic matches your profile at 96%",
-  "✅ CV submitted to 3 companies automatically",
-  "🧠 AI coach prepared 12 interview questions for you",
-  "💰 Salary insight: You can negotiate $20k more at Vercel",
-  "📊 Skills gap: Learning TypeScript could unlock 47 more roles",
-  "🔍 Scanning 1,240 new jobs on LinkedIn right now",
-];
-
-export default function Home() {
   return (
     <div className="min-h-screen" style={{ background: "#050508" }}>
       <Navbar />
@@ -54,19 +49,21 @@ export default function Home() {
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-sm text-white/60 mb-8">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Agent live — <span className="text-emerald-400 font-semibold">2,847 jobs found today</span></span>
+            <span>
+              Live right now — <span className="text-emerald-400 font-semibold">{jobCount !== null ? `${jobCount} real postings` : "scanning real sources"}</span>
+            </span>
           </div>
 
           <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black leading-[0.9] tracking-tight mb-8">
             <span className="text-white">Your AI </span>
             <span className="gradient-text">Career Agent</span>
             <br />
-            <span className="text-white/80 text-5xl sm:text-6xl lg:text-7xl font-black">Works While You Sleep</span>
+            <span className="text-white/80 text-5xl sm:text-6xl lg:text-7xl font-black">Finds Real Jobs</span>
           </h1>
 
           <p className="text-xl text-white/40 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Build your CV once. AI scrapes local job listings and big recruiters, matches you to perfect roles,
-            schedules interviews, and coaches you to get hired — all 24/7.
+            Build your CV once. We scan live postings from multiple real job sources, score them against your
+            actual skills, and help you track every application — no fabricated results.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
@@ -81,10 +78,8 @@ export default function Home() {
           {/* Stat pills */}
           <div className="flex flex-wrap justify-center gap-3 mb-16">
             {[
-              { val: "2,847", label: "Jobs found today" },
-              { val: "143", label: "Interviews booked" },
-              { val: "91%", label: "Match accuracy" },
-              { val: "12+", label: "Sources scraped" },
+              { val: jobCount !== null ? String(jobCount) : "—", label: "Live postings right now" },
+              { val: String(sourceCount), label: "Real job sources" },
               { val: "$10", label: "Per week" },
             ].map((s) => (
               <div key={s.label} className="glass rounded-2xl px-5 py-3 text-center">
@@ -92,15 +87,6 @@ export default function Home() {
                 <div className="text-xs text-white/40 mt-0.5">{s.label}</div>
               </div>
             ))}
-          </div>
-
-          {/* Live activity ticker */}
-          <div className="glass rounded-2xl py-3 overflow-hidden">
-            <div className="flex animate-ticker whitespace-nowrap">
-              {[...liveActivity, ...liveActivity].map((a, i) => (
-                <span key={i} className="text-sm text-white/40 px-8 shrink-0">{a}</span>
-              ))}
-            </div>
           </div>
         </div>
       </section>
@@ -173,16 +159,15 @@ export default function Home() {
 
                 <ul className="text-left space-y-3 mb-10">
                   {[
-                    "AI agent running 24/7 for 7 days",
-                    "CV builder with ATS optimization",
-                    "Unlimited job searches across local jobs & big recruiters",
-                    "Automatic interview scheduling",
+                    "Live job scanning across 4 real sources",
+                    "CV builder that powers every feature",
+                    "Real skill-based match scoring",
+                    "Application Tracker (Kanban)",
+                    "Interview Prep with calendar export",
                     "AI Interview Coach",
                     "Cover Letter Generator",
                     "Skills Gap Analysis",
-                    "Salary Intelligence & negotiation tips",
-                    "Application Tracker (Kanban)",
-                    "Real-time match scoring",
+                    "Salary Intelligence",
                     "30-day money back guarantee",
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-3">
@@ -200,40 +185,6 @@ export default function Home() {
                 <p className="text-white/25 text-xs mt-4">Secure payment · Instant access · Renew anytime</p>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="relative py-24 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">Loved by job seekers</h2>
-            <p className="text-white/40 text-lg">Join 4,200+ people who found their dream jobs.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {testimonials.map((t, i) => (
-              <div key={i} className="glass glass-hover rounded-2xl p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center text-white font-bold text-xs shrink-0">
-                    {t.avatar}
-                  </div>
-                  <div>
-                    <div className="text-white font-semibold text-sm">{t.name}</div>
-                    <div className="text-white/30 text-xs">{t.role}</div>
-                  </div>
-                </div>
-                <div className="flex gap-0.5 mb-3">
-                  {[...Array(5)].map((_, j) => (
-                    <svg key={j} className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <p className="text-white/50 text-sm leading-relaxed">&ldquo;{t.text}&rdquo;</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>

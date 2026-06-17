@@ -43,14 +43,30 @@ function init(): Database.Database {
       role TEXT NOT NULL,
       salary TEXT,
       status TEXT NOT NULL DEFAULT 'Applied',
+      interview_at TEXT,
+      notes TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS contact_messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT,
+      email TEXT NOT NULL,
+      message TEXT NOT NULL,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
   `);
 
-  try {
-    db.exec("ALTER TABLE payments ADD COLUMN stripe_session_id TEXT");
-  } catch {
-    // already present on databases created before this column existed
+  for (const migration of [
+    "ALTER TABLE payments ADD COLUMN stripe_session_id TEXT",
+    "ALTER TABLE applications ADD COLUMN interview_at TEXT",
+    "ALTER TABLE applications ADD COLUMN notes TEXT",
+  ]) {
+    try {
+      db.exec(migration);
+    } catch {
+      // already present on databases created before this column existed
+    }
   }
 
   return db;

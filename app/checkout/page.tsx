@@ -65,15 +65,15 @@ export default function Checkout() {
 
           <div className="space-y-3 mb-8">
             {[
-              "AI agent running 24/7 for 7 days",
-              "CV builder with ATS optimization",
-              "Unlimited searches across local jobs & big recruiters",
-              "Automatic interview scheduling",
+              "Live job scanning across 4 real sources",
+              "CV builder that powers every feature",
+              "Real skill-based match scoring",
+              "Application Tracker",
+              "Interview Prep with calendar export",
               "AI Interview Coach",
               "Cover Letter Generator",
               "Skills Gap Analysis",
               "Salary Intelligence",
-              "Application Tracker",
               "30-day money back guarantee",
             ].map((item) => (
               <div key={item} className="flex items-center gap-3">

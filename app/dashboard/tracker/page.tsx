@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 
 type Status = "Applied" | "Interview" | "Offer" | "Rejected";
 
@@ -8,22 +9,10 @@ interface Application {
   id: number;
   company: string;
   role: string;
-  salary: string;
-  date: string;
+  salary: string | null;
   status: Status;
-  color: string;
+  created_at: string;
 }
-
-const initialApps: Application[] = [
-  { id: 1, company: "Google", role: "Senior Software Engineer", salary: "$150k-200k", date: "Jun 10", status: "Interview", color: "#4285F4" },
-  { id: 2, company: "Stripe", role: "Full Stack Developer", salary: "$130k-170k", date: "Jun 11", status: "Interview", color: "#635bff" },
-  { id: 3, company: "Anthropic", role: "AI Engineer", salary: "$160k-220k", date: "Jun 12", status: "Applied", color: "#d97706" },
-  { id: 4, company: "Linear", role: "Software Engineer", salary: "$130k-160k", date: "Jun 13", status: "Applied", color: "#5e6ad2" },
-  { id: 5, company: "Vercel", role: "Frontend Engineer", salary: "$120k-160k", date: "Jun 9", status: "Applied", color: "#ffffff" },
-  { id: 6, company: "Figma", role: "Software Engineer", salary: "$140k-180k", date: "Jun 8", status: "Rejected", color: "#a259ff" },
-  { id: 7, company: "Meta", role: "Senior Engineer", salary: "$180k-240k", date: "Jun 7", status: "Offer", color: "#1877f2" },
-  { id: 8, company: "Shopify", role: "Backend Developer", salary: "$125k-155k", date: "Jun 14", status: "Applied", color: "#96bf48" },
-];
 
 const columns: { status: Status; color: string; glow: string }[] = [
   { status: "Applied", color: "border-white/15 bg-white/3", glow: "rgba(255,255,255,0.05)" },
@@ -46,14 +35,55 @@ const nextStatuses: Record<Status, Status | null> = {
   Rejected: null,
 };
 
-export default function Tracker() {
-  const [apps, setApps] = useState(initialApps);
+const AVATAR_COLORS = ["#4285F4", "#635bff", "#5e6ad2", "#96bf48", "#a259ff", "#ff5a5f", "#6e40c9", "#d97706"];
+const avatarColor = (company: string) => {
+  let hash = 0;
+  for (const ch of company) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+};
 
-  const move = (id: number, newStatus: Status) => {
-    setApps((prev) => prev.map((a) => a.id === id ? { ...a, status: newStatus } : a));
+export default function Tracker() {
+  const [email, setEmail] = useState<string | null>(null);
+  const [apps, setApps] = useState<Application[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const load = useCallback((userEmail: string) => {
+    setLoading(true);
+    fetch(`/api/applications?email=${encodeURIComponent(userEmail)}`)
+      .then((r) => r.json())
+      .then((data) => setApps(data.applications || []))
+      .catch(() => setError("Could not load your applications."))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("jobfinder_cv") : null;
+    const cvEmail = stored ? JSON.parse(stored).email : null;
+    setEmail(cvEmail);
+    if (cvEmail) load(cvEmail);
+    else setLoading(false);
+  }, [load]);
+
+  const move = async (id: number, newStatus: Status) => {
+    setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a)));
+    await fetch("/api/applications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, status: newStatus }),
+    }).catch(() => {});
   };
 
-  const responseRate = Math.round((apps.filter(a => a.status !== "Applied").length / apps.length) * 100);
+  if (!email) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 space-y-4 text-center">
+        <p className="text-white/50">Build your CV first to start tracking applications.</p>
+        <Link href="/create-cv" className="btn-primary px-6 py-3 rounded-2xl text-sm font-bold">Build Your CV</Link>
+      </div>
+    );
+  }
+
+  const responseRate = apps.length > 0 ? Math.round((apps.filter((a) => a.status !== "Applied").length / apps.length) * 100) : 0;
 
   return (
     <div className="space-y-6">
@@ -62,79 +92,95 @@ export default function Tracker() {
         <p className="text-white/40 text-sm mt-1">Track your applications from submission to offer.</p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {columns.map((col) => {
-          const count = apps.filter(a => a.status === col.status).length;
-          return (
-            <div key={col.status} className="glass rounded-2xl p-4 text-center" style={{ boxShadow: `0 8px 32px ${col.glow}` }}>
-              <div className={`text-3xl font-black ${statusColors[col.status].split(" ")[0]}`}>{count}</div>
-              <div className="text-white/40 text-xs mt-1">{col.status}</div>
-            </div>
-          );
-        })}
-      </div>
+      {error && (
+        <div className="glass rounded-2xl p-5 text-red-400 text-sm border border-red-500/20">{error}</div>
+      )}
 
-      <div className="glass rounded-xl p-3 flex items-center gap-3">
-        <div className="text-emerald-400 font-black text-2xl">{responseRate}%</div>
-        <div>
-          <div className="text-white/70 text-sm font-semibold">Response rate</div>
-          <div className="text-white/30 text-xs">Industry avg is 8% — you&apos;re at {responseRate}% 🔥</div>
+      {!loading && apps.length === 0 && !error && (
+        <div className="glass rounded-2xl p-8 text-center text-white/40 text-sm space-y-3">
+          <p>No applications yet — applying to a job from the Jobs tab adds it here automatically.</p>
+          <Link href="/dashboard/jobs" className="btn-primary inline-block px-6 py-3 rounded-2xl text-sm font-bold">Find Jobs</Link>
         </div>
-        <div className="ml-auto flex-1 max-w-32 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
-          <div className="h-full rounded-full" style={{ width: `${responseRate}%`, background: "linear-gradient(90deg, #7c3aed, #06b6d4)" }} />
-        </div>
-      </div>
+      )}
 
-      {/* Kanban */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        {columns.map((col) => {
-          const colApps = apps.filter((a) => a.status === col.status);
-          return (
-            <div key={col.status} className={`rounded-2xl p-3 border ${col.color}`} style={{ minHeight: "300px" }}>
-              <div className="flex items-center justify-between mb-3 px-1">
-                <span className={`text-sm font-bold px-2 py-1 rounded-lg border ${statusColors[col.status]}`}>{col.status}</span>
-                <span className="text-white/30 text-sm font-bold">{colApps.length}</span>
-              </div>
+      {apps.length > 0 && (
+        <>
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {columns.map((col) => {
+              const count = apps.filter((a) => a.status === col.status).length;
+              return (
+                <div key={col.status} className="glass rounded-2xl p-4 text-center" style={{ boxShadow: `0 8px 32px ${col.glow}` }}>
+                  <div className={`text-3xl font-black ${statusColors[col.status].split(" ")[0]}`}>{count}</div>
+                  <div className="text-white/40 text-xs mt-1">{col.status}</div>
+                </div>
+              );
+            })}
+          </div>
 
-              <div className="space-y-2">
-                {colApps.map((app) => {
-                  const next = nextStatuses[app.status];
-                  return (
-                    <div key={app.id} className="glass rounded-xl p-3 glass-hover">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shrink-0"
-                          style={{ background: `${app.color}15`, border: `1px solid ${app.color}25`, color: app.color }}>
-                          {app.company[0]}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-white/80 text-xs font-bold truncate">{app.company}</div>
-                          <div className="text-white/30 text-xs truncate">{app.role}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-emerald-400 text-xs font-semibold">{app.salary}</span>
-                        <span className="text-white/25 text-xs">{app.date}</span>
-                      </div>
-                      {next && (
-                        <button
-                          onClick={() => move(app.id, next)}
-                          className="mt-2 w-full text-xs py-1.5 rounded-lg btn-glass text-white/40 hover:text-white/70 transition-all"
-                        >
-                          Move to {next} →
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-                {colApps.length === 0 && (
-                  <div className="text-center py-8 text-white/20 text-sm">Empty</div>
-                )}
-              </div>
+          <div className="glass rounded-xl p-3 flex items-center gap-3">
+            <div className="text-emerald-400 font-black text-2xl">{responseRate}%</div>
+            <div>
+              <div className="text-white/70 text-sm font-semibold">Response rate</div>
+              <div className="text-white/30 text-xs">Share of your applications that moved past &quot;Applied&quot;</div>
             </div>
-          );
-        })}
-      </div>
+            <div className="ml-auto flex-1 max-w-32 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+              <div className="h-full rounded-full" style={{ width: `${responseRate}%`, background: "linear-gradient(90deg, #7c3aed, #06b6d4)" }} />
+            </div>
+          </div>
+
+          {/* Kanban */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            {columns.map((col) => {
+              const colApps = apps.filter((a) => a.status === col.status);
+              return (
+                <div key={col.status} className={`rounded-2xl p-3 border ${col.color}`} style={{ minHeight: "300px" }}>
+                  <div className="flex items-center justify-between mb-3 px-1">
+                    <span className={`text-sm font-bold px-2 py-1 rounded-lg border ${statusColors[col.status]}`}>{col.status}</span>
+                    <span className="text-white/30 text-sm font-bold">{colApps.length}</span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {colApps.map((app) => {
+                      const next = nextStatuses[app.status];
+                      const color = avatarColor(app.company);
+                      return (
+                        <div key={app.id} className="glass rounded-xl p-3 glass-hover">
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shrink-0"
+                              style={{ background: `${color}15`, border: `1px solid ${color}25`, color }}>
+                              {app.company[0]?.toUpperCase()}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-white/80 text-xs font-bold truncate">{app.company}</div>
+                              <div className="text-white/30 text-xs truncate">{app.role}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-emerald-400 text-xs font-semibold">{app.salary || "—"}</span>
+                            <span className="text-white/25 text-xs">{app.created_at.slice(0, 10)}</span>
+                          </div>
+                          {next && (
+                            <button
+                              onClick={() => move(app.id, next)}
+                              className="mt-2 w-full text-xs py-1.5 rounded-lg btn-glass text-white/40 hover:text-white/70 transition-all"
+                            >
+                              Move to {next} →
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                    {colApps.length === 0 && (
+                      <div className="text-center py-8 text-white/20 text-sm">Empty</div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }

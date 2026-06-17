@@ -6,6 +6,7 @@ import LogoutButton from "./LogoutButton";
 const navItems = [
   { href: "/admin", label: "Overview", icon: "📊" },
   { href: "/admin/users", label: "Users", icon: "👤" },
+  { href: "/admin/messages", label: "Messages", icon: "✉️" },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

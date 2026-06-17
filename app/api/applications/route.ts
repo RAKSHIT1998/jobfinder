@@ -32,9 +32,19 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   const body = await req.json();
-  const { id, status } = body;
-  if (!id || !status) return NextResponse.json({ error: "id and status required" }, { status: 400 });
+  const { id, status, interviewAt, notes } = body;
+  if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
   const db = getDb();
-  db.prepare("UPDATE applications SET status = ? WHERE id = ?").run(status, id);
+
+  if (status !== undefined) {
+    db.prepare("UPDATE applications SET status = ? WHERE id = ?").run(status, id);
+  }
+  if (interviewAt !== undefined) {
+    db.prepare("UPDATE applications SET interview_at = ? WHERE id = ?").run(interviewAt, id);
+  }
+  if (notes !== undefined) {
+    db.prepare("UPDATE applications SET notes = ? WHERE id = ?").run(notes, id);
+  }
+
   return NextResponse.json({ ok: true });
 }

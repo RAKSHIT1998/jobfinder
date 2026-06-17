@@ -7,8 +7,8 @@ import { hasActiveAccess, hasEverPaid } from "@/lib/access";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: "⚡" },
-  { href: "/dashboard/jobs", label: "Jobs", icon: "💼", badge: "47" },
-  { href: "/dashboard/meetings", label: "Meetings", icon: "📅", badge: "4" },
+  { href: "/dashboard/jobs", label: "Jobs", icon: "💼" },
+  { href: "/dashboard/meetings", label: "Interview Prep", icon: "📅" },
   { href: "/dashboard/ai-coach", label: "AI Coach", icon: "🧠" },
   { href: "/dashboard/cover-letter", label: "Cover Letters", icon: "✍️" },
   { href: "/dashboard/skills", label: "Skills Gap", icon: "📊" },
@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div className="w-2 h-2 rounded-full bg-emerald-400" />
               <div className="absolute inset-0 w-2 h-2 rounded-full bg-emerald-400 animate-ping opacity-60" />
             </div>
-            <span className="text-xs text-emerald-400 font-semibold">Agent Active · 247 jobs today</span>
+            <span className="text-xs text-emerald-400 font-semibold">Live job scan active</span>
           </div>
 
           <nav className="space-y-0.5">
@@ -79,11 +79,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 >
                   <span className="text-base">{item.icon}</span>
                   <span className="flex-1">{item.label}</span>
-                  {item.badge && (
-                    <span className={`text-xs px-1.5 py-0.5 rounded-full font-semibold ${isActive ? "bg-violet-500/30 text-violet-300" : "bg-white/8 text-white/40"}`}>
-                      {item.badge}
-                    </span>
-                  )}
                 </Link>
               );
             })}
