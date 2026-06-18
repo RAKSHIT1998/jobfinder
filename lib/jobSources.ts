@@ -90,7 +90,25 @@ async function fetchMuseCategory(category: string): Promise<JobListing[]> {
   }));
 }
 
-const MUSE_CATEGORIES = ["Software Engineering", "Data and Analytics", "IT"];
+// Spans far more than tech so non-tech CVs (hospitality, retail, healthcare,
+// admin...) have real postings to match against, not just software roles.
+// "IT" was dropped - The Muse no longer recognizes that category and it was
+// silently returning zero results.
+const MUSE_CATEGORIES = [
+  "Software Engineering",
+  "Data and Analytics",
+  "Retail",
+  "Healthcare",
+  "Customer Service",
+  "Sales",
+  "Education",
+  "Human Resources and Recruitment",
+  "Account Management",
+  "Accounting and Finance",
+  "Administration and Office",
+  "Design and UX",
+  "Social Services",
+];
 
 async function fetchMuseJobs(): Promise<JobListing[]> {
   const results = await Promise.allSettled(MUSE_CATEGORIES.map(fetchMuseCategory));

@@ -48,13 +48,22 @@ export function scoreJob(cv: CVProfile, job: JobListing): number {
 
   let raw = 0;
   let maxPossible = 0;
+  let hasSpecificMatch = false;
   for (const kw of keywords) {
     const w = keywordWeight(kw);
     maxPossible += TITLE_WEIGHT * w;
+    const overlaps = titleTokens.has(kw) || tagTokens.has(kw) || descTokens.has(kw);
     if (titleTokens.has(kw)) raw += TITLE_WEIGHT * w;
     if (tagTokens.has(kw)) raw += TAG_WEIGHT * w;
     if (descTokens.has(kw)) raw += DESCRIPTION_WEIGHT * w;
+    if (overlaps && w === 1) hasSpecificMatch = true;
   }
+
+  // A generic role word overlapping on its own ("manager", "specialist"...)
+  // isn't a real signal this job fits the CV - e.g. it'd let a hotel
+  // manager's CV "match" any "Engineering Manager" posting. Require at
+  // least one specific skill/tool/role keyword to overlap too.
+  if (!hasSpecificMatch) return 0;
 
   // A job matching every one of the user's keywords squarely in the title
   // hits 100 before bonuses; tag/description hits push it further, remote
