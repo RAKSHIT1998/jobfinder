@@ -32,6 +32,7 @@ const sourceStyle: Record<string, string> = {
   "The Muse": "bg-cyan-600/15 text-cyan-300 border-cyan-600/25",
   RemoteOK: "bg-emerald-600/15 text-emerald-300 border-emerald-600/25",
   Jobicy: "bg-amber-600/15 text-amber-300 border-amber-600/25",
+  Adzuna: "bg-rose-600/15 text-rose-300 border-rose-600/25",
 };
 
 const matchBadge = (match: number) => {

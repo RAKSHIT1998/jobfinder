@@ -1,3 +1,6 @@
+import { findCountryByCode } from "./countries";
+import { convertCurrency } from "./exchangeRates";
+
 export interface JobListing {
   id: string;
   title: string;
@@ -190,11 +193,88 @@ async function fetchJobicyJobs(): Promise<JobListing[]> {
   }));
 }
 
+interface AdzunaJob {
+  id: string;
+  title: string;
+  description: string;
+  redirect_url: string;
+  company?: { display_name?: string };
+  location?: { display_name?: string };
+  category?: { label?: string };
+  contract_type?: string;
+  contract_time?: string;
+  created?: string;
+  salary_min?: number;
+  salary_max?: number;
+}
+
+// Country codes Adzuna should be queried for - each has its own official
+// per-country endpoint. Defaults to India since that's the gap the other 4
+// (tech/remote-leaning) sources don't cover; add more via env (e.g. "in,us,gb").
+const ADZUNA_COUNTRIES = (process.env.ADZUNA_COUNTRIES || "in")
+  .split(",")
+  .map((c) => c.trim().toLowerCase())
+  .filter(Boolean);
+
+async function fetchAdzunaCountry(country: string): Promise<JobListing[]> {
+  const appId = process.env.ADZUNA_APP_ID;
+  const appKey = process.env.ADZUNA_APP_KEY;
+  if (!appId || !appKey) return [];
+
+  const res = await fetch(
+    `https://api.adzuna.com/v1/api/jobs/${country}/search/1?app_id=${appId}&app_key=${appKey}&results_per_page=50&content-type=application/json`,
+    { signal: AbortSignal.timeout(8000) }
+  );
+  if (!res.ok) throw new Error(`Adzuna (${country}) responded ${res.status}`);
+  const data = (await res.json()) as { results: AdzunaJob[] };
+
+  // Adzuna reports salary in the listing's local currency, not USD - convert
+  // so it's comparable with the other sources' salaryUsd figures.
+  const currency = findCountryByCode(country.toUpperCase())?.currency || "USD";
+
+  return Promise.all(
+    data.results.map(async (j): Promise<JobListing> => {
+      const description = stripHtml(j.description || "");
+      let salaryUsd: { min: number; max: number } | undefined;
+      if (j.salary_min && j.salary_max) {
+        const [min, max] =
+          currency === "USD"
+            ? [j.salary_min, j.salary_max]
+            : await Promise.all([
+                convertCurrency(j.salary_min, currency, "USD"),
+                convertCurrency(j.salary_max, currency, "USD"),
+              ]);
+        if (min !== null && max !== null) salaryUsd = { min: Math.round(min), max: Math.round(max) };
+      }
+
+      return {
+        id: `adzuna:${j.id}`,
+        title: j.title,
+        company: j.company?.display_name || "Unknown company",
+        location: j.location?.display_name || "Unspecified",
+        remote: /\bremote\b/i.test(`${j.title} ${description}`),
+        url: j.redirect_url,
+        source: "Adzuna",
+        tags: [j.category?.label, j.contract_type, j.contract_time].filter((t): t is string => !!t),
+        description,
+        postedAt: j.created || null,
+        salaryUsd,
+      };
+    })
+  );
+}
+
+async function fetchAdzunaJobs(): Promise<JobListing[]> {
+  const results = await Promise.allSettled(ADZUNA_COUNTRIES.map(fetchAdzunaCountry));
+  return results.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
+}
+
 const SOURCE_FETCHERS: Array<() => Promise<JobListing[]>> = [
   fetchArbeitnowJobs,
   fetchMuseJobs,
   fetchRemoteOkJobs,
   fetchJobicyJobs,
+  fetchAdzunaJobs,
 ];
 
 let cache: { jobs: JobListing[]; fetchedAt: number } | null = null;
