@@ -63,6 +63,7 @@ function init(): Database.Database {
   for (const migration of [
     "ALTER TABLE payments ADD COLUMN payment_provider TEXT",
     "ALTER TABLE payments ADD COLUMN payment_ref TEXT",
+    "ALTER TABLE payments ADD COLUMN currency TEXT",
     "ALTER TABLE applications ADD COLUMN interview_at TEXT",
     "ALTER TABLE applications ADD COLUMN notes TEXT",
     "ALTER TABLE users ADD COLUMN password_hash TEXT",
@@ -107,6 +108,7 @@ export function upsertUser(email: string, name?: string): UserRow {
 
 export function recordPayment(params: {
   amountCents: number;
+  currency: string;
   email: string;
   provider: string;
   referenceId: string;
@@ -118,8 +120,24 @@ export function recordPayment(params: {
   if (existing) return;
   const user = upsertUser(params.email);
   db.prepare(
-    "INSERT INTO payments (user_id, amount_cents, status, payment_provider, payment_ref) VALUES (?, ?, 'paid', ?, ?)"
-  ).run(user.id, params.amountCents, params.provider, params.referenceId);
+    "INSERT INTO payments (user_id, amount_cents, currency, status, payment_provider, payment_ref) VALUES (?, ?, ?, 'paid', ?, ?)"
+  ).run(user.id, params.amountCents, params.currency, params.provider, params.referenceId);
+}
+
+export interface PaymentRow {
+  id: number;
+  amount_cents: number;
+  currency: string | null;
+  status: string;
+  card_last4: string | null;
+  payment_provider: string | null;
+  created_at: string;
+}
+
+/** Every paid payment, for revenue reporting — currency is null on rows recorded before multi-currency support, which were always INR. */
+export function getPaidPayments(): PaymentRow[] {
+  const db = getDb();
+  return db.prepare("SELECT * FROM payments WHERE status = 'paid'").all() as PaymentRow[];
 }
 
 export interface UserWithAuth extends UserRow {

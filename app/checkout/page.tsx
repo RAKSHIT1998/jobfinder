@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { load } from "@cashfreepayments/cashfree-js";
-import { ACCESS_PRICE_INR, formatInr } from "@/lib/currency";
+import { useCountry } from "@/lib/useCountry";
+import { useLocalizedPrice } from "@/lib/useLocalizedPrice";
 import CountrySelector from "@/components/CountrySelector";
 import LocalizedPrice from "@/components/LocalizedPrice";
+import PriceTag from "@/components/PriceTag";
 
 const cashfreeMode =
   process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ? "production" : "sandbox";
 
 export default function Checkout() {
+  const { country } = useCountry();
+  const { formatted: localizedPrice } = useLocalizedPrice();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [expired, setExpired] = useState(false);
@@ -40,7 +44,7 @@ export default function Checkout() {
       const res = await fetch("/api/checkout/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, phone, name }),
+        body: JSON.stringify({ email, phone, name, currency: country.currency }),
       });
       const raw = await res.text();
       let data: { error?: string; paymentSessionId?: string } = {};
@@ -92,7 +96,7 @@ export default function Checkout() {
           <div className="iridescent-border rounded-2xl p-5 mb-6">
             <div className="flex items-center justify-between mb-1">
               <span className="text-white font-bold">JobFinder AI - 7-Day Access</span>
-              <span className="text-4xl font-black gradient-text">{formatInr(ACCESS_PRICE_INR)}</span>
+              <span className="text-4xl font-black gradient-text"><PriceTag /></span>
             </div>
             <div className="flex items-center justify-between">
               <p className="text-white/40 text-sm">One-time payment - valid for 7 days</p>
@@ -127,7 +131,7 @@ export default function Checkout() {
 
           <div className="pt-4 border-t border-white/5 flex items-center justify-between">
             <span className="text-white/40">Total</span>
-            <span className="text-xl font-black text-white">{formatInr(ACCESS_PRICE_INR, 2)}</span>
+            <span className="text-xl font-black text-white">{localizedPrice}</span>
           </div>
 
           <div className="mt-5 flex items-center gap-2 text-white/25 text-xs">
@@ -173,7 +177,7 @@ export default function Checkout() {
                 Opening Cashfree...
               </span>
             ) : (
-              `Pay ${formatInr(ACCESS_PRICE_INR)} - Get 7-Day Access`
+              `Pay ${localizedPrice} - Get 7-Day Access`
             )}
           </button>
 

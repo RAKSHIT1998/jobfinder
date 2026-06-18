@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import PriceTag from "./PriceTag";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -31,7 +32,7 @@ export default function Navbar() {
             Log In
           </Link>
           <Link href="/create-cv" className="btn-primary text-sm font-semibold px-5 py-2.5 rounded-xl">
-            Get Started - INR 1000
+            Get Started - <PriceTag />
           </Link>
         </div>
 
@@ -74,7 +75,7 @@ export default function Navbar() {
             className="block btn-primary text-center text-sm font-semibold px-5 py-3 rounded-xl mt-2"
             onClick={() => setOpen(false)}
           >
-            Get Started - INR 1000
+            Get Started - <PriceTag />
           </Link>
         </div>
       )}

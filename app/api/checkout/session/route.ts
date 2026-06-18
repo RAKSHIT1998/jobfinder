@@ -1,13 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ACCESS_PRICE_PAISE } from "@/lib/currency";
+import { ACCESS_PRICE_USD, roundForCurrency } from "@/lib/currency";
+import { convertCurrency } from "@/lib/exchangeRates";
 import { createCashfreeOrderId, getCashfree } from "@/lib/cashfree";
+
+// Cashfree only charges in currencies your merchant account has been approved
+// for — INR works for every account out of the box; anything else needs the
+// "Multi-Currency" / international payments feature enabled via Cashfree
+// support. List the currencies you've had enabled here (comma separated);
+// requests for anything else automatically fall back to the first one.
+const SUPPORTED_CURRENCIES = (process.env.CASHFREE_SUPPORTED_CURRENCIES || "INR")
+  .split(",")
+  .map((c) => c.trim().toUpperCase())
+  .filter(Boolean);
+
+function resolveOrderCurrency(requested: string): string {
+  if (SUPPORTED_CURRENCIES.includes(requested)) return requested;
+  return SUPPORTED_CURRENCIES[0] || "INR";
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
-  const { email, phone, name } = body as { email?: string; phone?: string; name?: string };
+  const { email, phone, name, currency } = body as {
+    email?: string;
+    phone?: string;
+    name?: string;
+    currency?: string;
+  };
 
   if (!email) {
     return NextResponse.json({ error: "Email is required before checkout." }, { status: 400 });
+  }
+
+  const requestedCurrency = (currency || "USD").toUpperCase();
+  const orderCurrency = resolveOrderCurrency(requestedCurrency);
+
+  let orderAmount = ACCESS_PRICE_USD;
+  if (orderCurrency !== "USD") {
+    const converted = await convertCurrency(ACCESS_PRICE_USD, "USD", orderCurrency).catch(() => null);
+    orderAmount = converted !== null ? roundForCurrency(converted, orderCurrency) : ACCESS_PRICE_USD;
   }
 
   const orderId = createCashfreeOrderId();
@@ -17,8 +47,8 @@ export async function POST(req: NextRequest) {
     const cashfree = getCashfree();
     const response = await cashfree.PGCreateOrder(
       {
-        order_amount: ACCESS_PRICE_PAISE / 100,
-        order_currency: "INR",
+        order_amount: orderAmount,
+        order_currency: orderCurrency,
         order_id: orderId,
         customer_details: {
           customer_id: email.replace(/[^a-zA-Z0-9_-]/g, "_").slice(0, 40) || orderId,
@@ -39,6 +69,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       orderId,
       paymentSessionId: response.data.payment_session_id,
+      currency: orderCurrency,
+      amount: orderAmount,
     });
   } catch (error) {
     const cashfreeError =

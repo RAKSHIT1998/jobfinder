@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CountrySelector from "@/components/CountrySelector";
 import LocalizedPrice from "@/components/LocalizedPrice";
-import { ACCESS_PRICE_INR, formatInr } from "@/lib/currency";
+import PriceTag from "@/components/PriceTag";
 import { fetchAllJobs } from "@/lib/jobSources";
 
 export const revalidate = 900;
@@ -70,7 +70,7 @@ export default async function Home() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link href="/create-cv" className="btn-primary text-base font-bold px-8 py-4 rounded-2xl inline-block">
-              Start Finding Jobs - {formatInr(ACCESS_PRICE_INR)}/week
+              Start Finding Jobs - <PriceTag />/week
             </Link>
             <Link href="#how-it-works" className="btn-glass text-base font-semibold px-8 py-4 rounded-2xl inline-block">
               See How It Works
@@ -81,10 +81,10 @@ export default async function Home() {
             {[
               { val: jobCount !== null ? String(jobCount) : "-", label: "Live postings right now" },
               { val: String(sourceCount), label: "Real job sources" },
-              { val: formatInr(ACCESS_PRICE_INR), label: "Per week" },
+              { val: null, label: "Per week" },
             ].map((s) => (
               <div key={s.label} className="glass rounded-2xl px-5 py-3 text-center">
-                <div className="text-2xl font-black gradient-text">{s.val}</div>
+                <div className="text-2xl font-black gradient-text">{s.val ?? <PriceTag />}</div>
                 <div className="text-xs text-white/40 mt-0.5">{s.label}</div>
               </div>
             ))}
@@ -120,7 +120,7 @@ export default async function Home() {
           <div className="text-center mb-16">
             <p className="text-cyan-400 font-semibold text-sm mb-3 tracking-widest uppercase">Features</p>
             <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">Everything to get you hired</h2>
-            <p className="text-white/40 text-lg">8 AI-powered tools for {formatInr(ACCESS_PRICE_INR)}/week.</p>
+            <p className="text-white/40 text-lg">8 AI-powered tools for <PriceTag />/week.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -154,7 +154,7 @@ export default async function Home() {
                 </div>
 
                 <div className="mb-2">
-                  <span className="text-7xl font-black gradient-text">{formatInr(ACCESS_PRICE_INR)}</span>
+                  <span className="text-7xl font-black gradient-text"><PriceTag /></span>
                 </div>
                 <p className="text-white/40 text-sm mb-2"><LocalizedPrice /></p>
                 <p className="text-white/40 mb-8">Full access for 7 days. Renew anytime.</p>
@@ -182,7 +182,7 @@ export default async function Home() {
                 </ul>
 
                 <Link href="/create-cv" className="btn-primary w-full block text-center py-4 rounded-2xl text-base font-bold">
-                  Get 7 Days for {formatInr(ACCESS_PRICE_INR)}
+                  Get 7 Days for <PriceTag />
                 </Link>
                 <p className="text-white/25 text-xs mt-4">Secure payment - instant access - renew anytime</p>
               </div>
@@ -203,7 +203,7 @@ export default async function Home() {
               One payment. 7 days of full access. Your AI career agent starts working in minutes.
             </p>
             <Link href="/create-cv" className="btn-primary inline-block text-lg font-bold px-10 py-4 rounded-2xl relative">
-              Build Your CV - Get 7 Days for {formatInr(ACCESS_PRICE_INR)}
+              Build Your CV - Get 7 Days for <PriceTag />
             </Link>
           </div>
         </div>

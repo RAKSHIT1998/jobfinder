@@ -8,7 +8,7 @@ export default function TermsOfService() {
       <section>
         <h2>What you&apos;re buying</h2>
         <p>
-          INR 1000 gets you 7 days of access to JobFinder AI: live job matching across the sources we query, the
+          $10 (charged in your local currency at the live exchange rate) gets you 7 days of access to JobFinder AI: live job matching across the sources we query, the
           Application Tracker, Interview Prep, Skills Gap and Salary Intelligence analysis, and (where
           configured) the AI Cover Letter Generator and Interview Coach. Access doesn&apos;t auto-renew - when the
           7 days end you can pay again to continue.

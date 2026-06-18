@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
     if (paid && order.customer_details?.customer_email && order.order_id) {
       recordPayment({
         amountCents: Math.round(Number(order.order_amount) * 100),
+        currency: (order.order_currency || "INR").toUpperCase(),
         email: order.customer_details.customer_email,
         provider: "cashfree",
         referenceId: order.order_id,

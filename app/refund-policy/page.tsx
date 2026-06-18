@@ -25,7 +25,7 @@ export default function RefundPolicy() {
       <section>
         <h2>After 30 days</h2>
         <p>
-          Past the 30-day window, payments aren&apos;t refundable, since access is a flat INR 1000 for 7 days rather
+          Past the 30-day window, payments aren&apos;t refundable, since access is a flat $10 (in your local currency) for 7 days rather
           than a recurring subscription you&apos;d need to cancel.
         </p>
       </section>

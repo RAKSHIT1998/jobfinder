@@ -7,6 +7,7 @@ interface CashfreeWebhook {
     order?: {
       order_id?: string;
       order_amount?: number;
+      order_currency?: string;
     };
     payment?: {
       payment_status?: string;
@@ -38,12 +39,14 @@ export async function POST(req: NextRequest) {
   const event = JSON.parse(rawBody) as CashfreeWebhook;
   const orderId = event.data?.order?.order_id;
   const amount = event.data?.order?.order_amount;
+  const currency = event.data?.order?.order_currency;
   const email = event.data?.customer_details?.customer_email;
   const paid = event.type === "PAYMENT_SUCCESS_WEBHOOK" && event.data?.payment?.payment_status === "SUCCESS";
 
   if (paid && orderId && typeof amount === "number" && email) {
     recordPayment({
       amountCents: Math.round(amount * 100),
+      currency: (currency || "INR").toUpperCase(),
       email,
       provider: "cashfree",
       referenceId: orderId,

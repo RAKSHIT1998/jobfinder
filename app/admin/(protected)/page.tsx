@@ -1,5 +1,22 @@
-import { getDb } from "@/lib/db";
-import { formatInr } from "@/lib/currency";
+import { getDb, getPaidPayments } from "@/lib/db";
+import { convertCurrency } from "@/lib/exchangeRates";
+
+async function getRevenueUsd(): Promise<number> {
+  const payments = getPaidPayments();
+  // Group by currency first so each distinct currency only needs one conversion call.
+  const totalsByCurrency = new Map<string, number>();
+  for (const p of payments) {
+    const currency = (p.currency || "INR").toUpperCase();
+    totalsByCurrency.set(currency, (totalsByCurrency.get(currency) || 0) + p.amount_cents / 100);
+  }
+
+  let totalUsd = 0;
+  for (const [currency, amount] of totalsByCurrency) {
+    const usd = currency === "USD" ? amount : await convertCurrency(amount, currency, "USD").catch(() => null);
+    totalUsd += usd ?? amount;
+  }
+  return totalUsd;
+}
 
 export default async function AdminOverview() {
   const db = getDb();
@@ -8,11 +25,7 @@ export default async function AdminOverview() {
   const totalPayments = (
     db.prepare("SELECT COUNT(*) AS c FROM payments WHERE status = 'paid'").get() as { c: number }
   ).c;
-  const revenueCents = (
-    db.prepare("SELECT COALESCE(SUM(amount_cents), 0) AS s FROM payments WHERE status = 'paid'").get() as {
-      s: number;
-    }
-  ).s;
+  const revenueUsd = await getRevenueUsd();
   const totalApplications = (db.prepare("SELECT COUNT(*) AS c FROM applications").get() as { c: number }).c;
   const conversionRate = totalUsers > 0 ? Math.round((totalPayments / totalUsers) * 100) : 0;
   const recentUsers = db
@@ -23,7 +36,7 @@ export default async function AdminOverview() {
     { label: "Total Users", value: totalUsers, color: "#a78bfa" },
     { label: "CVs Created", value: totalCvs, color: "#60a5fa" },
     { label: "Paid Customers", value: totalPayments, color: "#34d399" },
-    { label: "Revenue", value: formatInr(revenueCents / 100), color: "#fbbf24" },
+    { label: "Revenue", value: new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(revenueUsd), color: "#fbbf24" },
     { label: "Applications Tracked", value: totalApplications, color: "#f472b6" },
     { label: "Conversion Rate", value: `${conversionRate}%`, color: "#22d3ee" },
   ];

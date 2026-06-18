@@ -1,8 +1,8 @@
 const INR_LOCALE = "en-IN";
-const USD_TO_INR = 83;
 
-export const ACCESS_PRICE_INR = 1000;
-export const ACCESS_PRICE_PAISE = ACCESS_PRICE_INR * 100;
+// Canonical product price — every visitor pays the same $10, converted live
+// into whatever currency they're actually being charged in.
+export const ACCESS_PRICE_USD = 10;
 
 export function formatInr(amount: number, fractionDigits = 0): string {
   return new Intl.NumberFormat(INR_LOCALE, {
@@ -20,6 +20,24 @@ export function formatInrCompact(amount: number): string {
   return formatInr(amount);
 }
 
-export function usdToInr(amount: number): number {
-  return Math.round(amount * USD_TO_INR);
+/** Number of minor-unit decimal places a currency uses (0 for JPY/KRW, 2 for USD/EUR, etc). */
+export function getCurrencyDecimals(currency: string): number {
+  try {
+    return new Intl.NumberFormat("en", { style: "currency", currency }).resolvedOptions().maximumFractionDigits ?? 2;
+  } catch {
+    return 2;
+  }
+}
+
+/** Rounds an amount to the decimal precision a currency actually supports. */
+export function roundForCurrency(amount: number, currency: string): number {
+  const factor = 10 ** getCurrencyDecimals(currency);
+  return Math.round(amount * factor) / factor;
+}
+
+export function formatCurrency(amount: number, currency: string, locale?: string): string {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+  }).format(amount);
 }
