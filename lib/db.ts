@@ -82,7 +82,7 @@ function ensureSchema(): Promise<void> {
 }
 
 /** Runs a parameterized query and returns its rows. Use $1, $2... placeholders. */
-export async function query<T extends Record<string, unknown> = Record<string, unknown>>(
+export async function query<T extends object = Record<string, unknown>>(
   sql: string,
   params: unknown[] = []
 ): Promise<T[]> {
