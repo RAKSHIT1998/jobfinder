@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     const paid = order.order_status === "PAID";
 
     if (paid && order.customer_details?.customer_email && order.order_id) {
-      recordPayment({
+      await recordPayment({
         amountCents: Math.round(Number(order.order_amount) * 100),
         currency: (order.order_currency || "INR").toUpperCase(),
         email: order.customer_details.customer_email,

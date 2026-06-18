@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getDb } from "@/lib/db";
+import { query } from "@/lib/db";
 
 interface UserListRow {
   id: number;
@@ -12,18 +12,15 @@ interface UserListRow {
 }
 
 export default async function AdminUsers() {
-  const db = getDb();
-  const users = db
-    .prepare(
-      `SELECT
-         users.id, users.email, users.name, users.created_at,
-         (SELECT COUNT(*) FROM cvs WHERE cvs.user_id = users.id) AS has_cv,
-         (SELECT COUNT(*) FROM payments WHERE payments.user_id = users.id AND payments.status = 'paid') AS paid_count,
-         (SELECT COUNT(*) FROM applications WHERE applications.user_id = users.id) AS application_count
-       FROM users
-       ORDER BY users.created_at DESC`
-    )
-    .all() as UserListRow[];
+  const users = await query<UserListRow>(
+    `SELECT
+       users.id, users.email, users.name, users.created_at,
+       (SELECT COUNT(*) FROM cvs WHERE cvs.user_id = users.id)::int AS has_cv,
+       (SELECT COUNT(*) FROM payments WHERE payments.user_id = users.id AND payments.status = 'paid')::int AS paid_count,
+       (SELECT COUNT(*) FROM applications WHERE applications.user_id = users.id)::int AS application_count
+     FROM users
+     ORDER BY users.created_at DESC`
+  );
 
   return (
     <div className="space-y-6 max-w-5xl">

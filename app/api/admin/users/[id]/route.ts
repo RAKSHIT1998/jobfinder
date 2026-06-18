@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { query } from "@/lib/db";
 import { isAdminAuthed } from "@/lib/adminAuth";
 
 export async function GET(_req: Request, ctx: RouteContext<"/api/admin/users/[id]">) {
@@ -7,15 +7,15 @@ export async function GET(_req: Request, ctx: RouteContext<"/api/admin/users/[id
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { id } = await ctx.params;
-  const db = getDb();
-  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(id);
+  const [user] = await query("SELECT * FROM users WHERE id = $1", [id]);
   if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const cvRow = db.prepare("SELECT data FROM cvs WHERE user_id = ?").get(id) as { data: string } | undefined;
-  const payments = db.prepare("SELECT * FROM payments WHERE user_id = ? ORDER BY created_at DESC").all(id);
-  const applications = db
-    .prepare("SELECT * FROM applications WHERE user_id = ? ORDER BY created_at DESC")
-    .all(id);
+  const [cvRow] = await query<{ data: string }>("SELECT data FROM cvs WHERE user_id = $1", [id]);
+  const payments = await query("SELECT * FROM payments WHERE user_id = $1 ORDER BY created_at DESC", [id]);
+  const applications = await query(
+    "SELECT * FROM applications WHERE user_id = $1 ORDER BY created_at DESC",
+    [id]
+  );
 
   return NextResponse.json({
     user,
@@ -30,7 +30,6 @@ export async function DELETE(_req: Request, ctx: RouteContext<"/api/admin/users/
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { id } = await ctx.params;
-  const db = getDb();
-  db.prepare("DELETE FROM users WHERE id = ?").run(id);
+  await query("DELETE FROM users WHERE id = $1", [id]);
   return NextResponse.json({ ok: true });
 }

@@ -1,8 +1,8 @@
-import { getDb, getPaidPayments } from "@/lib/db";
+import { query, getPaidPayments } from "@/lib/db";
 import { convertCurrency } from "@/lib/exchangeRates";
 
 async function getRevenueUsd(): Promise<number> {
-  const payments = getPaidPayments();
+  const payments = await getPaidPayments();
   // Group by currency first so each distinct currency only needs one conversion call.
   const totalsByCurrency = new Map<string, number>();
   for (const p of payments) {
@@ -19,18 +19,19 @@ async function getRevenueUsd(): Promise<number> {
 }
 
 export default async function AdminOverview() {
-  const db = getDb();
-  const totalUsers = (db.prepare("SELECT COUNT(*) AS c FROM users").get() as { c: number }).c;
-  const totalCvs = (db.prepare("SELECT COUNT(*) AS c FROM cvs").get() as { c: number }).c;
-  const totalPayments = (
-    db.prepare("SELECT COUNT(*) AS c FROM payments WHERE status = 'paid'").get() as { c: number }
-  ).c;
-  const revenueUsd = await getRevenueUsd();
-  const totalApplications = (db.prepare("SELECT COUNT(*) AS c FROM applications").get() as { c: number }).c;
+  const [[{ c: totalUsers }], [{ c: totalCvs }], [{ c: totalPayments }], revenueUsd, [{ c: totalApplications }], recentUsers] =
+    await Promise.all([
+      query<{ c: number }>("SELECT COUNT(*)::int AS c FROM users"),
+      query<{ c: number }>("SELECT COUNT(*)::int AS c FROM cvs"),
+      query<{ c: number }>("SELECT COUNT(*)::int AS c FROM payments WHERE status = 'paid'"),
+      getRevenueUsd(),
+      query<{ c: number }>("SELECT COUNT(*)::int AS c FROM applications"),
+      query<{ id: number; email: string; name: string | null; created_at: string }>(
+        "SELECT id, email, name, created_at FROM users ORDER BY created_at DESC LIMIT 8"
+      ),
+    ]);
+
   const conversionRate = totalUsers > 0 ? Math.round((totalPayments / totalUsers) * 100) : 0;
-  const recentUsers = db
-    .prepare("SELECT id, email, name, created_at FROM users ORDER BY created_at DESC LIMIT 8")
-    .all() as Array<{ id: number; email: string; name: string | null; created_at: string }>;
 
   const stats = [
     { label: "Total Users", value: totalUsers, color: "#a78bfa" },

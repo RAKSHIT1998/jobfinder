@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDb } from "@/lib/db";
+import { query } from "@/lib/db";
 import { generateText } from "@/lib/anthropic";
 import { formatCvForPrompt } from "@/lib/cvFormat";
 
-function loadCvText(email: string): string | null {
-  const db = getDb();
-  const row = db
-    .prepare(`SELECT cvs.data FROM cvs JOIN users ON users.id = cvs.user_id WHERE users.email = ?`)
-    .get(email) as { data: string } | undefined;
+async function loadCvText(email: string): Promise<string | null> {
+  const [row] = await query<{ data: string }>(
+    `SELECT cvs.data FROM cvs JOIN users ON users.id = cvs.user_id WHERE users.email = $1`,
+    [email]
+  );
   if (!row) return null;
   return formatCvForPrompt(JSON.parse(row.data));
 }
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "email, company and role are required" }, { status: 400 });
   }
 
-  const cvText = loadCvText(email);
+  const cvText = await loadCvText(email);
   if (!cvText) return NextResponse.json({ error: "No CV found for this account yet." }, { status: 404 });
 
   if (action === "questions") {

@@ -7,7 +7,7 @@ export async function DELETE() {
   if (!userId) {
     return NextResponse.json({ error: "Not logged in." }, { status: 401 });
   }
-  deleteUserAccount(userId);
+  await deleteUserAccount(userId);
   await clearSessionCookie();
   return NextResponse.json({ ok: true });
 }

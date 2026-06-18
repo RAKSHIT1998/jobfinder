@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   const paid = event.type === "PAYMENT_SUCCESS_WEBHOOK" && event.data?.payment?.payment_status === "SUCCESS";
 
   if (paid && orderId && typeof amount === "number" && email) {
-    recordPayment({
+    await recordPayment({
       amountCents: Math.round(amount * 100),
       currency: (currency || "INR").toUpperCase(),
       email,

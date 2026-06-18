@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
   }
 
-  const user = getUserByEmail(email);
+  const user = await getUserByEmail(email);
   if (!user) {
     return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
   }
@@ -25,8 +25,8 @@ export async function POST(req: NextRequest) {
 
   await setSessionCookie(user.id);
 
-  const cvData = getCv(user.id);
-  const latestPayment = getLatestPayment(user.id);
+  const cvData = await getCv(user.id);
+  const latestPayment = await getLatestPayment(user.id);
   const paidAt = latestPayment ? new Date(latestPayment.created_at.replace(" ", "T") + "Z") : null;
   const paid = paidAt !== null && Date.now() - paidAt.getTime() < ACCESS_DURATION_MS;
 

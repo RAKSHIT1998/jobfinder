@@ -1,4 +1,4 @@
-import { getDb } from "@/lib/db";
+import { query } from "@/lib/db";
 
 interface ContactMessage {
   id: number;
@@ -9,10 +9,7 @@ interface ContactMessage {
 }
 
 export default async function AdminMessages() {
-  const db = getDb();
-  const messages = db
-    .prepare("SELECT * FROM contact_messages ORDER BY created_at DESC")
-    .all() as ContactMessage[];
+  const messages = await query<ContactMessage>("SELECT * FROM contact_messages ORDER BY created_at DESC");
 
   return (
     <div className="space-y-6 max-w-3xl">

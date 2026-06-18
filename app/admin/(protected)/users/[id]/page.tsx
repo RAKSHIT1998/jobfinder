@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getDb } from "@/lib/db";
+import { query } from "@/lib/db";
 import { formatCurrency } from "@/lib/currency";
 import DeleteUserButton from "./DeleteUserButton";
 
@@ -20,20 +20,22 @@ interface CVData {
 
 export default async function AdminUserDetail({ params }: PageProps) {
   const { id } = await params;
-  const db = getDb();
-  const user = db.prepare("SELECT * FROM users WHERE id = ?").get(id) as
-    | { id: number; email: string; name: string | null; created_at: string }
-    | undefined;
+  const [user] = await query<{ id: number; email: string; name: string | null; created_at: string }>(
+    "SELECT * FROM users WHERE id = $1",
+    [id]
+  );
   if (!user) notFound();
 
-  const cvRow = db.prepare("SELECT data FROM cvs WHERE user_id = ?").get(id) as { data: string } | undefined;
+  const [cvRow] = await query<{ data: string }>("SELECT data FROM cvs WHERE user_id = $1", [id]);
   const cv: CVData | null = cvRow ? JSON.parse(cvRow.data) : null;
-  const payments = db
-    .prepare("SELECT * FROM payments WHERE user_id = ? ORDER BY created_at DESC")
-    .all(id) as Array<{ id: number; amount_cents: number; currency: string | null; status: string; card_last4: string | null; created_at: string }>;
-  const applications = db
-    .prepare("SELECT * FROM applications WHERE user_id = ? ORDER BY created_at DESC")
-    .all(id) as Array<{ id: number; company: string; role: string; status: string; created_at: string }>;
+  const payments = await query<{ id: number; amount_cents: number; currency: string | null; status: string; card_last4: string | null; created_at: string }>(
+    "SELECT * FROM payments WHERE user_id = $1 ORDER BY created_at DESC",
+    [id]
+  );
+  const applications = await query<{ id: number; company: string; role: string; status: string; created_at: string }>(
+    "SELECT * FROM applications WHERE user_id = $1 ORDER BY created_at DESC",
+    [id]
+  );
 
   return (
     <div className="space-y-6 max-w-4xl">
