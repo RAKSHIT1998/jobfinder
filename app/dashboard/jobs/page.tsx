@@ -2,6 +2,17 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { tokenize } from "@/lib/matching";
+
+const ANYWHERE_WORDS = new Set(["anywhere", "any", "flexible", "open"]);
+
+function locationTokensFromCv(cv: { location?: string; preferredLocations?: string }): Set<string> | null {
+  const raw = (cv.preferredLocations || cv.location || "").trim();
+  if (!raw) return null;
+  const tokens = tokenize(raw);
+  if (tokens.length === 0 || tokens.every((t) => ANYWHERE_WORDS.has(t))) return null;
+  return new Set(tokens);
+}
 
 interface ScoredJob {
   id: string;
@@ -37,7 +48,8 @@ export default function Jobs() {
   const [appliedKeys, setAppliedKeys] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState<"all" | "remote" | "onsite">("all");
+  const [filter, setFilter] = useState<"all" | "remote" | "onsite" | "near">("all");
+  const [locationTokens, setLocationTokens] = useState<Set<string> | null>(null);
 
   const load = useCallback((userEmail: string) => {
     setLoading(true);
@@ -61,8 +73,10 @@ export default function Jobs() {
 
   useEffect(() => {
     const stored = typeof window !== "undefined" ? localStorage.getItem("jobfinder_cv") : null;
-    const cvEmail = stored ? JSON.parse(stored).email : null;
+    const parsed = stored ? JSON.parse(stored) : null;
+    const cvEmail = parsed?.email || null;
     setEmail(cvEmail);
+    if (parsed) setLocationTokens(locationTokensFromCv(parsed));
     if (cvEmail) load(cvEmail);
     else setLoading(false);
   }, [load]);
@@ -89,7 +103,14 @@ export default function Jobs() {
     );
   }
 
-  const filtered = jobs.filter((j) => filter === "all" || (filter === "remote" ? j.remote : !j.remote));
+  const isNear = (j: ScoredJob) => j.remote || (locationTokens ? tokenize(j.location).some((t) => locationTokens.has(t)) : false);
+
+  const filtered = jobs.filter((j) => {
+    if (filter === "remote") return j.remote;
+    if (filter === "onsite") return !j.remote;
+    if (filter === "near") return isNear(j);
+    return true;
+  });
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -123,6 +144,7 @@ export default function Jobs() {
             { key: "all" as const, label: `All (${jobs.length})` },
             { key: "remote" as const, label: `Remote (${jobs.filter((j) => j.remote).length})` },
             { key: "onsite" as const, label: `Onsite (${jobs.filter((j) => !j.remote).length})` },
+            ...(locationTokens ? [{ key: "near" as const, label: `Near Me (${jobs.filter(isNear).length})` }] : []),
           ].map((f) => (
             <button
               key={f.key}

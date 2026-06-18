@@ -5,6 +5,8 @@ export interface CVProfile {
   softSkills?: string[];
   targetRoles?: string;
   workType?: string;
+  location?: string;
+  preferredLocations?: string;
 }
 
 export interface ScoredJob extends JobListing {
@@ -33,6 +35,20 @@ const GENERIC_ROLE_WORDS = new Set([
 
 function keywordWeight(keyword: string): number {
   return GENERIC_ROLE_WORDS.has(keyword) ? 0.2 : 1;
+}
+
+const ANYWHERE_WORDS = new Set(["anywhere", "any", "flexible", "open"]);
+
+// City/country tokens the candidate actually wants to work in - "Preferred
+// Locations" if they filled it in, else their current location. Null means
+// no preference was expressed (or they said "Anywhere"), so location
+// shouldn't affect ranking at all.
+function locationPreferenceTokens(cv: CVProfile): Set<string> | null {
+  const raw = (cv.preferredLocations || cv.location || "").trim();
+  if (!raw) return null;
+  const tokens = tokenize(raw);
+  if (tokens.length === 0 || tokens.every((t) => ANYWHERE_WORDS.has(t))) return null;
+  return new Set(tokens);
 }
 
 export function scoreJob(cv: CVProfile, job: JobListing): number {
@@ -72,6 +88,17 @@ export function scoreJob(cv: CVProfile, job: JobListing): number {
 
   if (cv.workType?.toLowerCase().includes("remote") && job.remote) {
     score += 5;
+  }
+
+  // Remote work is location-agnostic, so only weigh location for jobs that
+  // actually require being there. A candidate in India has no real shot at
+  // an onsite role in the US/UK - sink those instead of presenting them
+  // alongside jobs they could actually take.
+  const placeTokens = locationPreferenceTokens(cv);
+  if (placeTokens && !job.remote) {
+    const jobLocationTokens = new Set(tokenize(job.location));
+    const nearby = [...placeTokens].some((t) => jobLocationTokens.has(t));
+    score = nearby ? score + 15 : Math.round(score * 0.3);
   }
 
   return Math.max(0, Math.min(99, score));
