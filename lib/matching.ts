@@ -1,4 +1,5 @@
 import type { JobListing } from "./jobSources";
+import { convertCurrency } from "./exchangeRates";
 
 export interface CVProfile {
   techSkills?: string[];
@@ -7,6 +8,9 @@ export interface CVProfile {
   workType?: string;
   location?: string;
   preferredLocations?: string;
+  salaryMin?: string;
+  salaryMax?: string;
+  salaryCurrency?: string;
 }
 
 export interface ScoredJob extends JobListing {
@@ -51,7 +55,19 @@ function locationPreferenceTokens(cv: CVProfile): Set<string> | null {
   return new Set(tokens);
 }
 
-export function scoreJob(cv: CVProfile, job: JobListing): number {
+// Converts the candidate's minimum salary expectation to USD once per
+// ranking pass (not per job - scoreJob stays synchronous and cheap to run
+// over hundreds of postings). Legacy CVs saved before salaryCurrency existed
+// were always entered in INR, so that's the fallback for them specifically.
+export async function desiredMinSalaryUsd(cv: CVProfile): Promise<number | null> {
+  const min = parseFloat(cv.salaryMin || "");
+  if (!min || min <= 0) return null;
+  const currency = (cv.salaryCurrency || "INR").toUpperCase();
+  if (currency === "USD") return min;
+  return convertCurrency(min, currency, "USD").catch(() => null);
+}
+
+export function scoreJob(cv: CVProfile, job: JobListing, desiredMinUsd?: number | null): number {
   const keywords = new Set<string>();
   (cv.techSkills || []).forEach((s) => tokenize(s).forEach((t) => keywords.add(t)));
   (cv.softSkills || []).forEach((s) => tokenize(s).forEach((t) => keywords.add(t)));
@@ -101,12 +117,21 @@ export function scoreJob(cv: CVProfile, job: JobListing): number {
     score = nearby ? score + 15 : Math.round(score * 0.3);
   }
 
+  // Reward postings that clear the candidate's stated minimum, and sink ones
+  // that pay well under it - but only when we actually have a disclosed
+  // figure to compare against. No data means no opinion, not a penalty.
+  if (desiredMinUsd && job.salaryUsd) {
+    if (job.salaryUsd.max >= desiredMinUsd) score += 10;
+    else if (job.salaryUsd.max < desiredMinUsd * 0.7) score = Math.round(score * 0.7);
+  }
+
   return Math.max(0, Math.min(99, score));
 }
 
-export function rankJobs(cv: CVProfile, jobs: JobListing[]): ScoredJob[] {
+export async function rankJobs(cv: CVProfile, jobs: JobListing[]): Promise<ScoredJob[]> {
+  const desiredMinUsd = await desiredMinSalaryUsd(cv);
   return jobs
-    .map((job) => ({ ...job, match: scoreJob(cv, job) }))
+    .map((job) => ({ ...job, match: scoreJob(cv, job, desiredMinUsd) }))
     .filter((j) => j.match > 0)
     .sort((a, b) => b.match - a.match);
 }

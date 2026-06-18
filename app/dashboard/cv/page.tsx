@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { formatInr } from "@/lib/currency";
+import { formatCurrency } from "@/lib/currency";
+import { useCountry } from "@/lib/useCountry";
 
 interface CVData {
   name: string;
@@ -11,6 +12,7 @@ interface CVData {
   phone: string;
   location: string;
   linkedin: string;
+  summary?: string;
   workExperiences: Array<{ company: string; role: string; startDate: string; endDate: string; description: string }>;
   education: Array<{ degree: string; school: string; year: string }>;
   techSkills: string[];
@@ -18,12 +20,14 @@ interface CVData {
   targetRoles: string;
   salaryMin: string;
   salaryMax: string;
+  salaryCurrency?: string;
   workType: string;
   preferredLocations: string;
 }
 
 export default function MyCVPage() {
   const router = useRouter();
+  const { country } = useCountry();
   const [cv, setCv] = useState<CVData | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -99,6 +103,12 @@ export default function MyCVPage() {
             </div>
           )}
         </div>
+        {cv.summary && (
+          <div className="glass rounded-xl p-3 mt-4">
+            <div className="text-white/30 text-xs mb-1">Summary</div>
+            <p className="text-white/70 text-sm leading-relaxed">{cv.summary}</p>
+          </div>
+        )}
       </Section>
 
       <Section title="Work Experience">
@@ -157,7 +167,13 @@ export default function MyCVPage() {
           {[
             { label: "Target Roles", value: cv.targetRoles },
             { label: "Work Type", value: cv.workType },
-            { label: "Salary Range", value: `${formatInr(parseInt(cv.salaryMin||"0"))} - ${formatInr(parseInt(cv.salaryMax||"0"))}` },
+            {
+              label: "Salary Range",
+              value:
+                cv.salaryMin && cv.salaryMax
+                  ? `${formatCurrency(parseFloat(cv.salaryMin), cv.salaryCurrency || "INR", country.locale)} - ${formatCurrency(parseFloat(cv.salaryMax), cv.salaryCurrency || "INR", country.locale)}`
+                  : "",
+            },
             { label: "Locations", value: cv.preferredLocations },
           ].map((f) => (
             <div key={f.label} className="glass rounded-xl p-3">

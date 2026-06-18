@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const ranked = rankJobs(cv, jobs).slice(0, 40);
+  const ranked = (await rankJobs(cv, jobs)).slice(0, 40);
   const sourcedFrom = [...new Set(jobs.map((j) => j.source))].sort();
   return NextResponse.json({ jobs: ranked, sourcedFrom });
 }

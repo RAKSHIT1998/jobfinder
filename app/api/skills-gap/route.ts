@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const ranked = rankJobs(cv, jobs);
+  const ranked = await rankJobs(cv, jobs);
   const result = analyzeSkillsGap(cv, ranked);
   return NextResponse.json(result);
 }

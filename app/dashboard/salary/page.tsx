@@ -11,6 +11,7 @@ interface SalaryIntel {
   max: number | null;
   median: number | null;
   currency: string;
+  desired: { min: number; max: number } | null;
 }
 
 const negotiationScript = [
@@ -18,7 +19,7 @@ const negotiationScript = [
   { step: "Express excitement first", tip: "'I'm really excited about this offer and the team. I'm very much looking forward to joining.' Never sound desperate or disappointed." },
   { step: "Ask for time", tip: "'I want to give this the consideration it deserves — can I have 48-72 hours?' This is normal and expected." },
   { step: "Research and counter", tip: "Use the real range above plus sites like levels.fyi and Glassdoor. Counter 10-20% above base, and negotiate equity, signing bonus, and remote policy too." },
-  { step: "The counter script", tip: "\"I'm very excited about [Company]. Based on my experience and what similar roles are paying right now, I was expecting something closer to INR X. Is there flexibility?\" Then stop talking." },
+  { step: "The counter script", tip: "\"I'm very excited about [Company]. Based on my experience and what similar roles are paying right now, I was expecting something closer to [your target figure]. Is there flexibility?\" Then stop talking." },
   { step: "If they say no", tip: "Ask: 'Is there flexibility on signing bonus, equity, or remote days?' Total comp matters, not just base." },
 ];
 
@@ -50,6 +51,13 @@ export default function Salary() {
 
   const fmt = (n: number) =>
     new Intl.NumberFormat(undefined, { style: "currency", currency: data?.currency || "USD", maximumFractionDigits: 0 }).format(n);
+
+  const verdict = (() => {
+    if (!data?.desired || data.min === null || data.max === null) return null;
+    if (data.desired.min > data.max) return { label: "Your ask is above what these postings show — be ready to justify it.", tone: "text-amber-400" };
+    if (data.desired.max < data.min) return { label: "You might be underselling yourself — postings show higher pay than you're asking for.", tone: "text-cyan-400" };
+    return { label: "Your expectations line up well with the market.", tone: "text-emerald-400" };
+  })();
 
   if (!email) {
     return (
@@ -98,6 +106,16 @@ export default function Salary() {
               )}
             </div>
           </div>
+        </div>
+      )}
+
+      {!loading && data?.desired && (
+        <div className="glass rounded-2xl p-6 flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <p className="text-white/30 text-xs uppercase tracking-widest mb-1">Your expectation (from your CV)</p>
+            <p className="text-2xl font-black text-white">{fmt(data.desired.min)} - {fmt(data.desired.max)}</p>
+          </div>
+          {verdict && <p className={`text-sm font-semibold max-w-xs text-right ${verdict.tone}`}>{verdict.label}</p>}
         </div>
       )}
 

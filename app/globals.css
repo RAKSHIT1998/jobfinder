@@ -110,6 +110,30 @@ body {
 }
 .animate-fade-in-up { animation: fadeInUp 0.6s ease forwards; }
 
+/* Wizard step transition */
+@keyframes stepIn {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-step-in { animation: stepIn 0.3s ease forwards; }
+
+/* Selection pop (skill chips, checkmarks) */
+@keyframes pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.animate-pop { animation: pop 0.25s ease; }
+
+/* Autosave indicator */
+@keyframes savedPulse {
+  0% { opacity: 0; transform: translateY(-2px); }
+  20% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.animate-saved-pulse { animation: savedPulse 1.8s ease forwards; }
+
 /* Input glass style */
 .input-glass {
   background: rgba(255, 255, 255, 0.04);
