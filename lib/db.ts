@@ -1,3 +1,4 @@
+import dns from "dns";
 import { Collection, Db, MongoClient, ObjectId } from "mongodb";
 
 declare global {
@@ -7,7 +8,15 @@ declare global {
 
 const DB_NAME = "jobfinder";
 
+// Some local resolvers (VPN/ISP proxies) can't answer the DNS SRV queries that
+// `mongodb+srv://` needs, failing with ECONNREFUSED even though the system
+// resolver works fine. Falling back to public resolvers fixes that without
+// requiring an OS-level DNS change.
+dns.setServers([...dns.getServers(), "8.8.8.8", "1.1.1.1"]);
+console.log("[debug] dns servers at module load:", dns.getServers());
+
 function init(): Promise<MongoClient> {
+  console.log("[debug] dns servers at init() call:", dns.getServers());
   const uri = process.env.MONGODB_URI;
   if (!uri) {
     throw new Error("MONGODB_URI is not set - point it at your MongoDB Atlas cluster.");
@@ -17,7 +26,10 @@ function init(): Promise<MongoClient> {
 
 export function getClient(): Promise<MongoClient> {
   if (!global.__jobfinderMongoConnect) {
-    global.__jobfinderMongoConnect = init();
+    global.__jobfinderMongoConnect = init().catch((err) => {
+      global.__jobfinderMongoConnect = undefined;
+      throw err;
+    });
   }
   return global.__jobfinderMongoConnect;
 }
