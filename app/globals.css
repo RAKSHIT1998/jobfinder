@@ -55,10 +55,28 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #a78bfa, #67e8f9, #f0abfc);
+  background: linear-gradient(135deg, #c4b5fd, #818cf8);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(167, 139, 250, 0.9);
+}
+.eyebrow::before {
+  content: '';
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: currentColor;
 }
 
 .gradient-text-gold {
@@ -190,6 +208,36 @@ body {
 /* Iridescent border */
 .iridescent-border {
   background: linear-gradient(var(--background), var(--background)) padding-box,
-    linear-gradient(135deg, #a78bfa, #67e8f9, #f0abfc, #a78bfa) border-box;
+    linear-gradient(135deg, #a78bfa, #6366f1, #c4b5fd, #a78bfa) border-box;
   border: 1px solid transparent;
+}
+
+/* Diagonal light sweep on hover - used for premium cards/CTAs */
+.shine-sweep {
+  position: relative;
+  overflow: hidden;
+}
+.shine-sweep::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.7s ease;
+  pointer-events: none;
+}
+.shine-sweep:hover::after {
+  left: 150%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-blob,
+  .animate-ticker,
+  .pulse-glow,
+  .shimmer-line {
+    animation: none !important;
+  }
 }

@@ -1,17 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Menu, X } from "lucide-react";
 import PriceTag from "./PriceTag";
+
+const navLinks = [
+  { href: "/#how-it-works", label: "How it works" },
+  { href: "/#features", label: "Features" },
+  { href: "/#pricing", label: "Pricing" },
+];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-4 pt-4">
-      <div className="max-w-6xl mx-auto glass rounded-2xl px-6 py-3 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center shadow-lg">
+      <div
+        className={`max-w-6xl mx-auto rounded-2xl px-6 py-3 flex items-center justify-between transition-all duration-300 ${
+          scrolled ? "glass-strong" : "glass"
+        }`}
+      >
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-400 flex items-center justify-center shadow-lg transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
@@ -21,10 +42,24 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
-          <Link href="/#how-it-works" className="text-sm text-white/50 hover:text-white transition-colors">How it works</Link>
-          <Link href="/#features" className="text-sm text-white/50 hover:text-white transition-colors">Features</Link>
-          <Link href="/#pricing" className="text-sm text-white/50 hover:text-white transition-colors">Pricing</Link>
+        <div className="hidden md:flex items-center gap-1" onMouseLeave={() => setHovered(null)}>
+          {navLinks.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onMouseEnter={() => setHovered(item.href)}
+              className="relative text-sm text-white/50 hover:text-white transition-colors px-4 py-2 rounded-xl"
+            >
+              {hovered === item.href && (
+                <motion.span
+                  layoutId="nav-hover-pill"
+                  className="absolute inset-0 rounded-xl bg-white/8"
+                  transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                />
+              )}
+              <span className="relative">{item.label}</span>
+            </Link>
+          ))}
         </div>
 
         <div className="hidden md:flex items-center gap-3">
@@ -36,49 +71,49 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <button className="md:hidden text-white/60 hover:text-white" onClick={() => setOpen(!open)}>
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {open
-              ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            }
-          </svg>
+        <button className="md:hidden text-white/60 hover:text-white" onClick={() => setOpen(!open)} aria-label="Toggle menu">
+          {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
-      {open && (
-        <div className="md:hidden glass-strong mt-2 mx-auto max-w-6xl rounded-2xl p-4 space-y-1">
-          {[
-            { href: "/#how-it-works", label: "How it works" },
-            { href: "/#features", label: "Features" },
-            { href: "/#pricing", label: "Pricing" },
-            { href: "/dashboard", label: "Dashboard" },
-          ].map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="block py-2.5 px-4 text-white/60 hover:text-white rounded-xl hover:bg-white/5 text-sm transition-all"
-              onClick={() => setOpen(false)}
-            >
-              {item.label}
-            </Link>
-          ))}
-          <Link
-            href="/login"
-            className="block py-2.5 px-4 text-white/60 hover:text-white rounded-xl hover:bg-white/5 text-sm transition-all"
-            onClick={() => setOpen(false)}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: [0.21, 0.47, 0.32, 0.98] }}
+            className="md:hidden mt-2 mx-auto max-w-6xl overflow-hidden"
           >
-            Log In
-          </Link>
-          <Link
-            href="/create-cv"
-            className="block btn-primary text-center text-sm font-semibold px-5 py-3 rounded-xl mt-2"
-            onClick={() => setOpen(false)}
-          >
-            Get Started - <PriceTag />
-          </Link>
-        </div>
-      )}
+            <div className="glass-strong rounded-2xl p-4 space-y-1">
+              {[...navLinks, { href: "/dashboard", label: "Dashboard" }].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="block py-2.5 px-4 text-white/60 hover:text-white rounded-xl hover:bg-white/5 text-sm transition-all"
+                  onClick={() => setOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              <Link
+                href="/login"
+                className="block py-2.5 px-4 text-white/60 hover:text-white rounded-xl hover:bg-white/5 text-sm transition-all"
+                onClick={() => setOpen(false)}
+              >
+                Log In
+              </Link>
+              <Link
+                href="/create-cv"
+                className="block btn-primary text-center text-sm font-semibold px-5 py-3 rounded-xl mt-2"
+                onClick={() => setOpen(false)}
+              >
+                Get Started - <PriceTag />
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

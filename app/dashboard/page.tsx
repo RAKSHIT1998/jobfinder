@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import AgentStatus from "@/components/AgentStatus";
 import Link from "next/link";
+import { Brain, PenLine, BarChart3, Wallet } from "lucide-react";
+import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 
 interface ScoredJob {
   id: string;
@@ -21,10 +24,10 @@ interface Application {
 }
 
 const quickActions = [
-  { href: "/dashboard/ai-coach", label: "Practice Interview", icon: "🧠", desc: "AI-powered prep" },
-  { href: "/dashboard/cover-letter", label: "Generate Cover Letter", icon: "✍️", desc: "Personalized in seconds" },
-  { href: "/dashboard/skills", label: "Check Skills Gap", icon: "📊", desc: "See what to learn" },
-  { href: "/dashboard/salary", label: "Salary Intelligence", icon: "💰", desc: "Know your worth" },
+  { href: "/dashboard/ai-coach", label: "Practice Interview", Icon: Brain, desc: "AI-powered prep" },
+  { href: "/dashboard/cover-letter", label: "Generate Cover Letter", Icon: PenLine, desc: "Personalized in seconds" },
+  { href: "/dashboard/skills", label: "Check Skills Gap", Icon: BarChart3, desc: "See what to learn" },
+  { href: "/dashboard/salary", label: "Salary Intelligence", Icon: Wallet, desc: "Know your worth" },
 ];
 
 export default function Dashboard() {
@@ -56,10 +59,10 @@ export default function Dashboard() {
   const avgMatch = jobs.length ? Math.round(jobs.reduce((s, j) => s + j.match, 0) / jobs.length) : null;
 
   const stats = [
-    { label: "Jobs Matched", value: loading ? "—" : String(jobs.length), color: "text-violet-300", border: "rgba(139,92,246,0.2)", glow: "rgba(139,92,246,0.1)" },
-    { label: "Interviews Scheduled", value: loading ? "—" : String(interviews.length), color: "text-emerald-300", border: "rgba(52,211,153,0.2)", glow: "rgba(52,211,153,0.1)" },
-    { label: "Avg Match Score", value: loading ? "—" : avgMatch !== null ? `${avgMatch}%` : "—", color: "text-cyan-300", border: "rgba(34,211,238,0.2)", glow: "rgba(34,211,238,0.1)" },
-    { label: "Live Sources", value: loading ? "—" : String(sources.length), color: "text-pink-300", border: "rgba(236,72,153,0.2)", glow: "rgba(236,72,153,0.1)" },
+    { label: "Jobs Matched", value: jobs.length, suffix: "", color: "text-violet-300", border: "rgba(139,92,246,0.2)", glow: "rgba(139,92,246,0.1)" },
+    { label: "Interviews Scheduled", value: interviews.length, suffix: "", color: "text-emerald-300", border: "rgba(52,211,153,0.2)", glow: "rgba(52,211,153,0.1)" },
+    { label: "Avg Match Score", value: avgMatch, suffix: "%", color: "text-cyan-300", border: "rgba(34,211,238,0.2)", glow: "rgba(34,211,238,0.1)" },
+    { label: "Live Sources", value: sources.length, suffix: "", color: "text-pink-300", border: "rgba(236,72,153,0.2)", glow: "rgba(236,72,153,0.1)" },
   ];
 
   if (!email) {
@@ -78,21 +81,27 @@ export default function Dashboard() {
         <p className="text-white/40 text-sm mt-1">Live job data scanned from real sources, matched against your real CV.</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <RevealGroup className="grid grid-cols-2 lg:grid-cols-4 gap-4" stagger={0.06}>
         {stats.map((stat, i) => (
-          <div key={i} className="glass rounded-2xl p-5" style={{ borderColor: stat.border, boxShadow: `0 8px 32px ${stat.glow}` }}>
-            <p className="text-white/40 text-xs mb-2">{stat.label}</p>
-            <p className={`text-3xl font-black ${stat.color}`}>{stat.value}</p>
-          </div>
+          <RevealItem key={i}>
+            <div className="glass rounded-2xl p-5" style={{ borderColor: stat.border, boxShadow: `0 8px 32px ${stat.glow}` }}>
+              <p className="text-white/40 text-xs mb-2">{stat.label}</p>
+              <p className={`text-3xl font-black ${stat.color}`}>
+                {loading || stat.value === null ? "—" : <AnimatedCounter value={stat.value} suffix={stat.suffix} />}
+              </p>
+            </div>
+          </RevealItem>
         ))}
-      </div>
+      </RevealGroup>
 
       <div>
         <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-3">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {quickActions.map((a, i) => (
             <Link key={i} href={a.href} className="glass glass-hover rounded-2xl p-4 group">
-              <div className="text-2xl mb-2">{a.icon}</div>
+              <div className="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-3 transition-colors group-hover:bg-violet-500/20">
+                <a.Icon className="w-4 h-4 text-violet-300" strokeWidth={1.75} />
+              </div>
               <div className="text-white/80 font-semibold text-sm group-hover:text-white transition-colors">{a.label}</div>
               <div className="text-white/30 text-xs mt-0.5">{a.desc}</div>
             </Link>

@@ -3,18 +3,23 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Zap, Briefcase, CalendarCheck, Brain, PenLine, BarChart3, Wallet, Target, FileText,
+  Menu, X, ArrowLeft, LogOut,
+} from "lucide-react";
 import { hasActiveAccess, hasEverPaid } from "@/lib/access";
 
 const navItems = [
-  { href: "/dashboard", label: "Overview", icon: "⚡" },
-  { href: "/dashboard/jobs", label: "Jobs", icon: "💼" },
-  { href: "/dashboard/meetings", label: "Interview Prep", icon: "📅" },
-  { href: "/dashboard/ai-coach", label: "AI Coach", icon: "🧠" },
-  { href: "/dashboard/cover-letter", label: "Cover Letters", icon: "✍️" },
-  { href: "/dashboard/skills", label: "Skills Gap", icon: "📊" },
-  { href: "/dashboard/salary", label: "Salary Intel", icon: "💰" },
-  { href: "/dashboard/tracker", label: "App Tracker", icon: "🎯" },
-  { href: "/dashboard/cv", label: "My CV", icon: "📄" },
+  { href: "/dashboard", label: "Overview", Icon: Zap },
+  { href: "/dashboard/jobs", label: "Jobs", Icon: Briefcase },
+  { href: "/dashboard/meetings", label: "Interview Prep", Icon: CalendarCheck },
+  { href: "/dashboard/ai-coach", label: "AI Coach", Icon: Brain },
+  { href: "/dashboard/cover-letter", label: "Cover Letters", Icon: PenLine },
+  { href: "/dashboard/skills", label: "Skills Gap", Icon: BarChart3 },
+  { href: "/dashboard/salary", label: "Salary Intel", Icon: Wallet },
+  { href: "/dashboard/tracker", label: "App Tracker", Icon: Target },
+  { href: "/dashboard/cv", label: "My CV", Icon: FileText },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -22,6 +27,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [authorized, setAuthorized] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(min-width: 768px)").matches
+  );
 
   useEffect(() => {
     if (hasActiveAccess()) {
@@ -31,22 +39,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.replace(hasEverPaid() ? "/checkout?expired=1" : "/checkout");
   }, [router]);
 
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   if (!authorized) return null;
 
   return (
     <div className="min-h-screen text-white flex" style={{ background: "#050508" }}>
-      {/* Fixed blob background */}
+      {/* Ambient background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="animate-blob absolute top-0 right-0 w-96 h-96 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(80px)" }} />
-        <div className="animate-blob animation-delay-4000 absolute bottom-0 left-0 w-72 h-72 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #0891b2, transparent)", filter: "blur(80px)" }} />
+        <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full opacity-[0.07]" style={{ background: "radial-gradient(circle, #6366f1, transparent)", filter: "blur(80px)" }} />
       </div>
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 flex flex-col transform transition-transform duration-300 md:translate-x-0 md:static md:z-auto ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+      <motion.aside
+        className="fixed inset-y-0 left-0 z-50 w-64 flex flex-col md:static md:z-auto"
         style={{ backdropFilter: "blur(40px) saturate(180%)", background: "rgba(255,255,255,0.03)", borderRight: "1px solid rgba(255,255,255,0.07)" }}
+        animate={{ x: isDesktop || sidebarOpen ? 0 : "-100%" }}
+        transition={{ type: "spring", stiffness: 320, damping: 32 }}
       >
         <div className="flex items-center gap-2.5 px-6 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-400 flex items-center justify-center">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
@@ -71,14 +90,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   key={item.href}
                   href={item.href}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${
-                    isActive
-                      ? "bg-violet-500/20 text-violet-200 border border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
-                      : "text-white/40 hover:text-white/80 hover:bg-white/5"
+                  className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
+                    isActive ? "text-violet-200" : "text-white/40 hover:text-white/80 hover:bg-white/5"
                   }`}
                 >
-                  <span className="text-base">{item.icon}</span>
-                  <span className="flex-1">{item.label}</span>
+                  {isActive && (
+                    <motion.span
+                      layoutId="sidebar-active-pill"
+                      className="absolute inset-0 rounded-xl bg-violet-500/20 border border-violet-500/30 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
+                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    />
+                  )}
+                  <item.Icon className="w-4 h-4 relative z-10 shrink-0" strokeWidth={2} />
+                  <span className="flex-1 relative z-10">{item.label}</span>
                 </Link>
               );
             })}
@@ -87,9 +111,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         <div className="px-4 pb-6 pt-2 space-y-0.5" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
           <Link href="/" className="flex items-center gap-2 px-3 py-2 rounded-xl text-white/30 hover:text-white/60 text-sm transition-colors">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
+            <ArrowLeft className="w-4 h-4" />
             Back to home
           </Link>
           <button
@@ -102,32 +124,37 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             }}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-white/30 hover:text-red-400 text-sm transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
+            <LogOut className="w-4 h-4" />
             Log Out
           </button>
         </div>
-      </aside>
+      </motion.aside>
 
-      {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-      )}
+      <AnimatePresence>
+        {sidebarOpen && !isDesktop && (
+          <motion.div
+            className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 relative z-10">
         <header className="px-6 py-4 flex items-center gap-4" style={{ backdropFilter: "blur(20px)", background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-          <button className="md:hidden text-white/40 hover:text-white" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+          <button className="md:hidden text-white/40 hover:text-white" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Toggle sidebar">
+            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
           <div className="ml-auto flex items-center gap-3">
             <div className="glass rounded-full px-3 py-1.5 flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-xs text-white/50">AI Running</span>
             </div>
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center text-white text-sm font-bold">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-400 flex items-center justify-center text-white text-sm font-bold">
               U
             </div>
           </div>

@@ -1,13 +1,14 @@
 import Link from "next/link";
+import { Reveal } from "./motion/Reveal";
 
 export default function Footer() {
   return (
     <footer className="border-t border-white/5 py-16 px-4">
-      <div className="max-w-6xl mx-auto">
+      <Reveal className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           <div className="md:col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-400 flex items-center justify-center">
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -60,7 +61,7 @@ export default function Footer() {
           <p className="text-white/25 text-sm">© 2026 JobFinder AI. All rights reserved.</p>
           <p className="text-white/25 text-xs">One-time payment · 7-day access · 30-day money back guarantee</p>
         </div>
-      </div>
+      </Reveal>
     </footer>
   );
 }
