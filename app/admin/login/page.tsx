@@ -15,17 +15,23 @@ export default function AdminLogin() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const res = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-    setLoading(false);
-    if (!res.ok) {
-      setError("Invalid username or password.");
-      return;
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || `Login failed (status ${res.status}).`);
+        setLoading(false);
+        return;
+      }
+      router.push("/admin");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not reach the server.");
+      setLoading(false);
     }
-    router.push("/admin");
   };
 
   return (
