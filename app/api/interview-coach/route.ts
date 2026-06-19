@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
+import { getCvDataByEmail } from "@/lib/db";
 import { generateText } from "@/lib/anthropic";
 import { formatCvForPrompt } from "@/lib/cvFormat";
 
 async function loadCvText(email: string): Promise<string | null> {
-  const [row] = await query<{ data: string }>(
-    `SELECT cvs.data FROM cvs JOIN users ON users.id = cvs.user_id WHERE users.email = $1`,
-    [email]
-  );
-  if (!row) return null;
-  return formatCvForPrompt(JSON.parse(row.data));
+  const data = await getCvDataByEmail(email);
+  if (!data) return null;
+  return formatCvForPrompt(JSON.parse(data));
 }
 
 function aiError(err: unknown) {

@@ -1,94 +1,124 @@
-import { Pool } from "pg";
+import { Collection, Db, MongoClient, ObjectId } from "mongodb";
 
 declare global {
   // eslint-disable-next-line no-var
-  var __jobfinderPool: Pool | undefined;
+  var __jobfinderMongoConnect: Promise<MongoClient> | undefined;
 }
 
-function init(): Pool {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
-    throw new Error("DATABASE_URL is not set - point it at your Postgres instance.");
+const DB_NAME = "jobfinder";
+
+function init(): Promise<MongoClient> {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error("MONGODB_URI is not set - point it at your MongoDB Atlas cluster.");
   }
-
-  return new Pool({
-    connectionString,
-    ssl: process.env.PGSSL === "false" ? false : { rejectUnauthorized: false },
-  });
+  return new MongoClient(uri).connect();
 }
 
-export function getPool(): Pool {
-  if (!global.__jobfinderPool) {
-    global.__jobfinderPool = init();
+export function getClient(): Promise<MongoClient> {
+  if (!global.__jobfinderMongoConnect) {
+    global.__jobfinderMongoConnect = init();
   }
-  return global.__jobfinderPool;
+  return global.__jobfinderMongoConnect;
 }
 
-let schemaReady: Promise<void> | null = null;
+export async function getDb(): Promise<Db> {
+  const client = await getClient();
+  return client.db(DB_NAME);
+}
 
-/** Creates tables on first use. Memoized, so repeated calls after the first are free. */
-function ensureSchema(): Promise<void> {
-  if (!schemaReady) {
-    schemaReady = getPool().query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        email TEXT UNIQUE NOT NULL,
-        name TEXT,
-        password_hash TEXT,
-        created_at TEXT NOT NULL
-      );
+let indexesReady: Promise<void> | null = null;
 
-      CREATE TABLE IF NOT EXISTS cvs (
-        id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-        data TEXT NOT NULL,
-        updated_at TEXT NOT NULL
-      );
-
-      CREATE TABLE IF NOT EXISTS payments (
-        id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        amount_cents INTEGER NOT NULL,
-        currency TEXT,
-        status TEXT NOT NULL,
-        card_last4 TEXT,
-        payment_provider TEXT,
-        payment_ref TEXT,
-        created_at TEXT NOT NULL
-      );
-
-      CREATE TABLE IF NOT EXISTS applications (
-        id SERIAL PRIMARY KEY,
-        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        company TEXT NOT NULL,
-        role TEXT NOT NULL,
-        salary TEXT,
-        status TEXT NOT NULL DEFAULT 'Applied',
-        interview_at TEXT,
-        notes TEXT,
-        created_at TEXT NOT NULL
-      );
-
-      CREATE TABLE IF NOT EXISTS contact_messages (
-        id SERIAL PRIMARY KEY,
-        name TEXT,
-        email TEXT NOT NULL,
-        message TEXT NOT NULL,
-        created_at TEXT NOT NULL
-      );
-    `).then(() => undefined);
+/** Creates indexes on first use. Memoized, so repeated calls after the first are free. */
+export function ensureIndexes(): Promise<void> {
+  if (!indexesReady) {
+    indexesReady = (async () => {
+      const db = await getDb();
+      await Promise.all([
+        db.collection("users").createIndex({ email: 1 }, { unique: true }),
+        db.collection("cvs").createIndex({ userId: 1 }, { unique: true }),
+        db.collection("payments").createIndex(
+          { paymentProvider: 1, paymentRef: 1 },
+          { unique: true, partialFilterExpression: { paymentProvider: { $type: "string" }, paymentRef: { $type: "string" } } }
+        ),
+        db.collection("payments").createIndex({ userId: 1 }),
+        db.collection("applications").createIndex({ userId: 1 }),
+      ]);
+    })();
   }
-  return schemaReady;
+  return indexesReady;
 }
 
-/** Runs a parameterized query and returns its rows. Use $1, $2... placeholders. */
-export async function query<T extends object = Record<string, unknown>>(
-  sql: string,
-  params: unknown[] = []
-): Promise<T[]> {
-  await ensureSchema();
-  const result = await getPool().query(sql, params);
-  return result.rows as T[];
+interface UserDoc {
+  _id: ObjectId;
+  email: string;
+  name: string | null;
+  passwordHash: string | null;
+  createdAt: string;
+}
+
+interface CvDoc {
+  _id: ObjectId;
+  userId: ObjectId;
+  data: string;
+  updatedAt: string;
+}
+
+interface PaymentDoc {
+  _id: ObjectId;
+  userId: ObjectId;
+  amountCents: number;
+  currency: string | null;
+  status: string;
+  cardLast4: string | null;
+  paymentProvider: string | null;
+  paymentRef: string | null;
+  createdAt: string;
+}
+
+interface ApplicationDoc {
+  _id: ObjectId;
+  userId: ObjectId;
+  company: string;
+  role: string;
+  salary: string | null;
+  status: string;
+  interviewAt: string | null;
+  notes: string | null;
+  createdAt: string;
+}
+
+interface ContactMessageDoc {
+  _id: ObjectId;
+  name: string | null;
+  email: string;
+  message: string;
+  createdAt: string;
+}
+
+async function usersCollection(): Promise<Collection<UserDoc>> {
+  await ensureIndexes();
+  return (await getDb()).collection<UserDoc>("users");
+}
+
+async function cvsCollection(): Promise<Collection<CvDoc>> {
+  await ensureIndexes();
+  return (await getDb()).collection<CvDoc>("cvs");
+}
+
+async function paymentsCollection(): Promise<Collection<PaymentDoc>> {
+  await ensureIndexes();
+  return (await getDb()).collection<PaymentDoc>("payments");
+}
+
+async function applicationsCollection(): Promise<Collection<ApplicationDoc>> {
+  await ensureIndexes();
+  return (await getDb()).collection<ApplicationDoc>("applications");
+}
+
+async function contactMessagesCollection(): Promise<Collection<ContactMessageDoc>> {
+  await ensureIndexes();
+  return (await getDb()).collection<ContactMessageDoc>("contact_messages");
 }
 
 /** "YYYY-MM-DD HH:MM:SS" in UTC - matches the format the app's date-parsing code already expects everywhere. */
@@ -96,27 +126,179 @@ export function nowStamp(): string {
   return new Date().toISOString().slice(0, 19).replace("T", " ");
 }
 
+export function isValidObjectId(id: string): boolean {
+  return ObjectId.isValid(id);
+}
+
 export interface UserRow {
-  id: number;
+  id: string;
   email: string;
   name: string | null;
-  created_at: string;
+  createdAt: string;
+}
+
+export interface UserWithAuth extends UserRow {
+  passwordHash: string | null;
+}
+
+export interface PaymentRow {
+  id: string;
+  amountCents: number;
+  currency: string | null;
+  status: string;
+  cardLast4: string | null;
+  paymentProvider: string | null;
+  createdAt: string;
+}
+
+export interface ApplicationRow {
+  id: string;
+  company: string;
+  role: string;
+  salary: string | null;
+  status: string;
+  interviewAt: string | null;
+  notes: string | null;
+  createdAt: string;
+}
+
+export interface ContactMessageRow {
+  id: string;
+  name: string | null;
+  email: string;
+  message: string;
+  createdAt: string;
+}
+
+function toUserRow(doc: UserDoc): UserRow {
+  return { id: doc._id.toString(), email: doc.email, name: doc.name, createdAt: doc.createdAt };
+}
+
+function toUserWithAuth(doc: UserDoc): UserWithAuth {
+  return { ...toUserRow(doc), passwordHash: doc.passwordHash };
+}
+
+function toPaymentRow(doc: PaymentDoc): PaymentRow {
+  return {
+    id: doc._id.toString(),
+    amountCents: doc.amountCents,
+    currency: doc.currency,
+    status: doc.status,
+    cardLast4: doc.cardLast4,
+    paymentProvider: doc.paymentProvider,
+    createdAt: doc.createdAt,
+  };
+}
+
+function toApplicationRow(doc: ApplicationDoc): ApplicationRow {
+  return {
+    id: doc._id.toString(),
+    company: doc.company,
+    role: doc.role,
+    salary: doc.salary,
+    status: doc.status,
+    interviewAt: doc.interviewAt,
+    notes: doc.notes,
+    createdAt: doc.createdAt,
+  };
+}
+
+function toContactMessageRow(doc: ContactMessageDoc): ContactMessageRow {
+  return { id: doc._id.toString(), name: doc.name, email: doc.email, message: doc.message, createdAt: doc.createdAt };
 }
 
 export async function upsertUser(email: string, name?: string): Promise<UserRow> {
-  const [existing] = await query<UserRow>("SELECT * FROM users WHERE email = $1", [email]);
+  const users = await usersCollection();
+  const existing = await users.findOne({ email });
   if (existing) {
     if (name && name !== existing.name) {
-      await query("UPDATE users SET name = $1 WHERE id = $2", [name, existing.id]);
-      return { ...existing, name };
+      await users.updateOne({ _id: existing._id }, { $set: { name } });
+      return { ...toUserRow(existing), name };
     }
-    return existing;
+    return toUserRow(existing);
   }
-  const [created] = await query<UserRow>(
-    "INSERT INTO users (email, name, created_at) VALUES ($1, $2, $3) RETURNING *",
-    [email, name ?? null, nowStamp()]
+  const doc: UserDoc = { _id: new ObjectId(), email, name: name ?? null, passwordHash: null, createdAt: nowStamp() };
+  await users.insertOne(doc);
+  return toUserRow(doc);
+}
+
+export async function getUserByEmail(email: string): Promise<UserWithAuth | undefined> {
+  const users = await usersCollection();
+  const doc = await users.findOne({ email });
+  return doc ? toUserWithAuth(doc) : undefined;
+}
+
+export async function getUserById(id: string): Promise<UserRow | undefined> {
+  if (!isValidObjectId(id)) return undefined;
+  const users = await usersCollection();
+  const doc = await users.findOne({ _id: new ObjectId(id) });
+  return doc ? toUserRow(doc) : undefined;
+}
+
+export async function setUserPassword(userId: string, passwordHash: string): Promise<void> {
+  const users = await usersCollection();
+  await users.updateOne({ _id: new ObjectId(userId) }, { $set: { passwordHash } });
+}
+
+export async function deleteUserAccount(userId: string): Promise<void> {
+  if (!isValidObjectId(userId)) return;
+  const _id = new ObjectId(userId);
+  const client = await getClient();
+  const db = client.db(DB_NAME);
+  const session = client.startSession();
+  try {
+    await session.withTransaction(async () => {
+      await db.collection("cvs").deleteOne({ userId: _id }, { session });
+      await db.collection("payments").deleteMany({ userId: _id }, { session });
+      await db.collection("applications").deleteMany({ userId: _id }, { session });
+      await db.collection("users").deleteOne({ _id }, { session });
+    });
+  } finally {
+    await session.endSession();
+  }
+}
+
+export async function getLatestPayment(userId: string): Promise<{ createdAt: string } | undefined> {
+  if (!isValidObjectId(userId)) return undefined;
+  const payments = await paymentsCollection();
+  const doc = await payments.findOne(
+    { userId: new ObjectId(userId), status: "paid" },
+    { sort: { createdAt: -1 } }
   );
-  return created;
+  return doc ? { createdAt: doc.createdAt } : undefined;
+}
+
+export async function getLatestPaymentByEmail(email: string): Promise<PaymentRow | undefined> {
+  const user = await getUserByEmail(email);
+  if (!user) return undefined;
+  const payments = await paymentsCollection();
+  const doc = await payments.findOne(
+    { userId: new ObjectId(user.id), status: "paid" },
+    { sort: { createdAt: -1 } }
+  );
+  return doc ? toPaymentRow(doc) : undefined;
+}
+
+export async function getCv(userId: string): Promise<string | undefined> {
+  if (!isValidObjectId(userId)) return undefined;
+  const cvs = await cvsCollection();
+  const doc = await cvs.findOne({ userId: new ObjectId(userId) });
+  return doc?.data;
+}
+
+export async function getCvDataByEmail(email: string): Promise<string | undefined> {
+  const user = await getUserByEmail(email);
+  if (!user) return undefined;
+  return getCv(user.id);
+}
+
+export async function upsertCv(userId: string, dataJson: string): Promise<void> {
+  const cvs = await cvsCollection();
+  await cvs.updateOne(
+    { userId: new ObjectId(userId) },
+    { $set: { data: dataJson, updatedAt: nowStamp() } },
+    { upsert: true }
+  );
 }
 
 export async function recordPayment(params: {
@@ -126,64 +308,197 @@ export async function recordPayment(params: {
   provider: string;
   referenceId: string;
 }): Promise<void> {
-  const [existing] = await query(
-    "SELECT id FROM payments WHERE payment_provider = $1 AND payment_ref = $2",
-    [params.provider, params.referenceId]
-  );
+  const payments = await paymentsCollection();
+  const existing = await payments.findOne({ paymentProvider: params.provider, paymentRef: params.referenceId });
   if (existing) return;
   const user = await upsertUser(params.email);
-  await query(
-    "INSERT INTO payments (user_id, amount_cents, currency, status, payment_provider, payment_ref, created_at) VALUES ($1, $2, $3, 'paid', $4, $5, $6)",
-    [user.id, params.amountCents, params.currency, params.provider, params.referenceId, nowStamp()]
-  );
+  await payments.insertOne({
+    _id: new ObjectId(),
+    userId: new ObjectId(user.id),
+    amountCents: params.amountCents,
+    currency: params.currency,
+    status: "paid",
+    cardLast4: null,
+    paymentProvider: params.provider,
+    paymentRef: params.referenceId,
+    createdAt: nowStamp(),
+  });
 }
 
-export interface PaymentRow {
-  id: number;
-  amount_cents: number;
-  currency: string | null;
-  status: string;
-  card_last4: string | null;
-  payment_provider: string | null;
-  created_at: string;
-}
-
-/** Every paid payment, for revenue reporting — currency is null on rows recorded before multi-currency support, which were always INR. */
+/** Every paid payment, for revenue reporting - currency is null on rows recorded before multi-currency support, which were always INR. */
 export async function getPaidPayments(): Promise<PaymentRow[]> {
-  return query<PaymentRow>("SELECT * FROM payments WHERE status = 'paid'");
+  const payments = await paymentsCollection();
+  const docs = await payments.find({ status: "paid" }).toArray();
+  return docs.map(toPaymentRow);
 }
 
-export interface UserWithAuth extends UserRow {
-  password_hash: string | null;
+export async function getPaymentsByUserId(userId: string): Promise<PaymentRow[]> {
+  if (!isValidObjectId(userId)) return [];
+  const payments = await paymentsCollection();
+  const docs = await payments.find({ userId: new ObjectId(userId) }).sort({ createdAt: -1 }).toArray();
+  return docs.map(toPaymentRow);
 }
 
-export async function getUserByEmail(email: string): Promise<UserWithAuth | undefined> {
-  const [row] = await query<UserWithAuth>("SELECT * FROM users WHERE email = $1", [email]);
-  return row;
+export async function getApplicationsByEmail(email: string): Promise<ApplicationRow[]> {
+  const user = await getUserByEmail(email);
+  if (!user) return [];
+  return getApplicationsByUserId(user.id);
 }
 
-export async function getUserById(id: number): Promise<UserRow | undefined> {
-  const [row] = await query<UserRow>("SELECT * FROM users WHERE id = $1", [id]);
-  return row;
+export async function getApplicationsByUserId(userId: string): Promise<ApplicationRow[]> {
+  if (!isValidObjectId(userId)) return [];
+  const applications = await applicationsCollection();
+  const docs = await applications.find({ userId: new ObjectId(userId) }).sort({ createdAt: -1 }).toArray();
+  return docs.map(toApplicationRow);
 }
 
-export async function setUserPassword(userId: number, passwordHash: string): Promise<void> {
-  await query("UPDATE users SET password_hash = $1 WHERE id = $2", [passwordHash, userId]);
+export async function createApplication(params: {
+  userId: string;
+  company: string;
+  role: string;
+  salary?: string | null;
+  status?: string;
+}): Promise<{ id: string }> {
+  const applications = await applicationsCollection();
+  const doc: ApplicationDoc = {
+    _id: new ObjectId(),
+    userId: new ObjectId(params.userId),
+    company: params.company,
+    role: params.role,
+    salary: params.salary ?? null,
+    status: params.status ?? "Applied",
+    interviewAt: null,
+    notes: null,
+    createdAt: nowStamp(),
+  };
+  await applications.insertOne(doc);
+  return { id: doc._id.toString() };
 }
 
-export async function deleteUserAccount(userId: number): Promise<void> {
-  await query("DELETE FROM users WHERE id = $1", [userId]);
+export async function updateApplication(
+  id: string,
+  patch: { status?: string; interviewAt?: string | null; notes?: string | null }
+): Promise<void> {
+  if (!isValidObjectId(id)) return;
+  const set: Record<string, unknown> = {};
+  if (patch.status !== undefined) set.status = patch.status;
+  if (patch.interviewAt !== undefined) set.interviewAt = patch.interviewAt;
+  if (patch.notes !== undefined) set.notes = patch.notes;
+  if (Object.keys(set).length === 0) return;
+  const applications = await applicationsCollection();
+  await applications.updateOne({ _id: new ObjectId(id) }, { $set: set });
 }
 
-export async function getLatestPayment(userId: number): Promise<{ created_at: string } | undefined> {
-  const [row] = await query<{ created_at: string }>(
-    "SELECT created_at FROM payments WHERE user_id = $1 AND status = 'paid' ORDER BY created_at DESC LIMIT 1",
-    [userId]
-  );
-  return row;
+export async function createContactMessage(params: { name?: string | null; email: string; message: string }): Promise<void> {
+  const contactMessages = await contactMessagesCollection();
+  await contactMessages.insertOne({
+    _id: new ObjectId(),
+    name: params.name ?? null,
+    email: params.email,
+    message: params.message,
+    createdAt: nowStamp(),
+  });
 }
 
-export async function getCv(userId: number): Promise<string | undefined> {
-  const [row] = await query<{ data: string }>("SELECT data FROM cvs WHERE user_id = $1", [userId]);
-  return row?.data;
+export async function getContactMessages(): Promise<ContactMessageRow[]> {
+  const contactMessages = await contactMessagesCollection();
+  const docs = await contactMessages.find().sort({ createdAt: -1 }).toArray();
+  return docs.map(toContactMessageRow);
+}
+
+export interface AdminStats {
+  totalUsers: number;
+  totalCvs: number;
+  totalApplications: number;
+  paidCount: number;
+  revenueCents: number;
+  recentUsers: UserRow[];
+}
+
+export async function getAdminStats(recentLimit: number): Promise<AdminStats> {
+  const db = await getDb();
+  await ensureIndexes();
+  const [totalUsers, totalCvs, totalApplications, paidCount, revenue, recentDocs] = await Promise.all([
+    db.collection<UserDoc>("users").countDocuments(),
+    db.collection<CvDoc>("cvs").countDocuments(),
+    db.collection<ApplicationDoc>("applications").countDocuments(),
+    db.collection<PaymentDoc>("payments").countDocuments({ status: "paid" }),
+    db
+      .collection<PaymentDoc>("payments")
+      .aggregate<{ total: number }>([{ $match: { status: "paid" } }, { $group: { _id: null, total: { $sum: "$amountCents" } } }])
+      .toArray(),
+    db.collection<UserDoc>("users").find().sort({ createdAt: -1 }).limit(recentLimit).toArray(),
+  ]);
+  return {
+    totalUsers,
+    totalCvs,
+    totalApplications,
+    paidCount,
+    revenueCents: revenue[0]?.total ?? 0,
+    recentUsers: recentDocs.map(toUserRow),
+  };
+}
+
+export interface AdminUserListRow extends UserRow {
+  hasCv: boolean;
+  paidCount: number;
+  applicationCount: number;
+}
+
+export async function getAdminUserList(): Promise<AdminUserListRow[]> {
+  const db = await getDb();
+  await ensureIndexes();
+  const users = await db.collection<UserDoc>("users").find().sort({ createdAt: -1 }).toArray();
+  const userIds = users.map((u) => u._id);
+
+  const [cvUserIds, paidCounts, applicationCounts] = await Promise.all([
+    db.collection<CvDoc>("cvs").find({ userId: { $in: userIds } }).map((d) => d.userId.toString()).toArray(),
+    db
+      .collection<PaymentDoc>("payments")
+      .aggregate<{ _id: ObjectId; count: number }>([
+        { $match: { userId: { $in: userIds }, status: "paid" } },
+        { $group: { _id: "$userId", count: { $sum: 1 } } },
+      ])
+      .toArray(),
+    db
+      .collection<ApplicationDoc>("applications")
+      .aggregate<{ _id: ObjectId; count: number }>([
+        { $match: { userId: { $in: userIds } } },
+        { $group: { _id: "$userId", count: { $sum: 1 } } },
+      ])
+      .toArray(),
+  ]);
+
+  const cvUserIdSet = new Set(cvUserIds);
+  const paidCountMap = new Map(paidCounts.map((p) => [p._id.toString(), p.count]));
+  const applicationCountMap = new Map(applicationCounts.map((a) => [a._id.toString(), a.count]));
+
+  return users.map((u) => {
+    const id = u._id.toString();
+    return {
+      ...toUserRow(u),
+      hasCv: cvUserIdSet.has(id),
+      paidCount: paidCountMap.get(id) ?? 0,
+      applicationCount: applicationCountMap.get(id) ?? 0,
+    };
+  });
+}
+
+export interface AdminUserDetail {
+  user: UserRow;
+  cv: string | null;
+  payments: PaymentRow[];
+  applications: ApplicationRow[];
+}
+
+export async function getAdminUserDetail(userId: string): Promise<AdminUserDetail | undefined> {
+  if (!isValidObjectId(userId)) return undefined;
+  const user = await getUserById(userId);
+  if (!user) return undefined;
+  const [cv, payments, applications] = await Promise.all([
+    getCv(userId),
+    getPaymentsByUserId(userId),
+    getApplicationsByUserId(userId),
+  ]);
+  return { user, cv: cv ?? null, payments, applications };
 }

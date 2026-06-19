@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
+import { getCvDataByEmail } from "@/lib/db";
 import { fetchAllJobs } from "@/lib/jobSources";
 import { rankJobs, type CVProfile } from "@/lib/matching";
 import { analyzeSalary } from "@/lib/salary";
@@ -29,13 +29,10 @@ export async function GET(req: NextRequest) {
   const currency = (req.nextUrl.searchParams.get("currency") || "USD").toUpperCase();
   if (!email) return NextResponse.json({ error: "email is required" }, { status: 400 });
 
-  const [row] = await query<{ data: string }>(
-    `SELECT cvs.data FROM cvs JOIN users ON users.id = cvs.user_id WHERE users.email = $1`,
-    [email]
-  );
-  if (!row) return NextResponse.json({ error: "No CV found for this account yet." }, { status: 404 });
+  const data = await getCvDataByEmail(email);
+  if (!data) return NextResponse.json({ error: "No CV found for this account yet." }, { status: 404 });
 
-  const cv = JSON.parse(row.data) as CVProfile;
+  const cv = JSON.parse(data) as CVProfile;
 
   let jobs;
   try {

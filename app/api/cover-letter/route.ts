@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query } from "@/lib/db";
+import { getCvDataByEmail } from "@/lib/db";
 import { generateText } from "@/lib/anthropic";
 import { formatCvForPrompt } from "@/lib/cvFormat";
 
@@ -10,13 +10,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "email, company and role are required" }, { status: 400 });
   }
 
-  const [row] = await query<{ data: string }>(
-    `SELECT cvs.data FROM cvs JOIN users ON users.id = cvs.user_id WHERE users.email = $1`,
-    [email]
-  );
-  if (!row) return NextResponse.json({ error: "No CV found for this account yet." }, { status: 404 });
+  const data = await getCvDataByEmail(email);
+  if (!data) return NextResponse.json({ error: "No CV found for this account yet." }, { status: 404 });
 
-  const cv = JSON.parse(row.data);
+  const cv = JSON.parse(data);
   const cvText = formatCvForPrompt(cv);
 
   let letter: string;

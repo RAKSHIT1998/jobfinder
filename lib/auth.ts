@@ -25,13 +25,13 @@ export function verifyPassword(password: string, stored: string): boolean {
   return crypto.timingSafeEqual(hashBuffer, candidateBuffer);
 }
 
-export function createSessionToken(userId: number): string {
+export function createSessionToken(userId: string): string {
   const payload = `${userId}:${Date.now() + MAX_AGE_SECONDS * 1000}`;
   const sig = sign(payload);
   return `${Buffer.from(payload).toString("base64url")}.${sig}`;
 }
 
-export function verifySessionToken(token: string | undefined | null): number | null {
+export function verifySessionToken(token: string | undefined | null): string | null {
   if (!token) return null;
   const [encodedPayload, sig] = token.split(".");
   if (!encodedPayload || !sig) return null;
@@ -45,13 +45,12 @@ export function verifySessionToken(token: string | undefined | null): number | n
   if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) return null;
   const [userIdStr, expiryStr] = payload.split(":");
   const expiry = Number(expiryStr);
-  const userId = Number(userIdStr);
   if (!Number.isFinite(expiry) || Date.now() >= expiry) return null;
-  if (!Number.isFinite(userId)) return null;
-  return userId;
+  if (!userIdStr) return null;
+  return userIdStr;
 }
 
-export async function setSessionCookie(userId: number): Promise<void> {
+export async function setSessionCookie(userId: string): Promise<void> {
   const store = await cookies();
   store.set(SESSION_COOKIE, createSessionToken(userId), {
     httpOnly: true,
@@ -66,7 +65,7 @@ export async function clearSessionCookie(): Promise<void> {
   store.delete(SESSION_COOKIE);
 }
 
-export async function getCurrentUserId(): Promise<number | null> {
+export async function getCurrentUserId(): Promise<string | null> {
   const store = await cookies();
   return verifySessionToken(store.get(SESSION_COOKIE)?.value);
 }
