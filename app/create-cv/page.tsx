@@ -295,7 +295,7 @@ export default function CreateCV() {
         </div>
 
         {/* Card */}
-        <div className="glass-strong rounded-3xl p-8 overflow-hidden">
+        <div className="glass-strong rounded-3xl p-5 sm:p-8 overflow-hidden">
           <div key={step} className="animate-step-in">
           {/* Step 1: Personal Info */}
           {step === 1 && (
@@ -369,7 +369,7 @@ export default function CreateCV() {
                       )}
                     </div>
                     <div className="space-y-3">
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                           <label className={labelClass}>Company</label>
                           <input className={inputClass} placeholder="Google" value={exp.company} onChange={(e) => updateWorkExp(idx, "company", e.target.value)} />
@@ -379,7 +379,7 @@ export default function CreateCV() {
                           <input className={inputClass} placeholder="Software Engineer" value={exp.role} onChange={(e) => updateWorkExp(idx, "role", e.target.value)} />
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                           <label className={labelClass}>Start Date</label>
                           <input className={inputClass} placeholder="Jan 2022" value={exp.startDate} onChange={(e) => updateWorkExp(idx, "startDate", e.target.value)} />
@@ -436,7 +436,7 @@ export default function CreateCV() {
                         <label className={labelClass}>Degree / Certificate</label>
                         <input className={inputClass} placeholder="B.S. Computer Science" value={edu.degree} onChange={(e) => updateEducation(idx, "degree", e.target.value)} />
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                           <label className={labelClass}>School / University</label>
                           <input className={inputClass} placeholder="MIT" value={edu.school} onChange={(e) => updateEducation(idx, "school", e.target.value)} />
@@ -568,7 +568,7 @@ export default function CreateCV() {
                       ))}
                     </select>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <input
                         className={inputClass}

@@ -29,8 +29,8 @@ export default async function AdminUsers() {
         <p className="text-white/40 text-sm mt-1">{users.length} registered user{users.length === 1 ? "" : "s"}.</p>
       </div>
 
-      <div className="glass rounded-2xl overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="glass rounded-2xl overflow-x-auto">
+        <table className="w-full text-sm min-w-[640px]">
           <thead>
             <tr className="border-b border-white/5 text-white/30 text-xs uppercase tracking-wider">
               <th className="text-left px-5 py-3 font-semibold">Name</th>

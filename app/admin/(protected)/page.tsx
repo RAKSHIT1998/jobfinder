@@ -67,12 +67,12 @@ export default async function AdminOverview() {
         ) : (
           <div className="space-y-2">
             {recentUsers.map((u) => (
-              <div key={u.id} className="glass rounded-xl p-3 flex items-center justify-between">
-                <div>
-                  <div className="text-white/80 text-sm font-semibold">{u.name || "—"}</div>
-                  <div className="text-white/30 text-xs">{u.email}</div>
+              <div key={u.id} className="glass rounded-xl p-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-white/80 text-sm font-semibold truncate">{u.name || "—"}</div>
+                  <div className="text-white/30 text-xs truncate">{u.email}</div>
                 </div>
-                <div className="text-white/25 text-xs">{u.created_at}</div>
+                <div className="text-white/25 text-xs shrink-0">{u.created_at}</div>
               </div>
             ))}
           </div>
