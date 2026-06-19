@@ -19,16 +19,18 @@ body {
   min-height: 100vh;
 }
 
-/* Liquid Glass System */
+/* Liquid Glass System - blur radius kept modest (vs. the 40-60px originally used)
+   since backdrop-filter is one of the more expensive properties to composite,
+   and this app stacks dozens of .glass elements per page. */
 .glass {
-  backdrop-filter: blur(40px) saturate(180%);
+  backdrop-filter: blur(18px) saturate(160%);
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .glass-strong {
-  backdrop-filter: blur(60px) saturate(200%);
+  backdrop-filter: blur(26px) saturate(180%);
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);

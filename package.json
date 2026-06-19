@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "migrate:mongo": "tsx scripts/migrate-to-mongo.ts"
+    "migrate:mongo": "tsx scripts/migrate-to-mongo.ts",
+    "seed:test-user": "tsx scripts/seed-test-user.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.2",
