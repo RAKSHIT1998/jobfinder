@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query, nowStamp } from "@/lib/db";
+import { createContactMessage, getContactMessages } from "@/lib/db";
 import { isAdminAuthed } from "@/lib/adminAuth";
 
 export async function POST(req: NextRequest) {
@@ -8,12 +8,7 @@ export async function POST(req: NextRequest) {
   if (!email || !message) {
     return NextResponse.json({ error: "email and message are required" }, { status: 400 });
   }
-  await query("INSERT INTO contact_messages (name, email, message, created_at) VALUES ($1, $2, $3, $4)", [
-    name || null,
-    email,
-    message,
-    nowStamp(),
-  ]);
+  await createContactMessage({ name: name || null, email, message });
   return NextResponse.json({ ok: true });
 }
 
@@ -21,6 +16,6 @@ export async function GET() {
   if (!(await isAdminAuthed())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const messages = await query("SELECT * FROM contact_messages ORDER BY created_at DESC");
+  const messages = await getContactMessages();
   return NextResponse.json({ messages });
 }

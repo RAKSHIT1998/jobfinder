@@ -1,4 +1,4 @@
-import { query, getPaidPayments } from "@/lib/db";
+import { getAdminStats, getPaidPayments } from "@/lib/db";
 import { convertCurrency } from "@/lib/exchangeRates";
 
 async function getRevenueUsd(): Promise<number> {
@@ -19,17 +19,10 @@ async function getRevenueUsd(): Promise<number> {
 }
 
 export default async function AdminOverview() {
-  const [[{ c: totalUsers }], [{ c: totalCvs }], [{ c: totalPayments }], revenueUsd, [{ c: totalApplications }], recentUsers] =
-    await Promise.all([
-      query<{ c: number }>("SELECT COUNT(*)::int AS c FROM users"),
-      query<{ c: number }>("SELECT COUNT(*)::int AS c FROM cvs"),
-      query<{ c: number }>("SELECT COUNT(*)::int AS c FROM payments WHERE status = 'paid'"),
-      getRevenueUsd(),
-      query<{ c: number }>("SELECT COUNT(*)::int AS c FROM applications"),
-      query<{ id: number; email: string; name: string | null; created_at: string }>(
-        "SELECT id, email, name, created_at FROM users ORDER BY created_at DESC LIMIT 8"
-      ),
-    ]);
+  const [{ totalUsers, totalCvs, totalPayments, totalApplications, recentUsers }, revenueUsd] = await Promise.all([
+    getAdminStats(8),
+    getRevenueUsd(),
+  ]);
 
   const conversionRate = totalUsers > 0 ? Math.round((totalPayments / totalUsers) * 100) : 0;
 

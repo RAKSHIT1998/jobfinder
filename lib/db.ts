@@ -130,25 +130,28 @@ export function isValidObjectId(id: string): boolean {
   return ObjectId.isValid(id);
 }
 
+// Public row shapes mirror the original Postgres column names (snake_case) so
+// every existing consumer keeps working unchanged except for `id` becoming a string.
+
 export interface UserRow {
   id: string;
   email: string;
   name: string | null;
-  createdAt: string;
+  created_at: string;
 }
 
 export interface UserWithAuth extends UserRow {
-  passwordHash: string | null;
+  password_hash: string | null;
 }
 
 export interface PaymentRow {
   id: string;
-  amountCents: number;
+  amount_cents: number;
   currency: string | null;
   status: string;
-  cardLast4: string | null;
-  paymentProvider: string | null;
-  createdAt: string;
+  card_last4: string | null;
+  payment_provider: string | null;
+  created_at: string;
 }
 
 export interface ApplicationRow {
@@ -157,9 +160,9 @@ export interface ApplicationRow {
   role: string;
   salary: string | null;
   status: string;
-  interviewAt: string | null;
+  interview_at: string | null;
   notes: string | null;
-  createdAt: string;
+  created_at: string;
 }
 
 export interface ContactMessageRow {
@@ -167,26 +170,26 @@ export interface ContactMessageRow {
   name: string | null;
   email: string;
   message: string;
-  createdAt: string;
+  created_at: string;
 }
 
 function toUserRow(doc: UserDoc): UserRow {
-  return { id: doc._id.toString(), email: doc.email, name: doc.name, createdAt: doc.createdAt };
+  return { id: doc._id.toString(), email: doc.email, name: doc.name, created_at: doc.createdAt };
 }
 
 function toUserWithAuth(doc: UserDoc): UserWithAuth {
-  return { ...toUserRow(doc), passwordHash: doc.passwordHash };
+  return { ...toUserRow(doc), password_hash: doc.passwordHash };
 }
 
 function toPaymentRow(doc: PaymentDoc): PaymentRow {
   return {
     id: doc._id.toString(),
-    amountCents: doc.amountCents,
+    amount_cents: doc.amountCents,
     currency: doc.currency,
     status: doc.status,
-    cardLast4: doc.cardLast4,
-    paymentProvider: doc.paymentProvider,
-    createdAt: doc.createdAt,
+    card_last4: doc.cardLast4,
+    payment_provider: doc.paymentProvider,
+    created_at: doc.createdAt,
   };
 }
 
@@ -197,14 +200,14 @@ function toApplicationRow(doc: ApplicationDoc): ApplicationRow {
     role: doc.role,
     salary: doc.salary,
     status: doc.status,
-    interviewAt: doc.interviewAt,
+    interview_at: doc.interviewAt,
     notes: doc.notes,
-    createdAt: doc.createdAt,
+    created_at: doc.createdAt,
   };
 }
 
 function toContactMessageRow(doc: ContactMessageDoc): ContactMessageRow {
-  return { id: doc._id.toString(), name: doc.name, email: doc.email, message: doc.message, createdAt: doc.createdAt };
+  return { id: doc._id.toString(), name: doc.name, email: doc.email, message: doc.message, created_at: doc.createdAt };
 }
 
 export async function upsertUser(email: string, name?: string): Promise<UserRow> {
@@ -258,14 +261,14 @@ export async function deleteUserAccount(userId: string): Promise<void> {
   }
 }
 
-export async function getLatestPayment(userId: string): Promise<{ createdAt: string } | undefined> {
+export async function getLatestPayment(userId: string): Promise<{ created_at: string } | undefined> {
   if (!isValidObjectId(userId)) return undefined;
   const payments = await paymentsCollection();
   const doc = await payments.findOne(
     { userId: new ObjectId(userId), status: "paid" },
     { sort: { createdAt: -1 } }
   );
-  return doc ? { createdAt: doc.createdAt } : undefined;
+  return doc ? { created_at: doc.createdAt } : undefined;
 }
 
 export async function getLatestPaymentByEmail(email: string): Promise<PaymentRow | undefined> {
@@ -409,8 +412,8 @@ export async function getContactMessages(): Promise<ContactMessageRow[]> {
 export interface AdminStats {
   totalUsers: number;
   totalCvs: number;
+  totalPayments: number;
   totalApplications: number;
-  paidCount: number;
   revenueCents: number;
   recentUsers: UserRow[];
 }
@@ -418,7 +421,7 @@ export interface AdminStats {
 export async function getAdminStats(recentLimit: number): Promise<AdminStats> {
   const db = await getDb();
   await ensureIndexes();
-  const [totalUsers, totalCvs, totalApplications, paidCount, revenue, recentDocs] = await Promise.all([
+  const [totalUsers, totalCvs, totalApplications, totalPayments, revenue, recentDocs] = await Promise.all([
     db.collection<UserDoc>("users").countDocuments(),
     db.collection<CvDoc>("cvs").countDocuments(),
     db.collection<ApplicationDoc>("applications").countDocuments(),
@@ -433,16 +436,16 @@ export async function getAdminStats(recentLimit: number): Promise<AdminStats> {
     totalUsers,
     totalCvs,
     totalApplications,
-    paidCount,
+    totalPayments,
     revenueCents: revenue[0]?.total ?? 0,
     recentUsers: recentDocs.map(toUserRow),
   };
 }
 
 export interface AdminUserListRow extends UserRow {
-  hasCv: boolean;
-  paidCount: number;
-  applicationCount: number;
+  has_cv: boolean;
+  paid_count: number;
+  application_count: number;
 }
 
 export async function getAdminUserList(): Promise<AdminUserListRow[]> {
@@ -477,9 +480,9 @@ export async function getAdminUserList(): Promise<AdminUserListRow[]> {
     const id = u._id.toString();
     return {
       ...toUserRow(u),
-      hasCv: cvUserIdSet.has(id),
-      paidCount: paidCountMap.get(id) ?? 0,
-      applicationCount: applicationCountMap.get(id) ?? 0,
+      has_cv: cvUserIdSet.has(id),
+      paid_count: paidCountMap.get(id) ?? 0,
+      application_count: applicationCountMap.get(id) ?? 0,
     };
   });
 }

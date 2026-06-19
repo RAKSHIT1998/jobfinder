@@ -1,26 +1,8 @@
 import Link from "next/link";
-import { query } from "@/lib/db";
-
-interface UserListRow {
-  id: number;
-  email: string;
-  name: string | null;
-  created_at: string;
-  has_cv: number;
-  paid_count: number;
-  application_count: number;
-}
+import { getAdminUserList } from "@/lib/db";
 
 export default async function AdminUsers() {
-  const users = await query<UserListRow>(
-    `SELECT
-       users.id, users.email, users.name, users.created_at,
-       (SELECT COUNT(*) FROM cvs WHERE cvs.user_id = users.id)::int AS has_cv,
-       (SELECT COUNT(*) FROM payments WHERE payments.user_id = users.id AND payments.status = 'paid')::int AS paid_count,
-       (SELECT COUNT(*) FROM applications WHERE applications.user_id = users.id)::int AS application_count
-     FROM users
-     ORDER BY users.created_at DESC`
-  );
+  const users = await getAdminUserList();
 
   return (
     <div className="space-y-6 max-w-5xl">

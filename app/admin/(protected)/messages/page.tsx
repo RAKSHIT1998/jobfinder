@@ -1,15 +1,7 @@
-import { query } from "@/lib/db";
-
-interface ContactMessage {
-  id: number;
-  name: string | null;
-  email: string;
-  message: string;
-  created_at: string;
-}
+import { getContactMessages } from "@/lib/db";
 
 export default async function AdminMessages() {
-  const messages = await query<ContactMessage>("SELECT * FROM contact_messages ORDER BY created_at DESC");
+  const messages = await getContactMessages();
 
   return (
     <div className="space-y-6 max-w-3xl">

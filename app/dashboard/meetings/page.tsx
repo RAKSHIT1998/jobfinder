@@ -5,7 +5,7 @@ import Link from "next/link";
 import { buildInterviewIcs } from "@/lib/ics";
 
 interface Application {
-  id: number;
+  id: string;
   company: string;
   role: string;
   status: string;
@@ -26,7 +26,7 @@ export default function InterviewPrep() {
   const [email, setEmail] = useState<string | null>(null);
   const [apps, setApps] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
-  const [drafts, setDrafts] = useState<Record<number, { when: string; notes: string }>>({});
+  const [drafts, setDrafts] = useState<Record<string, { when: string; notes: string }>>({});
 
   const load = useCallback((userEmail: string) => {
     fetch(`/api/applications?email=${encodeURIComponent(userEmail)}`)
@@ -58,7 +58,7 @@ export default function InterviewPrep() {
     else setLoading(false);
   }, [load]);
 
-  const save = async (id: number) => {
+  const save = async (id: string) => {
     const draft = drafts[id];
     await fetch("/api/applications", {
       method: "PATCH",

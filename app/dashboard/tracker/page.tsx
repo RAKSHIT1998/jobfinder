@@ -6,7 +6,7 @@ import Link from "next/link";
 type Status = "Applied" | "Interview" | "Offer" | "Rejected";
 
 interface Application {
-  id: number;
+  id: string;
   company: string;
   role: string;
   salary: string | null;
@@ -65,7 +65,7 @@ export default function Tracker() {
     else setLoading(false);
   }, [load]);
 
-  const move = async (id: number, newStatus: Status) => {
+  const move = async (id: string, newStatus: Status) => {
     setApps((prev) => prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a)));
     await fetch("/api/applications", {
       method: "PATCH",

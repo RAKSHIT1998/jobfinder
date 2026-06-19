@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { query } from "@/lib/db";
+import { getAdminUserDetail, isValidObjectId } from "@/lib/db";
 import { formatCurrency } from "@/lib/currency";
 import DeleteUserButton from "./DeleteUserButton";
 
@@ -20,22 +20,13 @@ interface CVData {
 
 export default async function AdminUserDetail({ params }: PageProps) {
   const { id } = await params;
-  const [user] = await query<{ id: number; email: string; name: string | null; created_at: string }>(
-    "SELECT * FROM users WHERE id = $1",
-    [id]
-  );
-  if (!user) notFound();
+  if (!isValidObjectId(id)) notFound();
 
-  const [cvRow] = await query<{ data: string }>("SELECT data FROM cvs WHERE user_id = $1", [id]);
-  const cv: CVData | null = cvRow ? JSON.parse(cvRow.data) : null;
-  const payments = await query<{ id: number; amount_cents: number; currency: string | null; status: string; card_last4: string | null; created_at: string }>(
-    "SELECT * FROM payments WHERE user_id = $1 ORDER BY created_at DESC",
-    [id]
-  );
-  const applications = await query<{ id: number; company: string; role: string; status: string; created_at: string }>(
-    "SELECT * FROM applications WHERE user_id = $1 ORDER BY created_at DESC",
-    [id]
-  );
+  const detail = await getAdminUserDetail(id);
+  if (!detail) notFound();
+
+  const { user, payments, applications } = detail;
+  const cv: CVData | null = detail.cv ? JSON.parse(detail.cv) : null;
 
   return (
     <div className="space-y-6 max-w-4xl">

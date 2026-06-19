@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query, upsertUser, getUserByEmail, setUserPassword, nowStamp } from "@/lib/db";
+import { upsertUser, getUserByEmail, setUserPassword, upsertCv, getCvDataByEmail } from "@/lib/db";
 import { hashPassword, setSessionCookie } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
@@ -19,13 +19,8 @@ export async function POST(req: NextRequest) {
     await setSessionCookie(user.id);
   }
 
-  const [existing] = await query<{ id: number }>("SELECT id FROM cvs WHERE user_id = $1", [user.id]);
   const cvJson = JSON.stringify({ email, name, ...cvFields });
-  if (existing) {
-    await query("UPDATE cvs SET data = $1, updated_at = $2 WHERE user_id = $3", [cvJson, nowStamp(), user.id]);
-  } else {
-    await query("INSERT INTO cvs (user_id, data, updated_at) VALUES ($1, $2, $3)", [user.id, cvJson, nowStamp()]);
-  }
+  await upsertCv(user.id, cvJson);
 
   return NextResponse.json({ ok: true });
 }
@@ -35,11 +30,8 @@ export async function GET(req: NextRequest) {
   if (!email) {
     return NextResponse.json({ error: "email is required" }, { status: 400 });
   }
-  const [row] = await query<{ data: string }>(
-    `SELECT cvs.data FROM cvs JOIN users ON users.id = cvs.user_id WHERE users.email = $1`,
-    [email]
-  );
+  const data = await getCvDataByEmail(email);
 
-  if (!row) return NextResponse.json({ cv: null });
-  return NextResponse.json({ cv: JSON.parse(row.data) });
+  if (!data) return NextResponse.json({ cv: null });
+  return NextResponse.json({ cv: JSON.parse(data) });
 }
