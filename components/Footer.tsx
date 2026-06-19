@@ -15,7 +15,7 @@ export default function Footer() {
               <span className="font-bold text-white text-lg">JobFinder<span className="gradient-text">AI</span></span>
             </div>
             <p className="text-white/40 text-sm leading-relaxed max-w-xs">
-              Real live job matching, application tracking, and AI-assisted prep — built on real data, not a demo.
+              We match your CV to real, live job postings and work to get you the highest offer you qualify for — not a marketplace, your AI career agent.
             </p>
             <div className="flex items-center gap-2 mt-4">
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />

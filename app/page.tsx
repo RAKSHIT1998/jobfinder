@@ -60,17 +60,17 @@ export default async function Home() {
             <span className="text-white">Your AI </span>
             <span className="gradient-text">Career Agent</span>
             <br />
-            <span className="text-white/80 text-5xl sm:text-6xl lg:text-7xl font-black">Finds Real Jobs</span>
+            <span className="text-white/80 text-5xl sm:text-6xl lg:text-7xl font-black">Maximizes Your Salary</span>
           </h1>
 
           <p className="text-xl text-white/40 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Build your CV once. We scan live postings from multiple real job sources, score them against your
-            actual skills, and help you track every application - no fabricated results.
+            Build your CV once. We match it against live postings from multiple real job sources to find the
+            roles that fit your skills and pay the most - then back you with the tools to land the highest offer.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link href="/create-cv" className="btn-primary text-base font-bold px-8 py-4 rounded-2xl inline-block">
-              Start Finding Jobs - <PriceTag />/week
+              Match My CV to Top-Paying Jobs
             </Link>
             <Link href="#how-it-works" className="btn-glass text-base font-semibold px-8 py-4 rounded-2xl inline-block">
               See How It Works
@@ -81,7 +81,7 @@ export default async function Home() {
             {[
               { val: jobCount !== null ? String(jobCount) : "-", label: "Live postings right now" },
               { val: String(sourceCount), label: "Real job sources" },
-              { val: null, label: "Per week" },
+              { val: null, label: "Flat weekly price" },
             ].map((s) => (
               <div key={s.label} className="glass rounded-2xl px-5 py-3 text-center">
                 <div className="text-2xl font-black gradient-text">{s.val ?? <PriceTag />}</div>
@@ -119,8 +119,8 @@ export default async function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <p className="text-cyan-400 font-semibold text-sm mb-3 tracking-widest uppercase">Features</p>
-            <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">Everything to get you hired</h2>
-            <p className="text-white/40 text-lg">8 AI-powered tools for <PriceTag />/week.</p>
+            <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">Everything to get you hired at the right price</h2>
+            <p className="text-white/40 text-lg">8 AI-powered tools working toward one goal: matching your CV to the offer that pays you the most.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -196,11 +196,12 @@ export default async function Home() {
           <div className="glass-strong rounded-3xl p-12 relative overflow-hidden">
             <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ background: "radial-gradient(circle at 50% 0%, #7c3aed, transparent 70%)" }} />
             <h2 className="text-4xl sm:text-5xl font-black text-white mb-4 relative">
-              Stop job hunting.<br />
-              <span className="gradient-text">Let AI do it.</span>
+              Stop settling for less.<br />
+              <span className="gradient-text">Let AI get you paid more.</span>
             </h2>
             <p className="text-white/40 text-lg mb-8 relative">
-              One payment. 7 days of full access. Your AI career agent starts working in minutes.
+              One payment. 7 days of full access. Your AI career agent starts matching your CV to the
+              highest-paying fits within minutes.
             </p>
             <Link href="/create-cv" className="btn-primary inline-block text-lg font-bold px-10 py-4 rounded-2xl relative">
               Build Your CV - Get 7 Days for <PriceTag />
