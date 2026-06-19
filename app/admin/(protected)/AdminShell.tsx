@@ -3,12 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { BarChart3, Users, Mail, X, Menu } from "lucide-react";
 import LogoutButton from "./LogoutButton";
 
 const navItems = [
-  { href: "/admin", label: "Overview", icon: "📊" },
-  { href: "/admin/users", label: "Users", icon: "👤" },
-  { href: "/admin/messages", label: "Messages", icon: "✉️" },
+  { href: "/admin", label: "Overview", Icon: BarChart3 },
+  { href: "/admin/users", label: "Users", Icon: Users },
+  { href: "/admin/messages", label: "Messages", Icon: Mail },
 ];
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
@@ -18,7 +20,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const nav = (
     <>
       <div className="flex items-center gap-2.5 mb-6 px-1">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-400 flex items-center justify-center">
           <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
@@ -34,14 +36,19 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${
-                isActive
-                  ? "bg-violet-500/20 text-violet-200 border border-violet-500/30"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
+              className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
+                isActive ? "text-violet-200" : "text-white/60 hover:text-white hover:bg-white/5"
               } font-semibold`}
             >
-              <span>{item.icon}</span>
-              {item.label}
+              {isActive && (
+                <motion.span
+                  layoutId="admin-active-pill"
+                  className="absolute inset-0 rounded-xl bg-violet-500/20 border border-violet-500/30"
+                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                />
+              )}
+              <item.Icon className="w-4 h-4 relative z-10" strokeWidth={2} />
+              <span className="relative z-10">{item.label}</span>
             </Link>
           );
         })}

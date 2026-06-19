@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { HeroEntrance, TapScale } from "@/components/motion/HeroEntrance";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -30,13 +31,13 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative" style={{ background: "#050508" }}>
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="animate-blob absolute top-1/3 left-1/4 w-80 h-80 rounded-full opacity-15" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(80px)" }} />
-        <div className="animate-blob animation-delay-2000 absolute bottom-1/3 right-1/4 w-72 h-72 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #db2777, transparent)", filter: "blur(80px)" }} />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[460px] h-[460px] rounded-full opacity-[0.13]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
       </div>
 
+      <HeroEntrance>
       <form onSubmit={handleSubmit} className="glass-strong rounded-3xl p-8 w-full max-w-sm relative">
         <div className="flex items-center gap-2.5 mb-6">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-400 flex items-center justify-center">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
@@ -72,14 +73,17 @@ export default function AdminLogin() {
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={loading || !username || !password}
-          className="btn-primary w-full py-3.5 rounded-2xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed mt-6"
-        >
-          {loading ? "Signing in..." : "Sign In"}
-        </button>
+        <TapScale className="block mt-6">
+          <button
+            type="submit"
+            disabled={loading || !username || !password}
+            className="btn-primary w-full py-3.5 rounded-2xl text-sm font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
+        </TapScale>
       </form>
+      </HeroEntrance>
     </div>
   );
 }
