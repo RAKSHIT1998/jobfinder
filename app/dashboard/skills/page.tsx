@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 
 interface SkillGap {
   skill: string;
@@ -73,72 +75,80 @@ export default function Skills() {
       )}
 
       {!loading && data && data.analyzedCount > 0 && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="glass rounded-2xl p-6 flex flex-col items-center text-center">
-            <h3 className="text-white/60 text-sm font-semibold mb-4">Skill Coverage</h3>
-            <div className="relative w-32 h-32">
-              <svg className="w-32 h-32 -rotate-90" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="10" />
-                <circle
-                  cx="60" cy="60" r="54"
-                  fill="none"
-                  stroke="url(#grad)"
-                  strokeWidth="10"
-                  strokeLinecap="round"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={offset}
-                  style={{ transition: "stroke-dashoffset 1s ease" }}
-                />
-                <defs>
-                  <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#7c3aed" />
-                    <stop offset="100%" stopColor="#06b6d4" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-black gradient-text">{data.coveragePercent ?? "—"}{data.coveragePercent !== null && "%"}</span>
-                <span className="text-white/40 text-xs">coverage</span>
+        <RevealGroup className="grid grid-cols-1 lg:grid-cols-3 gap-6" stagger={0.1}>
+          <RevealItem>
+            <div className="glass rounded-2xl p-6 flex flex-col items-center text-center h-full">
+              <h3 className="text-white/60 text-sm font-semibold mb-4">Skill Coverage</h3>
+              <div className="relative w-32 h-32">
+                <svg className="w-32 h-32 -rotate-90" viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="10" />
+                  <circle
+                    cx="60" cy="60" r="54"
+                    fill="none"
+                    stroke="url(#grad)"
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={offset}
+                    style={{ transition: "stroke-dashoffset 1s ease" }}
+                  />
+                  <defs>
+                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#7c3aed" />
+                      <stop offset="100%" stopColor="#6366f1" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-3xl font-black gradient-text">
+                    {data.coveragePercent !== null ? <AnimatedCounter value={data.coveragePercent} suffix="%" /> : "—"}
+                  </span>
+                  <span className="text-white/40 text-xs">coverage</span>
+                </div>
+              </div>
+              <p className="text-white/50 text-xs mt-4 leading-relaxed">
+                Of the named skills appearing in postings that match you, you already have {data.coveragePercent ?? 0}% of them.
+              </p>
+            </div>
+          </RevealItem>
+
+          <RevealItem className="lg:col-span-2">
+            <div className="glass rounded-2xl p-6 h-full">
+              <h3 className="text-white font-semibold mb-5">Your Skills</h3>
+              <div className="flex flex-wrap gap-2">
+                {data.haveSkills.map((s) => (
+                  <span key={s} className="px-3 py-1.5 rounded-xl text-xs font-semibold border bg-emerald-500/10 text-emerald-300 border-emerald-500/25 capitalize">
+                    {s}
+                  </span>
+                ))}
+                {data.haveSkills.length === 0 && <p className="text-white/30 text-sm">No skills listed on your CV yet.</p>}
               </div>
             </div>
-            <p className="text-white/50 text-xs mt-4 leading-relaxed">
-              Of the named skills appearing in postings that match you, you already have {data.coveragePercent ?? 0}% of them.
-            </p>
-          </div>
-
-          <div className="lg:col-span-2 glass rounded-2xl p-6">
-            <h3 className="text-white font-semibold mb-5">Your Skills</h3>
-            <div className="flex flex-wrap gap-2">
-              {data.haveSkills.map((s) => (
-                <span key={s} className="px-3 py-1.5 rounded-xl text-xs font-semibold border bg-emerald-500/10 text-emerald-300 border-emerald-500/25 capitalize">
-                  {s}
-                </span>
-              ))}
-              {data.haveSkills.length === 0 && <p className="text-white/30 text-sm">No skills listed on your CV yet.</p>}
-            </div>
-          </div>
-        </div>
+          </RevealItem>
+        </RevealGroup>
       )}
 
       {!loading && data && data.gaps.length > 0 && (
-        <div>
+        <Reveal>
           <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">
             Skills Showing Up in Real Postings You Don&apos;t Have Yet
           </h2>
-          <div className="space-y-3">
+          <RevealGroup className="space-y-3" stagger={0.06}>
             {data.gaps.map((g, i) => (
-              <div key={g.skill} className="glass glass-hover rounded-2xl p-5 flex items-center gap-5">
-                <div className="text-2xl font-black text-white/20 w-8 shrink-0">0{i + 1}</div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-white font-bold capitalize">{g.skill}</h3>
-                  <p className="text-white/40 text-xs mt-1">
-                    Appears in {g.count} of {data.analyzedCount} matching live postings ({g.percentOfPostings}%)
-                  </p>
+              <RevealItem key={g.skill}>
+                <div className="glass glass-hover rounded-2xl p-5 flex items-center gap-5">
+                  <div className="text-2xl font-black text-white/20 w-8 shrink-0">0{i + 1}</div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-white font-bold capitalize">{g.skill}</h3>
+                    <p className="text-white/40 text-xs mt-1">
+                      Appears in {g.count} of {data.analyzedCount} matching live postings ({g.percentOfPostings}%)
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </RevealItem>
             ))}
-          </div>
-        </div>
+          </RevealGroup>
+        </Reveal>
       )}
 
       {!loading && data && data.analyzedCount > 0 && data.gaps.length === 0 && (

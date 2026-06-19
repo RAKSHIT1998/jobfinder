@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
 
 type Status = "Applied" | "Interview" | "Offer" | "Rejected";
 
@@ -106,17 +108,19 @@ export default function Tracker() {
       {apps.length > 0 && (
         <>
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <RevealGroup className="grid grid-cols-2 md:grid-cols-4 gap-4" stagger={0.06}>
             {columns.map((col) => {
               const count = apps.filter((a) => a.status === col.status).length;
               return (
-                <div key={col.status} className="glass rounded-2xl p-4 text-center" style={{ boxShadow: `0 8px 32px ${col.glow}` }}>
-                  <div className={`text-3xl font-black ${statusColors[col.status].split(" ")[0]}`}>{count}</div>
-                  <div className="text-white/40 text-xs mt-1">{col.status}</div>
-                </div>
+                <RevealItem key={col.status}>
+                  <div className="glass rounded-2xl p-4 text-center" style={{ boxShadow: `0 8px 32px ${col.glow}` }}>
+                    <div className={`text-3xl font-black ${statusColors[col.status].split(" ")[0]}`}>{count}</div>
+                    <div className="text-white/40 text-xs mt-1">{col.status}</div>
+                  </div>
+                </RevealItem>
               );
             })}
-          </div>
+          </RevealGroup>
 
           <div className="glass rounded-xl p-3 flex items-center gap-3">
             <div className="text-emerald-400 font-black text-2xl">{responseRate}%</div>
@@ -125,7 +129,13 @@ export default function Tracker() {
               <div className="text-white/30 text-xs">Share of your applications that moved past &quot;Applied&quot;</div>
             </div>
             <div className="ml-auto flex-1 max-w-32 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
-              <div className="h-full rounded-full" style={{ width: `${responseRate}%`, background: "linear-gradient(90deg, #7c3aed, #06b6d4)" }} />
+              <motion.div
+                className="h-full rounded-full"
+                style={{ background: "linear-gradient(90deg, #7c3aed, #6366f1)" }}
+                initial={{ width: 0 }}
+                animate={{ width: `${responseRate}%` }}
+                transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
+              />
             </div>
           </div>
 
@@ -141,36 +151,46 @@ export default function Tracker() {
                   </div>
 
                   <div className="space-y-2">
-                    {colApps.map((app) => {
-                      const next = nextStatuses[app.status];
-                      const color = avatarColor(app.company);
-                      return (
-                        <div key={app.id} className="glass rounded-xl p-3 glass-hover">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shrink-0"
-                              style={{ background: `${color}15`, border: `1px solid ${color}25`, color }}>
-                              {app.company[0]?.toUpperCase()}
+                    <AnimatePresence>
+                      {colApps.map((app) => {
+                        const next = nextStatuses[app.status];
+                        const color = avatarColor(app.company);
+                        return (
+                          <motion.div
+                            key={app.id}
+                            layout
+                            layoutId={app.id}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ type: "spring", stiffness: 350, damping: 28 }}
+                            className="glass rounded-xl p-3 glass-hover"
+                          >
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shrink-0"
+                                style={{ background: `${color}15`, border: `1px solid ${color}25`, color }}>
+                                {app.company[0]?.toUpperCase()}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="text-white/80 text-xs font-bold truncate">{app.company}</div>
+                                <div className="text-white/30 text-xs truncate">{app.role}</div>
+                              </div>
                             </div>
-                            <div className="min-w-0">
-                              <div className="text-white/80 text-xs font-bold truncate">{app.company}</div>
-                              <div className="text-white/30 text-xs truncate">{app.role}</div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-emerald-400 text-xs font-semibold">{app.salary || "—"}</span>
+                              <span className="text-white/25 text-xs">{app.created_at.slice(0, 10)}</span>
                             </div>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-emerald-400 text-xs font-semibold">{app.salary || "—"}</span>
-                            <span className="text-white/25 text-xs">{app.created_at.slice(0, 10)}</span>
-                          </div>
-                          {next && (
-                            <button
-                              onClick={() => move(app.id, next)}
-                              className="mt-2 w-full text-xs py-1.5 rounded-lg btn-glass text-white/40 hover:text-white/70 transition-all"
-                            >
-                              Move to {next} →
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })}
+                            {next && (
+                              <button
+                                onClick={() => move(app.id, next)}
+                                className="mt-2 w-full text-xs py-1.5 rounded-lg btn-glass text-white/40 hover:text-white/70 transition-all"
+                              >
+                                Move to {next} →
+                              </button>
+                            )}
+                          </motion.div>
+                        );
+                      })}
+                    </AnimatePresence>
                     {colApps.length === 0 && (
                       <div className="text-center py-8 text-white/20 text-sm">Empty</div>
                     )}

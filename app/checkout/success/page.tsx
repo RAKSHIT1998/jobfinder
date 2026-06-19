@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { HeroEntrance } from "@/components/motion/HeroEntrance";
 
 export default function CheckoutSuccess() {
   const router = useRouter();
@@ -32,11 +33,10 @@ export default function CheckoutSuccess() {
   return (
     <div className="min-h-screen text-white flex items-center justify-center px-4 relative" style={{ background: "#050508" }}>
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="animate-blob absolute top-1/3 left-1/4 w-80 h-80 rounded-full opacity-15" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(80px)" }} />
-        <div className="animate-blob animation-delay-2000 absolute bottom-1/3 right-1/4 w-72 h-72 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #db2777, transparent)", filter: "blur(80px)" }} />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[420px] h-[420px] rounded-full opacity-[0.12]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
       </div>
 
-      <div className="glass-strong rounded-3xl p-10 max-w-sm text-center relative">
+      <HeroEntrance className="glass-strong rounded-3xl p-10 max-w-sm text-center relative">
         {status === "verifying" ? (
           <>
             <svg className="animate-spin w-8 h-8 text-violet-400 mx-auto mb-5" fill="none" viewBox="0 0 24 24">
@@ -58,7 +58,7 @@ export default function CheckoutSuccess() {
             <Link href="/checkout" className="btn-primary inline-block px-6 py-3 rounded-2xl text-sm font-bold">Back to Checkout</Link>
           </>
         )}
-      </div>
+      </HeroEntrance>
     </div>
   );
 }

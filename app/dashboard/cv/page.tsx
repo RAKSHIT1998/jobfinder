@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import { formatCurrency } from "@/lib/currency";
 import { useCountry } from "@/lib/useCountry";
+import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
 
 interface CVData {
   name: string;
@@ -54,7 +56,7 @@ export default function MyCVPage() {
   if (!cv) {
     return (
       <div className="flex flex-col items-center justify-center h-64 space-y-4 text-center">
-        <div className="w-16 h-16 glass rounded-2xl flex items-center justify-center text-3xl">📄</div>
+        <div className="w-16 h-16 glass rounded-2xl flex items-center justify-center"><FileText className="w-7 h-7 text-violet-300" /></div>
         <h2 className="text-xl font-bold text-white">No CV Found</h2>
         <p className="text-white/40 text-sm">Build your CV to start getting matched to jobs.</p>
         <Link href="/create-cv" className="btn-primary px-6 py-2.5 rounded-xl text-sm font-semibold">
@@ -65,14 +67,16 @@ export default function MyCVPage() {
   }
 
   const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div className="glass rounded-2xl p-6">
-      <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">{title}</h2>
-      {children}
-    </div>
+    <RevealItem>
+      <div className="glass rounded-2xl p-6">
+        <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">{title}</h2>
+        {children}
+      </div>
+    </RevealItem>
   );
 
   return (
-    <div className="space-y-4 max-w-3xl">
+    <RevealGroup className="space-y-4 max-w-3xl" stagger={0.07}>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-black text-white">My CV</h1>
@@ -184,6 +188,7 @@ export default function MyCVPage() {
         </div>
       </Section>
 
+      <RevealItem>
       <div className="glass rounded-2xl p-6 border border-red-500/20">
         <h2 className="text-sm font-semibold text-red-400/80 uppercase tracking-widest mb-2">Danger Zone</h2>
         <p className="text-white/40 text-sm mb-4">
@@ -215,6 +220,7 @@ export default function MyCVPage() {
           </div>
         )}
       </div>
-    </div>
+      </RevealItem>
+    </RevealGroup>
   );
 }

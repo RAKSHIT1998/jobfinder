@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { Search, Code2, Target, HelpCircle, Clock, NotebookPen, CalendarPlus } from "lucide-react";
 import { buildInterviewIcs } from "@/lib/ics";
+import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
 
 interface Application {
   id: string;
@@ -14,12 +16,12 @@ interface Application {
 }
 
 const prepTips = [
-  { icon: "🔍", tip: "Research the company's recent news, products, and engineering blog" },
-  { icon: "💻", tip: "Review system design patterns and data structures" },
-  { icon: "🎯", tip: "Prepare 3-4 STAR format stories about past accomplishments" },
-  { icon: "❓", tip: "Prepare thoughtful questions to ask your interviewer" },
-  { icon: "🕐", tip: "Test your video setup and internet connection 10 minutes before" },
-  { icon: "📝", tip: "Have your resume and notes ready for reference" },
+  { Icon: Search, tip: "Research the company's recent news, products, and engineering blog" },
+  { Icon: Code2, tip: "Review system design patterns and data structures" },
+  { Icon: Target, tip: "Prepare 3-4 STAR format stories about past accomplishments" },
+  { Icon: HelpCircle, tip: "Prepare thoughtful questions to ask your interviewer" },
+  { Icon: Clock, tip: "Test your video setup and internet connection 10 minutes before" },
+  { Icon: NotebookPen, tip: "Have your resume and notes ready for reference" },
 ];
 
 export default function InterviewPrep() {
@@ -127,11 +129,12 @@ export default function InterviewPrep() {
       )}
 
       {apps.length > 0 && (
-        <div className="space-y-3">
+        <RevealGroup className="space-y-3" stagger={0.07}>
           {apps.map((app) => {
             const draft = drafts[app.id] || { when: "", notes: "" };
             return (
-              <div key={app.id} className="glass glass-hover rounded-2xl p-5">
+              <RevealItem key={app.id}>
+              <div className="glass glass-hover rounded-2xl p-5">
                 <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
                   <div>
                     <span className="text-white font-bold text-sm">{app.role}</span>
@@ -172,28 +175,33 @@ export default function InterviewPrep() {
                   <button
                     onClick={() => downloadIcs(app)}
                     disabled={!draft.when}
-                    className="btn-glass px-4 py-2 rounded-xl text-xs font-semibold text-white/60 disabled:opacity-40"
+                    className="btn-glass px-4 py-2 rounded-xl text-xs font-semibold text-white/60 disabled:opacity-40 inline-flex items-center gap-1.5"
                   >
-                    📅 Download Calendar Invite
+                    <CalendarPlus className="w-3.5 h-3.5" /> Download Calendar Invite
                   </button>
                 </div>
               </div>
+              </RevealItem>
             );
           })}
-        </div>
+        </RevealGroup>
       )}
 
       <div>
         <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">General Interview Prep Checklist</h2>
         <div className="glass rounded-2xl p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <RevealGroup className="grid grid-cols-1 md:grid-cols-2 gap-3" stagger={0.05}>
             {prepTips.map((tip, i) => (
-              <div key={i} className="glass rounded-xl p-3 flex items-start gap-3">
-                <span className="text-lg shrink-0">{tip.icon}</span>
-                <p className="text-white/60 text-sm">{tip.tip}</p>
-              </div>
+              <RevealItem key={i}>
+                <div className="glass rounded-xl p-3 flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shrink-0">
+                    <tip.Icon className="w-3.5 h-3.5 text-violet-300" />
+                  </div>
+                  <p className="text-white/60 text-sm">{tip.tip}</p>
+                </div>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
         </div>
       </div>
     </div>

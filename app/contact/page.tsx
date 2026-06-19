@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { HeroEntrance, TapScale } from "@/components/motion/HeroEntrance";
 
 export default function Contact() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -30,12 +31,11 @@ export default function Contact() {
     <div className="min-h-screen" style={{ background: "#050508" }}>
       <Navbar />
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="animate-blob absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-15" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(80px)" }} />
-        <div className="animate-blob animation-delay-4000 absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #0891b2, transparent)", filter: "blur(80px)" }} />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[560px] h-[560px] rounded-full opacity-[0.13]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
       </div>
 
       <main className="relative pt-36 pb-24 px-4">
-        <div className="max-w-lg mx-auto">
+        <HeroEntrance className="max-w-lg mx-auto">
           <h1 className="text-4xl sm:text-5xl font-black text-white mb-2">Contact Us</h1>
           <p className="text-white/40 text-sm mb-10">
             Refund requests, account deletion, bugs, anything — send it here and it goes straight to our team.
@@ -77,13 +77,15 @@ export default function Contact() {
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                 />
                 {status === "error" && <p className="text-red-400 text-sm">Couldn&apos;t send that — try again in a moment.</p>}
-                <button type="submit" disabled={status === "sending"} className="btn-primary w-full py-3.5 rounded-2xl text-sm font-bold disabled:opacity-50">
-                  {status === "sending" ? "Sending..." : "Send Message"}
-                </button>
+                <TapScale className="block">
+                  <button type="submit" disabled={status === "sending"} className="btn-primary w-full py-3.5 rounded-2xl text-sm font-bold disabled:opacity-50">
+                    {status === "sending" ? "Sending..." : "Send Message"}
+                  </button>
+                </TapScale>
               </form>
             )}
           </div>
-        </div>
+        </HeroEntrance>
       </main>
 
       <Footer />

@@ -122,28 +122,30 @@ export default function Dashboard() {
               View all {jobs.length} →
             </Link>
           </div>
-          <div className="space-y-3">
+          <RevealGroup className="space-y-3" stagger={0.08}>
             {jobs.slice(0, 3).map((job) => (
-              <div key={job.id} className="glass glass-hover rounded-2xl p-4 flex items-center gap-4">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-500/20 to-cyan-500/20 border border-white/8 flex items-center justify-center text-base font-black text-violet-300 shrink-0">
-                  {job.company[0]?.toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-semibold text-sm truncate">{job.title}</p>
-                  <p className="text-white/40 text-xs truncate">{job.company} · {job.location} · {job.source}</p>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className={`text-xl font-black ${job.match >= 40 ? "text-emerald-400" : job.match >= 20 ? "text-cyan-400" : "text-violet-400"}`}>
-                    {job.match}%
+              <RevealItem key={job.id}>
+                <div className="glass glass-hover rounded-2xl p-4 flex items-center gap-4">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-500/20 to-indigo-500/20 border border-white/8 flex items-center justify-center text-base font-black text-violet-300 shrink-0">
+                    {job.company[0]?.toUpperCase()}
                   </div>
-                  <div className="text-white/30 text-xs">match</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-semibold text-sm truncate">{job.title}</p>
+                    <p className="text-white/40 text-xs truncate">{job.company} · {job.location} · {job.source}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <div className={`text-xl font-black ${job.match >= 40 ? "text-emerald-400" : job.match >= 20 ? "text-cyan-400" : "text-violet-400"}`}>
+                      {job.match}%
+                    </div>
+                    <div className="text-white/30 text-xs">match</div>
+                  </div>
                 </div>
-              </div>
+              </RevealItem>
             ))}
             {!loading && jobs.length === 0 && (
               <p className="text-white/30 text-sm">No live matches yet — try adding more skills to your CV.</p>
             )}
-          </div>
+          </RevealGroup>
         </div>
       </div>
 
@@ -157,17 +159,19 @@ export default function Dashboard() {
         {interviews.length === 0 ? (
           <p className="text-white/30 text-sm">No interviews scheduled yet.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <RevealGroup className="grid grid-cols-1 md:grid-cols-2 gap-4" stagger={0.08}>
             {interviews.slice(0, 2).map((m, i) => (
-              <div key={i} className="glass rounded-2xl p-5">
-                <p className="text-white font-semibold text-sm">{m.role}</p>
-                <p className="text-white/40 text-xs">{m.company}</p>
-                <p className="text-white/40 text-xs mt-2">
-                  {m.interview_at ? new Date(m.interview_at).toLocaleString() : "Date not set yet"}
-                </p>
-              </div>
+              <RevealItem key={i}>
+                <div className="glass rounded-2xl p-5">
+                  <p className="text-white font-semibold text-sm">{m.role}</p>
+                  <p className="text-white/40 text-xs">{m.company}</p>
+                  <p className="text-white/40 text-xs mt-2">
+                    {m.interview_at ? new Date(m.interview_at).toLocaleString() : "Date not set yet"}
+                  </p>
+                </div>
+              </RevealItem>
             ))}
-          </div>
+          </RevealGroup>
         )}
       </div>
     </div>

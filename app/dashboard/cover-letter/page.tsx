@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Sparkles, Check, Download } from "lucide-react";
 
 interface TrackedJob {
   company: string;
@@ -139,8 +140,9 @@ export default function CoverLetter() {
             </div>
           </div>
 
-          <button onClick={generate} disabled={loading} className="btn-primary w-full py-3 rounded-xl font-bold text-sm disabled:opacity-50">
-            {loading ? "Writing..." : "✨ Generate Letter"}
+          <button onClick={generate} disabled={loading} className="btn-primary w-full py-3 rounded-xl font-bold text-sm disabled:opacity-50 inline-flex items-center justify-center gap-2">
+            <Sparkles className="w-4 h-4" />
+            {loading ? "Writing..." : "Generate Letter"}
           </button>
           {error && <p className="text-red-400 text-xs">{error}</p>}
         </div>
@@ -153,11 +155,11 @@ export default function CoverLetter() {
             </div>
             {letter && (
               <div className="flex gap-2">
-                <button onClick={copy} className={`btn-glass px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${copied ? "text-emerald-400" : "text-white/60"}`}>
-                  {copied ? "✓ Copied!" : "Copy"}
+                <button onClick={copy} className={`btn-glass px-3 py-1.5 rounded-xl text-xs font-semibold transition-all inline-flex items-center gap-1.5 ${copied ? "text-emerald-400" : "text-white/60"}`}>
+                  {copied ? <><Check className="w-3.5 h-3.5" /> Copied!</> : "Copy"}
                 </button>
-                <button onClick={download} className="btn-glass px-3 py-1.5 rounded-xl text-xs font-semibold text-white/60">
-                  Download
+                <button onClick={download} className="btn-glass px-3 py-1.5 rounded-xl text-xs font-semibold text-white/60 inline-flex items-center gap-1.5">
+                  <Download className="w-3.5 h-3.5" /> Download
                 </button>
               </div>
             )}

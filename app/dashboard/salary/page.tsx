@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { Target } from "lucide-react";
 import { useCountry } from "@/lib/useCountry";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 
 interface SalaryIntel {
   analyzedCount: number;
@@ -80,60 +82,64 @@ export default function Salary() {
       {error && <div className="glass rounded-2xl p-5 text-red-400 text-sm border border-red-500/20">{error}</div>}
 
       {!loading && data && (
-        <div className="iridescent-border rounded-3xl p-px">
-          <div className="glass-strong rounded-3xl p-8 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-32 pointer-events-none opacity-20" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(40px)" }} />
-            <div className="relative">
-              {data.min !== null && data.max !== null ? (
-                <>
-                  <p className="text-white/50 text-sm mb-2">Based on real disclosed pay in matching postings</p>
-                  <p className="text-5xl font-black gradient-text mb-2">{fmt(data.min)} - {fmt(data.max)}</p>
-                  <p className="text-white/40 text-sm">median {fmt(data.median!)} · per year</p>
-                  <div className="flex flex-wrap gap-3 mt-4">
-                    <span className="glass px-3 py-1.5 rounded-xl text-xs text-violet-300 font-semibold">
-                      🎯 {data.disclosedCount} of {data.analyzedCount} matching postings disclosed pay
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="text-white/50 text-sm mb-2">No pay data available yet</p>
-                  <p className="text-2xl font-black text-white/70 mb-2">
-                    None of the {data.analyzedCount} live postings closely matching your profile disclosed a salary figure.
-                  </p>
-                  <p className="text-white/40 text-sm">This is common outside the US, where pay transparency in listings is rarer. We don&apos;t estimate a number when there&apos;s no real data behind it.</p>
-                </>
-              )}
+        <Reveal>
+          <div className="iridescent-border rounded-3xl p-px">
+            <div className="glass-strong shine-sweep rounded-3xl p-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-32 pointer-events-none opacity-20" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(40px)" }} />
+              <div className="relative">
+                {data.min !== null && data.max !== null ? (
+                  <>
+                    <p className="text-white/50 text-sm mb-2">Based on real disclosed pay in matching postings</p>
+                    <p className="text-5xl font-black gradient-text mb-2">{fmt(data.min)} - {fmt(data.max)}</p>
+                    <p className="text-white/40 text-sm">median {fmt(data.median!)} · per year</p>
+                    <div className="flex flex-wrap gap-3 mt-4">
+                      <span className="glass px-3 py-1.5 rounded-xl text-xs text-violet-300 font-semibold inline-flex items-center gap-1.5">
+                        <Target className="w-3.5 h-3.5" /> {data.disclosedCount} of {data.analyzedCount} matching postings disclosed pay
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-white/50 text-sm mb-2">No pay data available yet</p>
+                    <p className="text-2xl font-black text-white/70 mb-2">
+                      None of the {data.analyzedCount} live postings closely matching your profile disclosed a salary figure.
+                    </p>
+                    <p className="text-white/40 text-sm">This is common outside the US, where pay transparency in listings is rarer. We don&apos;t estimate a number when there&apos;s no real data behind it.</p>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       )}
 
       {!loading && data?.desired && (
-        <div className="glass rounded-2xl p-6 flex items-center justify-between flex-wrap gap-4">
+        <Reveal className="glass rounded-2xl p-6 flex items-center justify-between flex-wrap gap-4">
           <div>
             <p className="text-white/30 text-xs uppercase tracking-widest mb-1">Your expectation (from your CV)</p>
             <p className="text-2xl font-black text-white">{fmt(data.desired.min)} - {fmt(data.desired.max)}</p>
           </div>
           {verdict && <p className={`text-sm font-semibold max-w-xs text-right ${verdict.tone}`}>{verdict.label}</p>}
-        </div>
+        </Reveal>
       )}
 
       <div>
         <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">Negotiation Playbook</h2>
-        <div className="space-y-3">
+        <RevealGroup className="space-y-3" stagger={0.06}>
           {negotiationScript.map((s, i) => (
-            <div key={i} className="glass glass-hover rounded-2xl p-5 flex gap-4">
-              <div className="w-8 h-8 rounded-xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-300 font-black text-sm shrink-0">
-                {i + 1}
+            <RevealItem key={i}>
+              <div className="glass glass-hover rounded-2xl p-5 flex gap-4">
+                <div className="w-8 h-8 rounded-xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-300 font-black text-sm shrink-0">
+                  {i + 1}
+                </div>
+                <div>
+                  <h3 className="text-white font-bold text-sm mb-1">{s.step}</h3>
+                  <p className="text-white/50 text-sm leading-relaxed">{s.tip}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-white font-bold text-sm mb-1">{s.step}</h3>
-                <p className="text-white/50 text-sm leading-relaxed">{s.tip}</p>
-              </div>
-            </div>
+            </RevealItem>
           ))}
-        </div>
+        </RevealGroup>
       </div>
     </div>
   );
