@@ -230,8 +230,7 @@ export default function CreateCV() {
   return (
     <div className="min-h-screen text-white py-8 px-4 relative" style={{ background: "#050508" }}>
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="animate-blob absolute top-1/4 left-1/4 w-80 h-80 rounded-full opacity-15" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(80px)" }} />
-        <div className="animate-blob animation-delay-2000 absolute bottom-1/4 right-1/4 w-72 h-72 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #0891b2, transparent)", filter: "blur(80px)" }} />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[520px] h-[520px] rounded-full opacity-[0.12]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
       </div>
       <div className="max-w-2xl mx-auto relative">
         {/* Header */}
@@ -239,7 +238,7 @@ export default function CreateCV() {
           <div className="flex items-center gap-4">
             <Link href="/" className="text-white/40 hover:text-white transition-colors text-sm">← Back</Link>
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center">
+              <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-400 flex items-center justify-center">
                 <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
