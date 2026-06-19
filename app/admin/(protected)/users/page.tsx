@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAdminUserList } from "@/lib/db";
+import { Reveal } from "@/components/motion/Reveal";
 
 export default async function AdminUsers() {
   const users = await getAdminUserList();
@@ -11,7 +12,7 @@ export default async function AdminUsers() {
         <p className="text-white/40 text-sm mt-1">{users.length} registered user{users.length === 1 ? "" : "s"}.</p>
       </div>
 
-      <div className="glass rounded-2xl overflow-x-auto">
+      <Reveal className="glass rounded-2xl overflow-x-auto">
         <table className="w-full text-sm min-w-[640px]">
           <thead>
             <tr className="border-b border-white/5 text-white/30 text-xs uppercase tracking-wider">
@@ -67,7 +68,7 @@ export default async function AdminUsers() {
             )}
           </tbody>
         </table>
-      </div>
+      </Reveal>
     </div>
   );
 }

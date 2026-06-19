@@ -1,5 +1,7 @@
 import { getAdminStats, getPaidPayments } from "@/lib/db";
 import { convertCurrency } from "@/lib/exchangeRates";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 
 async function getRevenueUsd(): Promise<number> {
   const payments = await getPaidPayments();
@@ -42,18 +44,20 @@ export default async function AdminOverview() {
         <p className="text-white/40 text-sm mt-1">Live data from the JobFinder AI database.</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <RevealGroup className="grid grid-cols-2 md:grid-cols-3 gap-4" stagger={0.06}>
         {stats.map((s) => (
-          <div key={s.label} className="glass rounded-2xl p-5">
-            <div className="text-3xl font-black" style={{ color: s.color }}>
-              {s.value}
+          <RevealItem key={s.label}>
+            <div className="glass rounded-2xl p-5">
+              <div className="text-3xl font-black" style={{ color: s.color }}>
+                {typeof s.value === "number" ? <AnimatedCounter value={s.value} /> : s.value}
+              </div>
+              <div className="text-white/40 text-xs mt-1">{s.label}</div>
             </div>
-            <div className="text-white/40 text-xs mt-1">{s.label}</div>
-          </div>
+          </RevealItem>
         ))}
-      </div>
+      </RevealGroup>
 
-      <div className="glass rounded-2xl p-6">
+      <Reveal className="glass rounded-2xl p-6">
         <h2 className="text-white font-bold mb-4">Recent Signups</h2>
         {recentUsers.length === 0 ? (
           <p className="text-white/30 text-sm">No users yet.</p>
@@ -70,7 +74,7 @@ export default async function AdminOverview() {
             ))}
           </div>
         )}
-      </div>
+      </Reveal>
     </div>
   );
 }
