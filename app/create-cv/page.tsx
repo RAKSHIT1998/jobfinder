@@ -122,6 +122,7 @@ export default function CreateCV() {
   const [cv, setCv] = useState<CVData>(loadDraft);
   const [isReturningUser] = useState(() => !!loadDraft().email);
   const [attempted, setAttempted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveKey, setSaveKey] = useState(0);
   const [techSkillInput, setTechSkillInput] = useState("");
@@ -197,7 +198,7 @@ export default function CreateCV() {
   const salaryOutOfOrder =
     !!cv.salaryMin && !!cv.salaryMax && parseFloat(cv.salaryMax) < parseFloat(cv.salaryMin);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step === 1 && !step1Valid) {
       setAttempted(true);
       return;
@@ -207,11 +208,16 @@ export default function CreateCV() {
     if (step < STEPS.length) {
       localStorage.setItem("jobfinder_cv", JSON.stringify(cv));
       if (step === STEPS.length - 1) {
-        fetch("/api/cv", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...cv, password: password || undefined }),
-        }).catch(() => {});
+        setSubmitting(true);
+        try {
+          await fetch("/api/cv", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...cv, password: password || undefined }),
+          });
+        } catch {
+          // Checkout will redirect to login if the session didn't get set.
+        }
         router.push("/checkout");
         return;
       }
@@ -703,9 +709,10 @@ export default function CreateCV() {
             )}
             <button
               onClick={handleNext}
-              className="flex-1 btn-primary py-3 rounded-xl text-sm font-semibold active:scale-[0.98] transition-transform"
+              disabled={submitting}
+              className="flex-1 btn-primary py-3 rounded-xl text-sm font-semibold active:scale-[0.98] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {step === STEPS.length ? "Proceed to Payment →" : "Continue →"}
+              {submitting ? "Saving..." : step === STEPS.length ? "Proceed to Payment →" : "Continue →"}
             </button>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import dns from "dns";
 import { Collection, Db, MongoClient, ObjectId } from "mongodb";
+import { ACCESS_DURATION_MS } from "./access";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -279,6 +280,14 @@ export async function getLatestPayment(userId: string): Promise<{ created_at: st
     { sort: { createdAt: -1 } }
   );
   return doc ? { created_at: doc.createdAt } : undefined;
+}
+
+/** Server-side source of truth for paywall access - never trust a client-supplied paid flag. */
+export async function getAccessStatus(userId: string): Promise<{ paid: boolean; paidAt: Date | null }> {
+  const payment = await getLatestPayment(userId);
+  if (!payment) return { paid: false, paidAt: null };
+  const paidAt = new Date(payment.created_at.replace(" ", "T") + "Z");
+  return { paid: Date.now() - paidAt.getTime() < ACCESS_DURATION_MS, paidAt };
 }
 
 export async function getLatestPaymentByEmail(email: string): Promise<PaymentRow | undefined> {

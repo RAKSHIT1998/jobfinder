@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { load } from "@cashfreepayments/cashfree-js";
 import { useCountry } from "@/lib/useCountry";
 import { useLocalizedPrice } from "@/lib/useLocalizedPrice";
@@ -13,6 +14,7 @@ const cashfreeMode =
   process.env.NEXT_PUBLIC_CASHFREE_MODE === "production" ? "production" : "sandbox";
 
 export default function Checkout() {
+  const router = useRouter();
   const { country } = useCountry();
   const { formatted: localizedPrice } = useLocalizedPrice();
   const [loading, setLoading] = useState(false);
@@ -27,15 +29,13 @@ export default function Checkout() {
     setError("");
     setLoading(true);
 
-    let email = "";
     let phone = "";
     let name = "";
 
     if (typeof window !== "undefined") {
       const storedCv = localStorage.getItem("jobfinder_cv");
       if (storedCv) {
-        const parsed = JSON.parse(storedCv) as { email?: string; phone?: string; name?: string };
-        email = parsed.email || "";
+        const parsed = JSON.parse(storedCv) as { phone?: string; name?: string };
         phone = parsed.phone || "";
         name = parsed.name || "";
       }
@@ -45,7 +45,7 @@ export default function Checkout() {
       const res = await fetch("/api/checkout/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, phone, name, currency: country.currency }),
+        body: JSON.stringify({ phone, name, currency: country.currency }),
       });
       const raw = await res.text();
       let data: { error?: string; paymentSessionId?: string } = {};
@@ -57,6 +57,10 @@ export default function Checkout() {
         }
       }
 
+      if (res.status === 401) {
+        router.push("/login");
+        return;
+      }
       if (!res.ok || !data.paymentSessionId) {
         throw new Error(data.error || "Could not start checkout.");
       }

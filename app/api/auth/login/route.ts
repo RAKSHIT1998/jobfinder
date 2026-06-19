@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserByEmail, getCv, getLatestPayment } from "@/lib/db";
+import { getUserByEmail, getCv, getAccessStatus } from "@/lib/db";
 import { verifyPassword, setSessionCookie } from "@/lib/auth";
-import { ACCESS_DURATION_MS } from "@/lib/access";
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
@@ -26,9 +25,7 @@ export async function POST(req: NextRequest) {
   await setSessionCookie(user.id);
 
   const cvData = await getCv(user.id);
-  const latestPayment = await getLatestPayment(user.id);
-  const paidAt = latestPayment ? new Date(latestPayment.created_at.replace(" ", "T") + "Z") : null;
-  const paid = paidAt !== null && Date.now() - paidAt.getTime() < ACCESS_DURATION_MS;
+  const { paid, paidAt } = await getAccessStatus(user.id);
 
   return NextResponse.json({
     ok: true,

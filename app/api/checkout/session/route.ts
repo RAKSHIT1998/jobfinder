@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { ACCESS_PRICE_USD, roundForCurrency } from "@/lib/currency";
 import { convertCurrency } from "@/lib/exchangeRates";
 import { createCashfreeOrderId, getCashfree } from "@/lib/cashfree";
+import { getCurrentUserId } from "@/lib/auth";
+import { getUserById } from "@/lib/db";
 
 // Cashfree only charges in currencies your merchant account has been approved
 // for — INR works for every account out of the box; anything else needs the
@@ -19,17 +21,19 @@ function resolveOrderCurrency(requested: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  const userId = await getCurrentUserId();
+  const user = userId ? await getUserById(userId) : undefined;
+  if (!user) {
+    return NextResponse.json({ error: "Please log in before checking out." }, { status: 401 });
+  }
+  const email = user.email;
+
   const body = await req.json().catch(() => ({}));
-  const { email, phone, name, currency } = body as {
-    email?: string;
+  const { phone, name, currency } = body as {
     phone?: string;
     name?: string;
     currency?: string;
   };
-
-  if (!email) {
-    return NextResponse.json({ error: "Email is required before checkout." }, { status: 400 });
-  }
 
   const requestedCurrency = (currency || "USD").toUpperCase();
   const orderCurrency = resolveOrderCurrency(requestedCurrency);
