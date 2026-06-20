@@ -11,8 +11,8 @@ export default function AdminError({ error, reset }: { error: Error & { digest?:
 
   return (
     <div className="max-w-lg mx-auto mt-10 glass rounded-2xl p-8 text-center">
-      <h2 className="text-xl font-bold text-white mb-2">Couldn&apos;t load this page</h2>
-      <p className="text-white/40 text-sm mb-6">
+      <h2 className="text-xl font-bold text-foreground mb-2">Couldn&apos;t load this page</h2>
+      <p className="text-foreground/40 text-sm mb-6">
         {isDbError
           ? "Couldn't reach the database. Check that MONGODB_URI is set correctly and that this server's IP is allowed in MongoDB Atlas under Network Access."
           : "Something went wrong while loading this page."}

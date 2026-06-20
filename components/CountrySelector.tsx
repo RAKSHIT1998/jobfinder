@@ -10,10 +10,10 @@ export default function CountrySelector({ className }: { className?: string }) {
     <select
       value={country.code}
       onChange={(e) => setCountry(e.target.value)}
-      className={className || "bg-transparent text-white/50 text-xs border border-white/10 rounded-lg px-2 py-1 outline-none"}
+      className={className || "bg-transparent text-foreground/50 text-xs border border-foreground/10 rounded-lg px-2 py-1 outline-none"}
     >
       {COUNTRIES.map((c) => (
-        <option key={c.code} value={c.code} className="bg-black">
+        <option key={c.code} value={c.code} className="bg-white">
           {c.name} ({c.currency})
         </option>
       ))}

@@ -125,7 +125,7 @@ export function LocationAutocomplete({ value, onChange, placeholder, className, 
                   }}
                   onClick={() => applySuggestion(s)}
                   className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-                    i === highlighted ? "bg-violet-500/20 text-violet-200" : "text-white/70 hover:bg-white/5"
+                    i === highlighted ? "bg-violet-500/15 text-violet-700" : "text-foreground/70 hover:bg-foreground/5"
                   }`}
                 >
                   {s}

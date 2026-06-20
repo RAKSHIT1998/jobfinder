@@ -55,7 +55,7 @@ function frameSvg(frameIndex: number): string {
         <feGaussianBlur stdDeviation="70" />
       </filter>
     </defs>
-    <rect width="${WIDTH}" height="${HEIGHT}" fill="#050508" />
+    <rect width="${WIDTH}" height="${HEIGHT}" fill="#ffffff" />
     ${circles}
   </svg>`;
 }
