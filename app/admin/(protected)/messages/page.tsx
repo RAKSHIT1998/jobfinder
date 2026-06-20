@@ -1,5 +1,6 @@
 import { getContactMessages } from "@/lib/db";
 import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 export default async function AdminMessages() {
   const messages = await getContactMessages();
@@ -17,7 +18,7 @@ export default async function AdminMessages() {
         <RevealGroup className="space-y-3" stagger={0.05}>
           {messages.map((m) => (
             <RevealItem key={m.id}>
-              <div className="glass rounded-2xl p-5">
+              <TiltCard className="glass rounded-2xl p-5" max={5}>
                 <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
                   <div>
                     <span className="text-white font-semibold text-sm">{m.name || "Anonymous"}</span>
@@ -26,7 +27,7 @@ export default async function AdminMessages() {
                   <span className="text-white/25 text-xs">{m.created_at}</span>
                 </div>
                 <p className="text-white/60 text-sm whitespace-pre-wrap">{m.message}</p>
-              </div>
+              </TiltCard>
             </RevealItem>
           ))}
         </RevealGroup>

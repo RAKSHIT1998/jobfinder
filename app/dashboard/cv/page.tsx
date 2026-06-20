@@ -7,6 +7,7 @@ import { FileText } from "lucide-react";
 import { formatCurrency } from "@/lib/currency";
 import { useCountry } from "@/lib/useCountry";
 import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 interface CVData {
   name: string;
@@ -68,10 +69,10 @@ export default function MyCVPage() {
 
   const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <RevealItem>
-      <div className="glass rounded-2xl p-6">
+      <TiltCard className="glass rounded-2xl p-6" max={4}>
         <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">{title}</h2>
         {children}
-      </div>
+      </TiltCard>
     </RevealItem>
   );
 
@@ -189,7 +190,7 @@ export default function MyCVPage() {
       </Section>
 
       <RevealItem>
-      <div className="glass rounded-2xl p-6 border border-red-500/20">
+      <TiltCard className="glass rounded-2xl p-6 border border-red-500/20" max={4}>
         <h2 className="text-sm font-semibold text-red-400/80 uppercase tracking-widest mb-2">Danger Zone</h2>
         <p className="text-white/40 text-sm mb-4">
           Permanently delete your account, CV, applications, and payment history. This can&apos;t be undone.
@@ -219,7 +220,7 @@ export default function MyCVPage() {
             </button>
           </div>
         )}
-      </div>
+      </TiltCard>
       </RevealItem>
     </RevealGroup>
   );

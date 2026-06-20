@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, Check, Download } from "lucide-react";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 interface TrackedJob {
   company: string;
@@ -96,7 +97,7 @@ export default function CoverLetter() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="space-y-4">
-          <div className="glass rounded-2xl p-5 space-y-3">
+          <TiltCard className="glass rounded-2xl p-5 space-y-3" max={4}>
             <h3 className="text-white font-semibold text-sm">Job</h3>
             {tracked.length > 0 && (
               <select
@@ -121,9 +122,9 @@ export default function CoverLetter() {
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
             />
-          </div>
+          </TiltCard>
 
-          <div className="glass rounded-2xl p-5">
+          <TiltCard className="glass rounded-2xl p-5" max={4}>
             <h3 className="text-white font-semibold text-sm mb-3">Tone</h3>
             <div className="space-y-2">
               {tones.map((t) => (
@@ -138,7 +139,7 @@ export default function CoverLetter() {
                 </button>
               ))}
             </div>
-          </div>
+          </TiltCard>
 
           <button onClick={generate} disabled={loading} className="btn-primary w-full py-3 rounded-xl font-bold text-sm disabled:opacity-50 inline-flex items-center justify-center gap-2">
             <Sparkles className="w-4 h-4" />

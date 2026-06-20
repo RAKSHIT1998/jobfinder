@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 type Status = "Applied" | "Interview" | "Offer" | "Rejected";
 
@@ -113,10 +114,10 @@ export default function Tracker() {
               const count = apps.filter((a) => a.status === col.status).length;
               return (
                 <RevealItem key={col.status}>
-                  <div className="glass rounded-2xl p-4 text-center" style={{ boxShadow: `0 8px 32px ${col.glow}` }}>
+                  <TiltCard className="glass rounded-2xl p-4 text-center" max={8} style={{ boxShadow: `0 8px 32px ${col.glow}` }}>
                     <div className={`text-3xl font-black ${statusColors[col.status].split(" ")[0]}`}>{count}</div>
                     <div className="text-white/40 text-xs mt-1">{col.status}</div>
-                  </div>
+                  </TiltCard>
                 </RevealItem>
               );
             })}

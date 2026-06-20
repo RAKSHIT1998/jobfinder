@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getAdminUserDetail, isValidObjectId } from "@/lib/db";
 import { formatCurrency } from "@/lib/currency";
 import DeleteUserButton from "./DeleteUserButton";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -38,7 +39,7 @@ export default async function AdminUserDetail({ params }: PageProps) {
         <DeleteUserButton id={user.id} />
       </div>
 
-      <div className="glass rounded-2xl p-6">
+      <TiltCard className="glass rounded-2xl p-6" max={4}>
         <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">CV</h2>
         {!cv ? (
           <p className="text-white/30 text-sm">No CV submitted.</p>
@@ -51,10 +52,10 @@ export default async function AdminUserDetail({ params }: PageProps) {
                 { label: "Location", value: cv.location },
                 { label: "Target Roles", value: cv.targetRoles },
               ].map((f) => (
-                <div key={f.label} className="glass rounded-xl p-3">
+                <TiltCard key={f.label} className="glass rounded-xl p-3" max={8}>
                   <div className="text-white/30 text-xs mb-1">{f.label}</div>
                   <div className="text-white/80 font-semibold text-sm">{f.value || "—"}</div>
-                </div>
+                </TiltCard>
               ))}
             </div>
             {!!cv.techSkills?.length && (
@@ -68,9 +69,9 @@ export default async function AdminUserDetail({ params }: PageProps) {
             )}
           </div>
         )}
-      </div>
+      </TiltCard>
 
-      <div className="glass rounded-2xl p-6">
+      <TiltCard className="glass rounded-2xl p-6" max={4}>
         <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">Payments</h2>
         {payments.length === 0 ? (
           <p className="text-white/30 text-sm">No payments recorded.</p>
@@ -85,9 +86,9 @@ export default async function AdminUserDetail({ params }: PageProps) {
             ))}
           </div>
         )}
-      </div>
+      </TiltCard>
 
-      <div className="glass rounded-2xl p-6">
+      <TiltCard className="glass rounded-2xl p-6" max={4}>
         <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">Applications</h2>
         {applications.length === 0 ? (
           <p className="text-white/30 text-sm">No applications tracked.</p>
@@ -106,7 +107,7 @@ export default async function AdminUserDetail({ params }: PageProps) {
             ))}
           </div>
         )}
-      </div>
+      </TiltCard>
     </div>
   );
 }

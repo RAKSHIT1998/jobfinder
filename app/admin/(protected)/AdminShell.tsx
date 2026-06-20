@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { BarChart3, Users, Mail, X, Menu } from "lucide-react";
 import LogoutButton from "./LogoutButton";
+import { Spotlight } from "@/components/motion/Spotlight";
 
 const navItems = [
   { href: "/admin", label: "Overview", Icon: BarChart3 },
@@ -124,7 +125,9 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
           <div className="glass rounded-2xl p-4 sticky top-4">{nav}</div>
         </aside>
 
-        <main className="flex-1 p-4 md:p-8 min-w-0">{children}</main>
+        <Spotlight className="flex-1 p-4 md:p-8 min-w-0" color="124,58,237">
+          {children}
+        </Spotlight>
       </div>
     </div>
   );

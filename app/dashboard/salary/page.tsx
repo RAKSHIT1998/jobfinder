@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Target } from "lucide-react";
 import { useCountry } from "@/lib/useCountry";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 interface SalaryIntel {
   analyzedCount: number;
@@ -83,7 +84,7 @@ export default function Salary() {
 
       {!loading && data && (
         <Reveal>
-          <div className="iridescent-border rounded-3xl p-px">
+          <TiltCard className="iridescent-border rounded-3xl p-px" max={5}>
             <div className="glass-strong shine-sweep rounded-3xl p-8 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-32 pointer-events-none opacity-20" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(40px)" }} />
               <div className="relative">
@@ -109,7 +110,7 @@ export default function Salary() {
                 )}
               </div>
             </div>
-          </div>
+          </TiltCard>
         </Reveal>
       )}
 
@@ -128,7 +129,7 @@ export default function Salary() {
         <RevealGroup className="space-y-3" stagger={0.06}>
           {negotiationScript.map((s, i) => (
             <RevealItem key={i}>
-              <div className="glass glass-hover rounded-2xl p-5 flex gap-4">
+              <TiltCard className="glass glass-hover rounded-2xl p-5 flex gap-4" max={5}>
                 <div className="w-8 h-8 rounded-xl bg-violet-500/20 border border-violet-500/30 flex items-center justify-center text-violet-300 font-black text-sm shrink-0">
                   {i + 1}
                 </div>
@@ -136,7 +137,7 @@ export default function Salary() {
                   <h3 className="text-white font-bold text-sm mb-1">{s.step}</h3>
                   <p className="text-white/50 text-sm leading-relaxed">{s.tip}</p>
                 </div>
-              </div>
+              </TiltCard>
             </RevealItem>
           ))}
         </RevealGroup>

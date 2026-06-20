@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ChevronDown } from "lucide-react";
 import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 interface TrackedJob {
   company: string;
@@ -98,7 +99,7 @@ export default function AICoach() {
         <p className="text-white/40 text-sm mt-1">Real questions generated for a specific role, real feedback on your actual answers.</p>
       </div>
 
-      <div className="glass rounded-2xl p-5 space-y-3">
+      <TiltCard className="glass rounded-2xl p-5 space-y-3" max={4}>
         <h3 className="text-white font-semibold text-sm">Interviewing for</h3>
         {tracked.length > 0 && (
           <select
@@ -123,13 +124,13 @@ export default function AICoach() {
           {loadingQuestions ? "Generating..." : "Generate Real Questions"}
         </button>
         {error && <p className="text-red-400 text-xs">{error}</p>}
-      </div>
+      </TiltCard>
 
       {questions.length > 0 && (
         <RevealGroup className="space-y-3" stagger={0.07}>
           {questions.map((q, i) => (
             <RevealItem key={i}>
-              <div className="glass glass-hover rounded-2xl overflow-hidden">
+              <TiltCard className="glass glass-hover rounded-2xl overflow-hidden" max={4}>
                 <button
                   className="w-full text-left p-5 flex items-start justify-between gap-4"
                   onClick={() => setActiveQ(activeQ === i ? null : i)}
@@ -181,7 +182,7 @@ export default function AICoach() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </TiltCard>
             </RevealItem>
           ))}
         </RevealGroup>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 interface SkillGap {
   skill: string;
@@ -77,7 +78,7 @@ export default function Skills() {
       {!loading && data && data.analyzedCount > 0 && (
         <RevealGroup className="grid grid-cols-1 lg:grid-cols-3 gap-6" stagger={0.1}>
           <RevealItem>
-            <div className="glass rounded-2xl p-6 flex flex-col items-center text-center h-full">
+            <TiltCard className="glass rounded-2xl p-6 flex flex-col items-center text-center h-full" max={6}>
               <h3 className="text-white/60 text-sm font-semibold mb-4">Skill Coverage</h3>
               <div className="relative w-32 h-32">
                 <svg className="w-32 h-32 -rotate-90" viewBox="0 0 120 120">
@@ -109,11 +110,11 @@ export default function Skills() {
               <p className="text-white/50 text-xs mt-4 leading-relaxed">
                 Of the named skills appearing in postings that match you, you already have {data.coveragePercent ?? 0}% of them.
               </p>
-            </div>
+            </TiltCard>
           </RevealItem>
 
           <RevealItem className="lg:col-span-2">
-            <div className="glass rounded-2xl p-6 h-full">
+            <TiltCard className="glass rounded-2xl p-6 h-full" max={5}>
               <h3 className="text-white font-semibold mb-5">Your Skills</h3>
               <div className="flex flex-wrap gap-2">
                 {data.haveSkills.map((s) => (
@@ -123,7 +124,7 @@ export default function Skills() {
                 ))}
                 {data.haveSkills.length === 0 && <p className="text-white/30 text-sm">No skills listed on your CV yet.</p>}
               </div>
-            </div>
+            </TiltCard>
           </RevealItem>
         </RevealGroup>
       )}
@@ -136,7 +137,7 @@ export default function Skills() {
           <RevealGroup className="space-y-3" stagger={0.06}>
             {data.gaps.map((g, i) => (
               <RevealItem key={g.skill}>
-                <div className="glass glass-hover rounded-2xl p-5 flex items-center gap-5">
+                <TiltCard className="glass glass-hover rounded-2xl p-5 flex items-center gap-5" max={5}>
                   <div className="text-2xl font-black text-white/20 w-8 shrink-0">0{i + 1}</div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-white font-bold capitalize">{g.skill}</h3>
@@ -144,7 +145,7 @@ export default function Skills() {
                       Appears in {g.count} of {data.analyzedCount} matching live postings ({g.percentOfPostings}%)
                     </p>
                   </div>
-                </div>
+                </TiltCard>
               </RevealItem>
             ))}
           </RevealGroup>

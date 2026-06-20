@@ -2,6 +2,7 @@ import { getAdminStats, getPaidPayments } from "@/lib/db";
 import { convertCurrency } from "@/lib/exchangeRates";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 async function getRevenueUsd(): Promise<number> {
   const payments = await getPaidPayments();
@@ -47,12 +48,12 @@ export default async function AdminOverview() {
       <RevealGroup className="grid grid-cols-2 md:grid-cols-3 gap-4" stagger={0.06}>
         {stats.map((s) => (
           <RevealItem key={s.label}>
-            <div className="glass rounded-2xl p-5">
+            <TiltCard className="glass rounded-2xl p-5" max={8}>
               <div className="text-3xl font-black" style={{ color: s.color }}>
                 {typeof s.value === "number" ? <AnimatedCounter value={s.value} /> : s.value}
               </div>
               <div className="text-white/40 text-xs mt-1">{s.label}</div>
-            </div>
+            </TiltCard>
           </RevealItem>
         ))}
       </RevealGroup>

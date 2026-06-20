@@ -5,6 +5,7 @@ import Link from "next/link";
 import { RotateCw, MapPin, ExternalLink, CheckCircle2 } from "lucide-react";
 import { tokenize } from "@/lib/matching";
 import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 const ANYWHERE_WORDS = new Set(["anywhere", "any", "flexible", "open"]);
 
@@ -168,7 +169,7 @@ export default function Jobs() {
           const isApplied = appliedKeys.has(`${job.company}|${job.title}`);
           return (
             <RevealItem key={job.id}>
-              <div className="glass glass-hover rounded-2xl p-5 transition-all">
+              <TiltCard className="glass glass-hover rounded-2xl p-5 transition-all" max={5}>
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-black shrink-0 bg-violet-500/15 border border-violet-500/25 text-violet-300">
                     {job.company[0]?.toUpperCase() || "?"}
@@ -222,7 +223,7 @@ export default function Jobs() {
                     )}
                   </button>
                 </div>
-              </div>
+              </TiltCard>
             </RevealItem>
           );
         })}

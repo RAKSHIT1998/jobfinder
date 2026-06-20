@@ -8,6 +8,7 @@ import {
   Zap, Briefcase, CalendarCheck, Brain, PenLine, BarChart3, Wallet, Target, FileText,
   Menu, X, ArrowLeft, LogOut,
 } from "lucide-react";
+import { Spotlight } from "@/components/motion/Spotlight";
 
 const navItems = [
   { href: "/dashboard", label: "Overview", Icon: Zap },
@@ -132,7 +133,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       </AnimatePresence>
 
       {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0 relative z-10">
+      <Spotlight className="flex-1 flex flex-col min-w-0 z-10" color="124,58,237">
         <header className="px-6 py-4 flex items-center gap-4" style={{ backdropFilter: "blur(20px)", background: "rgba(255,255,255,0.02)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
           <button className="md:hidden text-white/40 hover:text-white" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Toggle sidebar">
             {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -151,7 +152,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         <main className="flex-1 p-6 overflow-auto">
           {children}
         </main>
-      </div>
+      </Spotlight>
     </div>
   );
 }

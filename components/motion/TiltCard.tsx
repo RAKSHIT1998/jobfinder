@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import type { MouseEvent, ReactNode } from "react";
+import type { CSSProperties, MouseEvent, ReactNode } from "react";
 
 /**
  * Wraps a card with a mouse-tracked 3D tilt and a specular highlight that
@@ -13,10 +13,12 @@ export function TiltCard({
   children,
   className,
   max = 8,
+  style,
 }: {
   children: ReactNode;
   className?: string;
   max?: number;
+  style?: CSSProperties;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [hovering, setHovering] = useState(false);
@@ -49,7 +51,7 @@ export function TiltCard({
       onMouseMove={handleMove}
       onMouseEnter={() => setHovering(true)}
       onMouseLeave={handleLeave}
-      style={{ rotateX, rotateY, transformPerspective: 800 }}
+      style={{ ...style, rotateX, rotateY, transformPerspective: 800 }}
       className={`relative ${className ?? ""}`}
     >
       <motion.div

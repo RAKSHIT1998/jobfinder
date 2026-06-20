@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Brain, PenLine, BarChart3, Wallet } from "lucide-react";
 import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 interface ScoredJob {
   id: string;
@@ -84,12 +85,12 @@ export default function Dashboard() {
       <RevealGroup className="grid grid-cols-2 lg:grid-cols-4 gap-4" stagger={0.06}>
         {stats.map((stat, i) => (
           <RevealItem key={i}>
-            <div className="glass rounded-2xl p-5" style={{ borderColor: stat.border, boxShadow: `0 8px 32px ${stat.glow}` }}>
+            <TiltCard className="glass rounded-2xl p-5" max={8} style={{ borderColor: stat.border, boxShadow: `0 8px 32px ${stat.glow}` }}>
               <p className="text-white/40 text-xs mb-2">{stat.label}</p>
               <p className={`text-3xl font-black ${stat.color}`}>
                 {loading || stat.value === null ? "—" : <AnimatedCounter value={stat.value} suffix={stat.suffix} />}
               </p>
-            </div>
+            </TiltCard>
           </RevealItem>
         ))}
       </RevealGroup>
@@ -98,12 +99,14 @@ export default function Dashboard() {
         <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-3">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {quickActions.map((a, i) => (
-            <Link key={i} href={a.href} className="glass glass-hover rounded-2xl p-4 group">
-              <div className="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-3 transition-colors group-hover:bg-violet-500/20">
-                <a.Icon className="w-4 h-4 text-violet-300" strokeWidth={1.75} />
-              </div>
-              <div className="text-white/80 font-semibold text-sm group-hover:text-white transition-colors">{a.label}</div>
-              <div className="text-white/30 text-xs mt-0.5">{a.desc}</div>
+            <Link key={i} href={a.href} className="group block">
+              <TiltCard className="glass glass-hover rounded-2xl p-4" max={10}>
+                <div className="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-3 transition-colors group-hover:bg-violet-500/20">
+                  <a.Icon className="w-4 h-4 text-violet-300" strokeWidth={1.75} />
+                </div>
+                <div className="text-white/80 font-semibold text-sm group-hover:text-white transition-colors">{a.label}</div>
+                <div className="text-white/30 text-xs mt-0.5">{a.desc}</div>
+              </TiltCard>
             </Link>
           ))}
         </div>
@@ -125,7 +128,7 @@ export default function Dashboard() {
           <RevealGroup className="space-y-3" stagger={0.08}>
             {jobs.slice(0, 3).map((job) => (
               <RevealItem key={job.id}>
-                <div className="glass glass-hover rounded-2xl p-4 flex items-center gap-4">
+                <TiltCard className="glass glass-hover rounded-2xl p-4 flex items-center gap-4" max={6}>
                   <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-500/20 to-indigo-500/20 border border-white/8 flex items-center justify-center text-base font-black text-violet-300 shrink-0">
                     {job.company[0]?.toUpperCase()}
                   </div>
@@ -139,7 +142,7 @@ export default function Dashboard() {
                     </div>
                     <div className="text-white/30 text-xs">match</div>
                   </div>
-                </div>
+                </TiltCard>
               </RevealItem>
             ))}
             {!loading && jobs.length === 0 && (
@@ -162,13 +165,13 @@ export default function Dashboard() {
           <RevealGroup className="grid grid-cols-1 md:grid-cols-2 gap-4" stagger={0.08}>
             {interviews.slice(0, 2).map((m, i) => (
               <RevealItem key={i}>
-                <div className="glass rounded-2xl p-5">
+                <TiltCard className="glass rounded-2xl p-5" max={6}>
                   <p className="text-white font-semibold text-sm">{m.role}</p>
                   <p className="text-white/40 text-xs">{m.company}</p>
                   <p className="text-white/40 text-xs mt-2">
                     {m.interview_at ? new Date(m.interview_at).toLocaleString() : "Date not set yet"}
                   </p>
-                </div>
+                </TiltCard>
               </RevealItem>
             ))}
           </RevealGroup>

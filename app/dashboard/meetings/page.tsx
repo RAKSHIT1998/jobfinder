@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Search, Code2, Target, HelpCircle, Clock, NotebookPen, CalendarPlus } from "lucide-react";
 import { buildInterviewIcs } from "@/lib/ics";
 import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 interface Application {
   id: string;
@@ -113,18 +114,18 @@ export default function InterviewPrep() {
 
       {apps.length > 0 && (
         <div className="grid grid-cols-3 gap-4">
-          <div className="glass rounded-2xl p-4 text-center">
+          <TiltCard className="glass rounded-2xl p-4 text-center" max={8}>
             <div className="text-3xl font-black text-emerald-400">{scheduled.length}</div>
             <div className="text-xs text-white/40 mt-1">Scheduled</div>
-          </div>
-          <div className="glass rounded-2xl p-4 text-center">
+          </TiltCard>
+          <TiltCard className="glass rounded-2xl p-4 text-center" max={8}>
             <div className="text-3xl font-black text-amber-400">{unscheduled.length}</div>
             <div className="text-xs text-white/40 mt-1">Need a date</div>
-          </div>
-          <div className="glass rounded-2xl p-4 text-center">
+          </TiltCard>
+          <TiltCard className="glass rounded-2xl p-4 text-center" max={8}>
             <div className="text-3xl font-black text-cyan-400">{apps.length}</div>
             <div className="text-xs text-white/40 mt-1">Total</div>
-          </div>
+          </TiltCard>
         </div>
       )}
 
@@ -134,7 +135,7 @@ export default function InterviewPrep() {
             const draft = drafts[app.id] || { when: "", notes: "" };
             return (
               <RevealItem key={app.id}>
-              <div className="glass glass-hover rounded-2xl p-5">
+              <TiltCard className="glass glass-hover rounded-2xl p-5" max={4}>
                 <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
                   <div>
                     <span className="text-white font-bold text-sm">{app.role}</span>
@@ -180,7 +181,7 @@ export default function InterviewPrep() {
                     <CalendarPlus className="w-3.5 h-3.5" /> Download Calendar Invite
                   </button>
                 </div>
-              </div>
+              </TiltCard>
               </RevealItem>
             );
           })}
@@ -193,12 +194,12 @@ export default function InterviewPrep() {
           <RevealGroup className="grid grid-cols-1 md:grid-cols-2 gap-3" stagger={0.05}>
             {prepTips.map((tip, i) => (
               <RevealItem key={i}>
-                <div className="glass rounded-xl p-3 flex items-start gap-3">
+                <TiltCard className="glass rounded-xl p-3 flex items-start gap-3" max={6}>
                   <div className="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shrink-0">
                     <tip.Icon className="w-3.5 h-3.5 text-violet-300" />
                   </div>
                   <p className="text-white/60 text-sm">{tip.tip}</p>
-                </div>
+                </TiltCard>
               </RevealItem>
             ))}
           </RevealGroup>

@@ -6,6 +6,8 @@ import Link from "next/link";
 import { formatCurrency } from "@/lib/currency";
 import { COUNTRIES } from "@/lib/countries";
 import { useCountry } from "@/lib/useCountry";
+import { TiltCard } from "@/components/motion/TiltCard";
+import { Spotlight } from "@/components/motion/Spotlight";
 
 interface WorkExperience {
   company: string;
@@ -234,7 +236,7 @@ export default function CreateCV() {
   const errorClass = "text-xs text-red-400 mt-1.5";
 
   return (
-    <div className="min-h-screen text-white py-8 px-4 relative" style={{ background: "#050508" }}>
+    <Spotlight className="min-h-screen text-white py-8 px-4 bg-[#050508]" color="124,58,237">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[520px] h-[520px] rounded-full opacity-[0.12]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
       </div>
@@ -300,7 +302,7 @@ export default function CreateCV() {
         </div>
 
         {/* Card */}
-        <div className="glass-strong rounded-3xl p-5 sm:p-8 overflow-hidden">
+        <TiltCard className="glass-strong rounded-3xl p-5 sm:p-8 overflow-hidden" max={3}>
           <div key={step} className="animate-step-in">
           {/* Step 1: Personal Info */}
           {step === 1 && (
@@ -715,8 +717,8 @@ export default function CreateCV() {
               {submitting ? "Saving..." : step === STEPS.length ? "Proceed to Payment →" : "Continue →"}
             </button>
           </div>
-        </div>
+        </TiltCard>
       </div>
-    </div>
+    </Spotlight>
   );
 }

@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
+import { TiltCard } from "@/components/motion/TiltCard";
 
 interface AgentStatusProps {
   jobsAnalyzed: number;
@@ -11,7 +12,7 @@ interface AgentStatusProps {
 
 export default function AgentStatus({ jobsAnalyzed, sources, loading }: AgentStatusProps) {
   return (
-    <div className="glass rounded-2xl p-5 h-full">
+    <TiltCard className="glass rounded-2xl p-5 h-full" max={6}>
       <div className="flex items-center gap-3 mb-5">
         <div className="relative">
           <motion.div
@@ -55,6 +56,6 @@ export default function AgentStatus({ jobsAnalyzed, sources, loading }: AgentSta
           </AnimatePresence>
         </div>
       </div>
-    </div>
+    </TiltCard>
   );
 }
