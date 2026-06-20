@@ -269,12 +269,103 @@ async function fetchAdzunaJobs(): Promise<JobListing[]> {
   return results.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
 }
 
+interface NaukriJob {
+  uniq_id: string;
+  timestamp: string | null;
+  job_title: string | null;
+  job_salary: string | null;
+  job_experience_required: string | null;
+  key_skills: string | null;
+  role_category: string | null;
+  location: string | null;
+  functional_area: string | null;
+  industry: string | null;
+  role: string | null;
+}
+
+// job_salary looks like " 3,00,000 - 8,00,000 PA. " (Indian lakh grouping) or
+// "Not Disclosed by Recruiter" - returns the raw INR range, left to the
+// caller to convert to USD.
+function parseNaukriSalaryInr(raw: string | null): { min: number; max: number } | undefined {
+  if (!raw) return undefined;
+  const match = raw.replace(/PA\.?/i, "").match(/([\d,]+)\s*-\s*([\d,]+)/);
+  if (!match) return undefined;
+  const min = Number(match[1].replace(/,/g, ""));
+  const max = Number(match[2].replace(/,/g, ""));
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return undefined;
+  return { min, max };
+}
+
+// The dataset has no apply link, so point at a Naukri title search instead
+// of fabricating a URL to a since-expired posting.
+function naukriSearchUrl(title: string): string {
+  const slug = title
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return `https://www.naukri.com/${slug || "jobs"}-jobs`;
+}
+
+async function fetchNaukriJobs(): Promise<JobListing[]> {
+  const res = await fetch("https://suraj-996.github.io/Naukri.com-API/api.json", {
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!res.ok) throw new Error(`Naukri responded ${res.status}`);
+  const data = (await res.json()) as { content: NaukriJob[] };
+
+  return Promise.all(
+    data.content
+      .filter((j) => j.job_title && j.job_title.trim() && j.job_title.trim().toLowerCase() !== "not disclosed")
+      .map(async (j): Promise<JobListing> => {
+        const title = j.job_title!.trim();
+        const skills = (j.key_skills || "")
+          .split("|")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        const tags = [...skills, j.role_category, j.role].filter((t): t is string => !!t);
+
+        const salaryInr = parseNaukriSalaryInr(j.job_salary);
+        let salaryUsd: { min: number; max: number } | undefined;
+        if (salaryInr) {
+          const [min, max] = await Promise.all([
+            convertCurrency(salaryInr.min, "INR", "USD"),
+            convertCurrency(salaryInr.max, "INR", "USD"),
+          ]);
+          if (min !== null && max !== null) salaryUsd = { min: Math.round(min), max: Math.round(max) };
+        }
+
+        return {
+          id: `naukri:${j.uniq_id}`,
+          title,
+          company: "Unknown company",
+          location: j.location || "India",
+          remote: /\bremote\b/i.test(`${title} ${j.functional_area || ""}`),
+          url: naukriSearchUrl(title),
+          source: "Naukri",
+          tags,
+          description: [
+            j.role ? `Role: ${j.role}.` : null,
+            j.functional_area ? `Functional area: ${j.functional_area.replace(/\s*,\s*/g, ", ")}.` : null,
+            j.job_experience_required ? `Experience required: ${j.job_experience_required}.` : null,
+            skills.length ? `Key skills: ${skills.join(", ")}.` : null,
+          ]
+            .filter((s): s is string => !!s)
+            .join(" "),
+          postedAt: j.timestamp ? new Date(j.timestamp).toISOString() : null,
+          salaryUsd,
+        };
+      })
+  );
+}
+
 const SOURCE_FETCHERS: Array<() => Promise<JobListing[]>> = [
   fetchArbeitnowJobs,
   fetchMuseJobs,
   fetchRemoteOkJobs,
   fetchJobicyJobs,
   fetchAdzunaJobs,
+  fetchNaukriJobs,
 ];
 
 let cache: { jobs: JobListing[]; fetchedAt: number } | null = null;

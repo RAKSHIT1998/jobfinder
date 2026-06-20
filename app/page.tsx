@@ -11,6 +11,8 @@ import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { HeroEntrance, TapScale } from "@/components/motion/HeroEntrance";
 import { TiltCard } from "@/components/motion/TiltCard";
 import { Spotlight } from "@/components/motion/Spotlight";
+import { HeroCrystal } from "@/components/three/HeroCrystal";
+import { PngSequenceBackground } from "@/components/three/PngSequenceBackground";
 
 export const revalidate = 900;
 
@@ -52,10 +54,14 @@ export default async function Home() {
         <div className="animate-blob absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #6366f1, transparent)", filter: "blur(90px)" }} />
       </div>
 
-      <section className="relative">
+      <section className="relative isolate overflow-hidden">
+        <PngSequenceBackground basePath="/hero-sequence" frameCount={72} className="absolute inset-0 -z-20" />
+        {/* Dark scrim over the live background so headline/body text stays legible. */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#050508]/55 via-[#050508]/80 to-[#050508]" />
+
       <Spotlight className="pt-36 pb-24 px-4" color="124,58,237">
-        <div className="max-w-5xl mx-auto text-center">
-          <HeroEntrance>
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-center">
+          <HeroEntrance className="text-center lg:text-left">
             <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-sm text-white/60 mb-8">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>
@@ -63,19 +69,19 @@ export default async function Home() {
               </span>
             </div>
 
-            <h1 className="text-6xl sm:text-7xl lg:text-8xl font-black leading-[0.9] tracking-tight mb-8">
+            <h1 className="text-6xl sm:text-7xl lg:text-7xl font-black leading-[0.9] tracking-tight mb-8">
               <span className="text-white">Your AI </span>
               <span className="gradient-text">Career Agent</span>
               <br />
-              <span className="text-white/80 text-5xl sm:text-6xl lg:text-7xl font-black">Maximizes Your Salary</span>
+              <span className="text-white/80 text-5xl sm:text-6xl lg:text-6xl font-black">Maximizes Your Salary</span>
             </h1>
 
-            <p className="text-xl text-white/40 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-white/40 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               Build your CV once. We match it against live postings from multiple real job sources to find the
               roles that fit your skills and pay the most - then back you with the tools to land the highest offer.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-16">
               <TapScale>
                 <Link href="/create-cv" className="btn-primary text-base font-bold px-8 py-4 rounded-2xl inline-flex items-center gap-2">
                   Match My CV to Top-Paying Jobs
@@ -89,7 +95,7 @@ export default async function Home() {
               </TapScale>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-3 mb-16">
+            <div className="flex flex-wrap justify-center lg:justify-start gap-3">
               <div className="glass rounded-2xl px-5 py-3 text-center">
                 <div className="text-2xl font-black gradient-text">
                   {jobCount !== null ? <AnimatedCounter value={jobCount} /> : "-"}
@@ -106,6 +112,8 @@ export default async function Home() {
               </div>
             </div>
           </HeroEntrance>
+
+          <HeroCrystal className="mx-auto lg:mx-0 w-64 h-64 sm:w-80 sm:h-80 lg:w-full lg:h-[420px]" />
         </div>
       </Spotlight>
       </section>
