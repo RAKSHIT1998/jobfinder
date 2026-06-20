@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ACCESS_PRICE_USD, roundForCurrency } from "@/lib/currency";
 import { convertCurrency } from "@/lib/exchangeRates";
-import { createCashfreeOrderId, getCashfree } from "@/lib/cashfree";
+import { cashfreeErrorMessage, createCashfreeOrderId, getCashfree } from "@/lib/cashfree";
 import { getCurrentUserId } from "@/lib/auth";
 import { getUserById } from "@/lib/db";
 
@@ -77,16 +77,7 @@ export async function POST(req: NextRequest) {
       amount: orderAmount,
     });
   } catch (error) {
-    const cashfreeError =
-      typeof error === "object" &&
-      error !== null &&
-      "response" in error &&
-      typeof (error as { response?: { data?: { message?: string } } }).response?.data?.message === "string"
-        ? (error as { response: { data: { message: string } } }).response.data.message
-        : null;
-    const message =
-      cashfreeError ||
-      (error instanceof Error ? error.message : "Could not create your Cashfree order.");
+    const message = cashfreeErrorMessage(error, "Could not create your Cashfree order.");
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

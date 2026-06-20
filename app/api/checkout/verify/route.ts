@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCashfree } from "@/lib/cashfree";
+import { cashfreeErrorMessage, getCashfree } from "@/lib/cashfree";
 import { recordPayment } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
@@ -25,8 +25,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ paid, status: order.order_status });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Could not verify this payment.";
+    const message = cashfreeErrorMessage(error, "Could not verify this payment.");
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

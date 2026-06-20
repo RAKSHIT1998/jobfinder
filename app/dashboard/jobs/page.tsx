@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { RotateCw, MapPin, ExternalLink, CheckCircle2 } from "lucide-react";
+import { RotateCw, MapPin, ExternalLink, CheckCircle2, Check, X } from "lucide-react";
 import { tokenize } from "@/lib/matching";
 import { StaggerGroup as RevealGroup, StaggerItem as RevealItem } from "@/components/motion/Reveal";
 import { TiltCard } from "@/components/motion/TiltCard";
@@ -54,6 +54,8 @@ export default function Jobs() {
   const [error, setError] = useState("");
   const [filter, setFilter] = useState<"all" | "remote" | "onsite" | "near">("all");
   const [locationTokens, setLocationTokens] = useState<Set<string> | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkApplying, setBulkApplying] = useState(false);
 
   const load = useCallback((userEmail: string) => {
     setLoading(true);
@@ -91,11 +93,65 @@ export default function Jobs() {
     const key = `${job.company}|${job.title}`;
     if (appliedKeys.has(key)) return;
     setAppliedKeys((prev) => new Set(prev).add(key));
+    setSelected((prev) => {
+      if (!prev.has(job.id)) return prev;
+      const next = new Set(prev);
+      next.delete(job.id);
+      return next;
+    });
     await fetch("/api/applications", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, company: job.company, role: job.title, status: "Applied" }),
     }).catch(() => {});
+  };
+
+  const toggleSelected = (jobId: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(jobId)) next.delete(jobId);
+      else next.add(jobId);
+      return next;
+    });
+  };
+
+  // Opens every selected posting's real Apply page (same as the single Apply
+  // Now button, just N times) and tracks each as Applied - no bot login to
+  // other sites, no stored credentials, you still submit each application
+  // yourself on the real job board.
+  const handleBulkApply = async () => {
+    if (!email || selected.size === 0) return;
+    const targets = jobs.filter((j) => selected.has(j.id) && !appliedKeys.has(`${j.company}|${j.title}`));
+    if (targets.length === 0) {
+      setSelected(new Set());
+      return;
+    }
+
+    setBulkApplying(true);
+    // Opened synchronously in the same click handler (no setTimeout) so
+    // browsers attribute every popup to this one user gesture - deferring
+    // even slightly makes most browsers block all but the first.
+    for (const job of targets) {
+      window.open(job.url, "_blank", "noopener,noreferrer");
+    }
+
+    await Promise.all(
+      targets.map((job) =>
+        fetch("/api/applications", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, company: job.company, role: job.title, status: "Applied" }),
+        }).catch(() => {})
+      )
+    );
+
+    setAppliedKeys((prev) => {
+      const next = new Set(prev);
+      targets.forEach((job) => next.add(`${job.company}|${job.title}`));
+      return next;
+    });
+    setSelected(new Set());
+    setBulkApplying(false);
   };
 
   if (!email) {
@@ -164,13 +220,25 @@ export default function Jobs() {
         </div>
       )}
 
-      <RevealGroup className="space-y-3" stagger={0.05}>
+      <RevealGroup className="space-y-3 pb-20" stagger={0.05}>
         {filtered.map((job) => {
           const isApplied = appliedKeys.has(`${job.company}|${job.title}`);
+          const isSelected = selected.has(job.id);
           return (
             <RevealItem key={job.id}>
-              <TiltCard className="glass glass-hover rounded-2xl p-5 transition-all" max={5}>
+              <TiltCard className={`glass glass-hover rounded-2xl p-5 transition-all ${isSelected ? "ring-2 ring-violet-500/50" : ""}`} max={5}>
                 <div className="flex items-start gap-4">
+                  {!isApplied && (
+                    <button
+                      onClick={() => toggleSelected(job.id)}
+                      aria-label={isSelected ? "Deselect job" : "Select job for bulk apply"}
+                      className={`mt-2 w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
+                        isSelected ? "bg-violet-600 border-violet-600" : "border-foreground/20 hover:border-violet-400"
+                      }`}
+                    >
+                      {isSelected && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
+                    </button>
+                  )}
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl font-black shrink-0 bg-violet-500/10 border border-violet-500/25 text-violet-700">
                     {job.company[0]?.toUpperCase() || "?"}
                   </div>
@@ -228,6 +296,30 @@ export default function Jobs() {
           );
         })}
       </RevealGroup>
+
+      {selected.size > 0 && (
+        <div className="fixed bottom-6 right-6 z-50 glass-strong rounded-2xl pl-5 pr-3 py-3 flex items-center gap-3 shadow-2xl">
+          <div>
+            <span className="text-sm font-semibold text-foreground block">{selected.size} job{selected.size > 1 ? "s" : ""} selected</span>
+            <span className="text-xs text-foreground/40">Opens each real posting - allow popups if your browser asks</span>
+          </div>
+          <button
+            onClick={() => setSelected(new Set())}
+            aria-label="Clear selection"
+            className="text-foreground/30 hover:text-foreground p-2 rounded-lg hover:bg-foreground/5"
+          >
+            <X className="w-4 h-4" />
+          </button>
+          <button
+            onClick={handleBulkApply}
+            disabled={bulkApplying}
+            className="btn-primary px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 inline-flex items-center gap-2 whitespace-nowrap"
+          >
+            {bulkApplying ? "Opening..." : `Apply to All (${selected.size})`}
+            <ExternalLink className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
