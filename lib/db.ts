@@ -15,12 +15,24 @@ const DB_NAME = "jobfinder";
 // requiring an OS-level DNS change.
 dns.setServers([...dns.getServers(), "8.8.8.8", "1.1.1.1"]);
 
-function init(): Promise<MongoClient> {
+/** Network blips on `mongodb+srv://` DNS resolution are transient - a couple of
+ * short retries here keeps a single bad lookup from failing the whole request. */
+async function init(): Promise<MongoClient> {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
     throw new Error("MONGODB_URI is not set - point it at your MongoDB Atlas cluster.");
   }
-  return new MongoClient(uri).connect();
+  const attempts = [0, 500, 1500];
+  let lastErr: unknown;
+  for (const delayMs of attempts) {
+    if (delayMs) await new Promise((resolve) => setTimeout(resolve, delayMs));
+    try {
+      return await new MongoClient(uri, { serverSelectionTimeoutMS: 8000 }).connect();
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr;
 }
 
 export function getClient(): Promise<MongoClient> {
