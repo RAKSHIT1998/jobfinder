@@ -308,8 +308,10 @@ function naukriSearchUrl(title: string): string {
 }
 
 async function fetchNaukriJobs(): Promise<JobListing[]> {
+  // This dataset is a single ~2.4MB JSON file (no pagination), much heavier
+  // than the other sources' responses - give it more room before timing out.
   const res = await fetch("https://suraj-996.github.io/Naukri.com-API/api.json", {
-    signal: AbortSignal.timeout(8000),
+    signal: AbortSignal.timeout(20000),
   });
   if (!res.ok) throw new Error(`Naukri responded ${res.status}`);
   const data = (await res.json()) as { content: NaukriJob[] };
