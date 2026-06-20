@@ -1,5 +1,5 @@
 import { getContactMessages } from "@/lib/db";
-import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { StaggerGroup as RevealGroup, StaggerItem as RevealItem } from "@/components/motion/Reveal";
 import { TiltCard } from "@/components/motion/TiltCard";
 
 export default async function AdminMessages() {

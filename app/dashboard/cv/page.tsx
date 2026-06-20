@@ -6,7 +6,7 @@ import Link from "next/link";
 import { FileText } from "lucide-react";
 import { formatCurrency } from "@/lib/currency";
 import { useCountry } from "@/lib/useCountry";
-import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { StaggerGroup as RevealGroup, StaggerItem as RevealItem } from "@/components/motion/Reveal";
 import { TiltCard } from "@/components/motion/TiltCard";
 
 interface CVData {

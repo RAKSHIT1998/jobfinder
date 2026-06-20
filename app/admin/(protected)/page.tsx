@@ -1,6 +1,6 @@
 import { getAdminStats, getPaidPayments } from "@/lib/db";
 import { convertCurrency } from "@/lib/exchangeRates";
-import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { FadeIn as Reveal, StaggerGroup as RevealGroup, StaggerItem as RevealItem } from "@/components/motion/Reveal";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { TiltCard } from "@/components/motion/TiltCard";
 

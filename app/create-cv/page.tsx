@@ -8,6 +8,7 @@ import { COUNTRIES } from "@/lib/countries";
 import { useCountry } from "@/lib/useCountry";
 import { TiltCard } from "@/components/motion/TiltCard";
 import { Spotlight } from "@/components/motion/Spotlight";
+import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 
 interface WorkExperience {
   company: string;
@@ -332,7 +333,7 @@ export default function CreateCV() {
                 </div>
                 <div>
                   <label className={labelClass}>Location</label>
-                  <input className={inputClass} placeholder="San Francisco, CA" value={cv.location} onChange={(e) => updateCv("location", e.target.value)} />
+                  <LocationAutocomplete className={inputClass} placeholder="San Francisco, CA" value={cv.location} onChange={(v) => updateCv("location", v)} />
                 </div>
                 <div>
                   <label className={labelClass}>LinkedIn URL</label>
@@ -624,11 +625,13 @@ export default function CreateCV() {
                 </div>
                 <div>
                   <label className={labelClass}>Preferred Locations</label>
-                  <input
+                  <LocationAutocomplete
                     className={inputClass}
                     placeholder="e.g. San Francisco, New York, Austin (or Anywhere)"
                     value={cv.preferredLocations}
-                    onChange={(e) => updateCv("preferredLocations", e.target.value)}
+                    onChange={(v) => updateCv("preferredLocations", v)}
+                    multi
+                    includeRemote
                   />
                   <p className="text-xs text-white/20 mt-1">Onsite/hybrid roles outside these get ranked lower - remote roles are unaffected.</p>
                 </div>

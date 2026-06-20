@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { RotateCw, MapPin, ExternalLink, CheckCircle2 } from "lucide-react";
 import { tokenize } from "@/lib/matching";
-import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { StaggerGroup as RevealGroup, StaggerItem as RevealItem } from "@/components/motion/Reveal";
 import { TiltCard } from "@/components/motion/TiltCard";
 
 const ANYWHERE_WORDS = new Set(["anywhere", "any", "flexible", "open"]);

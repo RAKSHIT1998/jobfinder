@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Search, Code2, Target, HelpCircle, Clock, NotebookPen, CalendarPlus } from "lucide-react";
 import { buildInterviewIcs } from "@/lib/ics";
-import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { StaggerGroup as RevealGroup, StaggerItem as RevealItem } from "@/components/motion/Reveal";
 import { TiltCard } from "@/components/motion/TiltCard";
 
 interface Application {

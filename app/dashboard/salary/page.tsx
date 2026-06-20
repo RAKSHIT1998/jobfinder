@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Target } from "lucide-react";
 import { useCountry } from "@/lib/useCountry";
-import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { FadeIn as Reveal, StaggerGroup as RevealGroup, StaggerItem as RevealItem } from "@/components/motion/Reveal";
 import { TiltCard } from "@/components/motion/TiltCard";
 
 interface SalaryIntel {

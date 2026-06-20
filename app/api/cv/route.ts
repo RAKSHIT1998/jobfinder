@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { upsertUser, getUserByEmail, setUserPassword, upsertCv, getCvDataByEmail } from "@/lib/db";
 import { hashPassword, setSessionCookie } from "@/lib/auth";
+import { sendRegistrationEmail } from "@/lib/registrationEmail";
+import type { CVProfile } from "@/lib/matching";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -9,10 +11,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "email is required" }, { status: 400 });
   }
 
+  const existingUser = await getUserByEmail(email);
   const user = await upsertUser(email, name);
 
   if (password) {
-    const existingUser = await getUserByEmail(email);
     if (!existingUser?.password_hash) {
       await setUserPassword(user.id, hashPassword(password));
     }
@@ -21,6 +23,14 @@ export async function POST(req: NextRequest) {
 
   const cvJson = JSON.stringify({ email, name, ...cvFields });
   await upsertCv(user.id, cvJson);
+
+  // Fire-and-forget: AI copy + a live job scan take a few seconds, and a
+  // welcome email should never delay the redirect into checkout.
+  if (!existingUser) {
+    sendRegistrationEmail({ email, name: name || "", cv: cvFields as CVProfile }).catch((err) =>
+      console.error("[api/cv] registration email failed:", err)
+    );
+  }
 
   return NextResponse.json({ ok: true });
 }

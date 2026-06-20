@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import AgentStatus from "@/components/AgentStatus";
 import Link from "next/link";
 import { Brain, PenLine, BarChart3, Wallet } from "lucide-react";
-import { RevealGroup, RevealItem } from "@/components/motion/Reveal";
+import { StaggerGroup as RevealGroup, StaggerItem as RevealItem } from "@/components/motion/Reveal";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { TiltCard } from "@/components/motion/TiltCard";
 
