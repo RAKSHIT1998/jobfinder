@@ -64,7 +64,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   return (
     <div className="min-h-screen relative" style={{ background: "#ffffff" }}>
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="animate-blob absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-[0.06]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(100px)" }} />
+        <div className="animate-blob absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-[0.06]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(var(--blur-ambient))" }} />
       </div>
 
       {/* Mobile top bar */}

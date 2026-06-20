@@ -83,7 +83,7 @@ export default function Checkout() {
   return (
     <div className="min-h-screen text-foreground flex items-center justify-center px-4 py-16 relative" style={{ background: "#ffffff" }}>
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="animate-blob absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full opacity-[0.12]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
+        <div className="animate-blob absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full opacity-[0.12]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(var(--blur-ambient))" }} />
       </div>
 
       <HeroEntrance className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 relative">

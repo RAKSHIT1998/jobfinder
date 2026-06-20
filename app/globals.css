@@ -3,6 +3,17 @@
 :root {
   --background: #ffffff;
   --foreground: #15131f;
+  /* Large decorative ambient-glow blobs (the big blurred radial-gradient
+     circles on most pages) use this via inline style="filter: blur(var(...))"
+     since blur radius is the dominant cost driver and these run at 80-100px -
+     much larger than .glass's 18-26px - so they get the same mobile cut. */
+  --blur-ambient: 90px;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --blur-ambient: 40px;
+  }
 }
 
 @theme inline {
@@ -257,5 +268,30 @@ body {
   .pulse-glow,
   .shimmer-line {
     animation: none !important;
+  }
+}
+
+/* Mobile perf: backdrop-filter is one of the priciest properties to
+   composite, and phone GPUs handle it far worse than desktop - this app
+   stacks dozens of .glass elements per page, so cutting blur radius here
+   (cost scales with radius) is the single biggest lever for mobile lag.
+   Also pauses the decorative blob animation and drops the full-page
+   grain overlay's blend-mode compositing, both real but smaller wins. */
+@media (max-width: 767px) {
+  .glass {
+    backdrop-filter: blur(8px) saturate(140%);
+  }
+  .glass-strong {
+    backdrop-filter: blur(10px) saturate(140%);
+  }
+  .input-glass,
+  .btn-glass {
+    backdrop-filter: blur(6px);
+  }
+  .animate-blob {
+    animation: none;
+  }
+  .grain-overlay {
+    display: none;
   }
 }

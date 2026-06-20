@@ -42,8 +42,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     <div className="min-h-screen text-foreground flex" style={{ background: "#ffffff" }}>
       {/* Ambient background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="animate-blob absolute top-0 right-0 w-96 h-96 rounded-full opacity-[0.08]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(80px)" }} />
-        <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full opacity-[0.06]" style={{ background: "radial-gradient(circle, #6366f1, transparent)", filter: "blur(80px)" }} />
+        <div className="animate-blob absolute top-0 right-0 w-96 h-96 rounded-full opacity-[0.08]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(var(--blur-ambient))" }} />
+        <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full opacity-[0.06]" style={{ background: "radial-gradient(circle, #6366f1, transparent)", filter: "blur(var(--blur-ambient))" }} />
       </div>
 
       {/* Sidebar */}

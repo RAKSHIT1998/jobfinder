@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 const HeroCrystalCanvas = dynamic(() => import("./HeroCrystalCanvas"), {
   ssr: false,
@@ -43,8 +44,12 @@ function StaticGem({ className }: { className?: string }) {
 
 export function HeroCrystal({ className }: { className?: string }) {
   const reducedMotion = usePrefersReducedMotion();
+  // A WebGL render loop is the single most expensive thing on this page -
+  // skip it on phones, where it's also the least useful (cursor-driven
+  // rotation has no touch equivalent and the box renders much smaller anyway).
+  const isMobile = useIsMobile();
   const [canvasReady, setCanvasReady] = useState(false);
-  const showCanvas = !reducedMotion;
+  const showCanvas = !reducedMotion && !isMobile;
   // Keep the static gem visible until the WebGL canvas has actually painted
   // a frame, so there's no blank gap while its chunk is still loading.
   const showStatic = !showCanvas || !canvasReady;

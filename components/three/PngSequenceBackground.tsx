@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 interface PngSequenceBackgroundProps {
   /** Folder under /public holding frame-000.png..frame-{N-1}.png and poster.png. */
@@ -35,10 +36,15 @@ export function PngSequenceBackground({ basePath, frameCount, fps = 24, classNam
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reducedMotion = usePrefersReducedMotion();
+  // A continuous canvas redraw loop is real, sustained CPU/GPU work - skip it
+  // on phones (where it's also the biggest lag contributor) and just show
+  // the static poster, same as the reduced-motion fallback.
+  const isMobile = useIsMobile();
+  const skipAnimation = reducedMotion || isMobile;
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (reducedMotion) return;
+    if (skipAnimation) return;
 
     const canvas = canvasRef.current;
     const container = containerRef.current;
@@ -95,12 +101,12 @@ export function PngSequenceBackground({ basePath, frameCount, fps = 24, classNam
       observer.disconnect();
       cancelAnimationFrame(rafId);
     };
-  }, [reducedMotion, basePath, frameCount, fps]);
+  }, [skipAnimation, basePath, frameCount, fps]);
 
   return (
     <div ref={containerRef} className={`overflow-hidden ${className ?? ""}`}>
       <Image src={`${basePath}/poster.png`} alt="" fill priority sizes="100vw" className="object-cover" />
-      {!reducedMotion && (
+      {!skipAnimation && (
         <canvas
           ref={canvasRef}
           className={`absolute inset-0 w-full h-full transition-opacity duration-700 ${ready ? "opacity-100" : "opacity-0"}`}

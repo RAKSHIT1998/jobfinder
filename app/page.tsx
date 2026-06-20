@@ -50,8 +50,8 @@ export default async function Home() {
       <Navbar />
 
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[640px] h-[640px] rounded-full opacity-[0.1]" style={{ background: "radial-gradient(circle, #7c3aed, transparent 70%)", filter: "blur(100px)" }} />
-        <div className="animate-blob absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-[0.07]" style={{ background: "radial-gradient(circle, #6366f1, transparent)", filter: "blur(90px)" }} />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[640px] h-[640px] rounded-full opacity-[0.1]" style={{ background: "radial-gradient(circle, #7c3aed, transparent 70%)", filter: "blur(var(--blur-ambient))" }} />
+        <div className="animate-blob absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-[0.07]" style={{ background: "radial-gradient(circle, #6366f1, transparent)", filter: "blur(var(--blur-ambient))" }} />
       </div>
 
       <section className="relative isolate overflow-hidden">

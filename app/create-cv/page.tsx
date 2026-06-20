@@ -239,7 +239,7 @@ export default function CreateCV() {
   return (
     <Spotlight className="min-h-screen text-foreground py-8 px-4 bg-white" color="124,58,237">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[520px] h-[520px] rounded-full opacity-[0.12]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[520px] h-[520px] rounded-full opacity-[0.12]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(var(--blur-ambient))" }} />
       </div>
       <div className="max-w-2xl mx-auto relative">
         {/* Header */}

@@ -33,7 +33,7 @@ export default function CheckoutSuccess() {
   return (
     <div className="min-h-screen text-foreground flex items-center justify-center px-4 relative" style={{ background: "#ffffff" }}>
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[420px] h-[420px] rounded-full opacity-[0.12]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[420px] h-[420px] rounded-full opacity-[0.12]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(var(--blur-ambient))" }} />
       </div>
 
       <HeroEntrance className="glass-strong rounded-3xl p-10 max-w-sm text-center relative">
