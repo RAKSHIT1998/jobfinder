@@ -47,7 +47,7 @@ export default function Login() {
   };
 
   return (
-    <Spotlight className="min-h-screen flex items-center justify-center px-4 bg-[#050508]" color="124,58,237">
+    <Spotlight className="min-h-screen flex items-center justify-center px-4 bg-white" color="124,58,237">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[460px] h-[460px] rounded-full opacity-[0.13]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
       </div>
@@ -61,13 +61,13 @@ export default function Login() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <span className="text-white font-bold">JobFinder<span className="gradient-text">AI</span></span>
+          <span className="text-foreground font-bold">JobFinder<span className="gradient-text">AI</span></span>
         </div>
 
-        <h1 className="text-2xl font-black text-white mb-1">Welcome back</h1>
-        <p className="text-white/40 text-sm mb-6">Log in to pick up right where you left off.</p>
+        <h1 className="text-2xl font-black text-foreground mb-1">Welcome back</h1>
+        <p className="text-foreground/40 text-sm mb-6">Log in to pick up right where you left off.</p>
 
-        <label className="block text-sm font-medium text-white/50 mb-2">Email</label>
+        <label className="block text-sm font-medium text-foreground/50 mb-2">Email</label>
         <input
           type="email"
           className="input-glass mb-4"
@@ -77,7 +77,7 @@ export default function Login() {
           autoFocus
         />
 
-        <label className="block text-sm font-medium text-white/50 mb-2">Password</label>
+        <label className="block text-sm font-medium text-foreground/50 mb-2">Password</label>
         <input
           type="password"
           className="input-glass"
@@ -87,7 +87,7 @@ export default function Login() {
         />
 
         {error && (
-          <div className="glass rounded-xl px-4 py-3 text-red-400 text-sm border border-red-500/20 mt-4">
+          <div className="glass rounded-xl px-4 py-3 text-red-600 text-sm border border-red-500/20 mt-4">
             {error}
           </div>
         )}
@@ -102,9 +102,9 @@ export default function Login() {
           </button>
         </TapScale>
 
-        <p className="text-white/30 text-xs text-center mt-5">
+        <p className="text-foreground/30 text-xs text-center mt-5">
           New here?{" "}
-          <Link href="/create-cv" className="text-violet-400 hover:text-violet-300">Build your CV</Link>
+          <Link href="/create-cv" className="text-violet-600 hover:text-violet-700">Build your CV</Link>
         </p>
       </form>
       </TiltCard>

@@ -37,7 +37,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <Spotlight className="min-h-screen flex items-center justify-center px-4 bg-[#050508]" color="124,58,237">
+    <Spotlight className="min-h-screen flex items-center justify-center px-4 bg-white" color="124,58,237">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[460px] h-[460px] rounded-full opacity-[0.13]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
       </div>
@@ -51,13 +51,13 @@ export default function AdminLogin() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <span className="text-white font-bold">JobFinder<span className="gradient-text">AI</span> Admin</span>
+          <span className="text-foreground font-bold">JobFinder<span className="gradient-text">AI</span> Admin</span>
         </div>
 
-        <h1 className="text-2xl font-black text-white mb-1">Admin Console</h1>
-        <p className="text-white/40 text-sm mb-6">Sign in to manage users, CVs and payments.</p>
+        <h1 className="text-2xl font-black text-foreground mb-1">Admin Console</h1>
+        <p className="text-foreground/40 text-sm mb-6">Sign in to manage users, CVs and payments.</p>
 
-        <label className="block text-sm font-medium text-white/50 mb-2">Username</label>
+        <label className="block text-sm font-medium text-foreground/50 mb-2">Username</label>
         <input
           type="text"
           className="input-glass mb-4"
@@ -67,7 +67,7 @@ export default function AdminLogin() {
           autoFocus
         />
 
-        <label className="block text-sm font-medium text-white/50 mb-2">Password</label>
+        <label className="block text-sm font-medium text-foreground/50 mb-2">Password</label>
         <input
           type="password"
           className="input-glass"
@@ -77,7 +77,7 @@ export default function AdminLogin() {
         />
 
         {error && (
-          <div className="glass rounded-xl px-4 py-3 text-red-400 text-sm border border-red-500/20 mt-4">
+          <div className="glass rounded-xl px-4 py-3 text-red-600 text-sm border border-red-500/20 mt-4">
             {error}
           </div>
         )}

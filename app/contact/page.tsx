@@ -28,7 +28,7 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: "#050508" }}>
+    <div className="min-h-screen" style={{ background: "#ffffff" }}>
       <Navbar />
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[560px] h-[560px] rounded-full opacity-[0.13]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
@@ -36,8 +36,8 @@ export default function Contact() {
 
       <main className="relative pt-36 pb-24 px-4">
         <HeroEntrance className="max-w-lg mx-auto">
-          <h1 className="text-4xl sm:text-5xl font-black text-white mb-2">Contact Us</h1>
-          <p className="text-white/40 text-sm mb-10">
+          <h1 className="text-4xl sm:text-5xl font-black text-foreground mb-2">Contact Us</h1>
+          <p className="text-foreground/40 text-sm mb-10">
             Refund requests, account deletion, bugs, anything — send it here and it goes straight to our team.
           </p>
 
@@ -45,12 +45,12 @@ export default function Contact() {
             {status === "sent" ? (
               <div className="text-center py-6">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <p className="text-white font-bold mb-1">Message sent</p>
-                <p className="text-white/40 text-sm">We&apos;ll get back to you at the email you provided.</p>
+                <p className="text-foreground font-bold mb-1">Message sent</p>
+                <p className="text-foreground/40 text-sm">We&apos;ll get back to you at the email you provided.</p>
               </div>
             ) : (
               <form onSubmit={submit} className="space-y-4">
@@ -76,7 +76,7 @@ export default function Contact() {
                   value={form.message}
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                 />
-                {status === "error" && <p className="text-red-400 text-sm">Couldn&apos;t send that — try again in a moment.</p>}
+                {status === "error" && <p className="text-red-600 text-sm">Couldn&apos;t send that — try again in a moment.</p>}
                 <TapScale className="block">
                   <button type="submit" disabled={status === "sending"} className="btn-primary w-full py-3.5 rounded-2xl text-sm font-bold disabled:opacity-50">
                     {status === "sending" ? "Sending..." : "Send Message"}

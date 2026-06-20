@@ -26,7 +26,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
         </div>
-        <span className="text-white font-bold text-sm">Admin Console</span>
+        <span className="text-foreground font-bold text-sm">Admin Console</span>
       </div>
 
       <nav className="space-y-1">
@@ -38,13 +38,13 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               href={item.href}
               onClick={() => setOpen(false)}
               className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${
-                isActive ? "text-violet-200" : "text-white/60 hover:text-white hover:bg-white/5"
+                isActive ? "text-violet-700" : "text-foreground/60 hover:text-foreground hover:bg-foreground/5"
               } font-semibold`}
             >
               {isActive && (
                 <motion.span
                   layoutId="admin-active-pill"
-                  className="absolute inset-0 rounded-xl bg-violet-500/20 border border-violet-500/30"
+                  className="absolute inset-0 rounded-xl bg-violet-500/15 border border-violet-500/25"
                   transition={{ type: "spring", stiffness: 380, damping: 32 }}
                 />
               )}
@@ -55,16 +55,16 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         })}
       </nav>
 
-      <div className="mt-6 pt-4 border-t border-white/5">
+      <div className="mt-6 pt-4 border-t border-foreground/5">
         <LogoutButton />
       </div>
     </>
   );
 
   return (
-    <div className="min-h-screen relative" style={{ background: "#050508" }}>
+    <div className="min-h-screen relative" style={{ background: "#ffffff" }}>
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="animate-blob absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-[0.08]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(100px)" }} />
+        <div className="animate-blob absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-[0.06]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(100px)" }} />
       </div>
 
       {/* Mobile top bar */}
@@ -75,11 +75,11 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <span className="text-white font-bold text-sm">Admin Console</span>
+          <span className="text-foreground font-bold text-sm">Admin Console</span>
         </div>
         <button
           onClick={() => setOpen(true)}
-          className="text-white/60 hover:text-white p-1"
+          className="text-foreground/60 hover:text-foreground p-1"
           aria-label="Open menu"
         >
           <Menu className="w-6 h-6" />
@@ -91,7 +91,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
         {open && (
           <div className="md:hidden fixed inset-0 z-50 flex">
             <motion.div
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -108,7 +108,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               <div className="glass-strong rounded-2xl p-4 h-full">
                 <button
                   onClick={() => setOpen(false)}
-                  className="absolute top-6 right-6 text-white/50 hover:text-white"
+                  className="absolute top-6 right-6 text-foreground/50 hover:text-foreground"
                   aria-label="Close menu"
                 >
                   <X className="w-5 h-5" />

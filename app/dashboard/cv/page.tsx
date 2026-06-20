@@ -57,9 +57,9 @@ export default function MyCVPage() {
   if (!cv) {
     return (
       <div className="flex flex-col items-center justify-center h-64 space-y-4 text-center">
-        <div className="w-16 h-16 glass rounded-2xl flex items-center justify-center"><FileText className="w-7 h-7 text-violet-300" /></div>
-        <h2 className="text-xl font-bold text-white">No CV Found</h2>
-        <p className="text-white/40 text-sm">Build your CV to start getting matched to jobs.</p>
+        <div className="w-16 h-16 glass rounded-2xl flex items-center justify-center"><FileText className="w-7 h-7 text-violet-700" /></div>
+        <h2 className="text-xl font-bold text-foreground">No CV Found</h2>
+        <p className="text-foreground/40 text-sm">Build your CV to start getting matched to jobs.</p>
         <Link href="/create-cv" className="btn-primary px-6 py-2.5 rounded-xl text-sm font-semibold">
           Build My CV
         </Link>
@@ -70,7 +70,7 @@ export default function MyCVPage() {
   const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <RevealItem>
       <TiltCard className="glass rounded-2xl p-6" max={4}>
-        <h2 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">{title}</h2>
+        <h2 className="text-sm font-semibold text-foreground/50 uppercase tracking-widest mb-4">{title}</h2>
         {children}
       </TiltCard>
     </RevealItem>
@@ -80,10 +80,10 @@ export default function MyCVPage() {
     <RevealGroup className="space-y-4 max-w-3xl" stagger={0.07}>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-black text-white">My CV</h1>
-          <p className="text-white/40 text-sm mt-1">Your profile used by AI for job matching</p>
+          <h1 className="text-3xl font-black text-foreground">My CV</h1>
+          <p className="text-foreground/40 text-sm mt-1">Your profile used by AI for job matching</p>
         </div>
-        <Link href="/create-cv" className="btn-glass px-4 py-2 rounded-xl text-sm font-semibold text-white/60 hover:text-white">
+        <Link href="/create-cv" className="btn-glass px-4 py-2 rounded-xl text-sm font-semibold text-foreground/60 hover:text-foreground">
           Edit CV
         </Link>
       </div>
@@ -97,21 +97,21 @@ export default function MyCVPage() {
             { label: "Location", value: cv.location },
           ].map((f) => (
             <div key={f.label} className="glass rounded-xl p-3">
-              <div className="text-white/30 text-xs mb-1">{f.label}</div>
-              <div className="text-white/80 font-semibold">{f.value || "—"}</div>
+              <div className="text-foreground/30 text-xs mb-1">{f.label}</div>
+              <div className="text-foreground/80 font-semibold">{f.value || "—"}</div>
             </div>
           ))}
           {cv.linkedin && (
             <div className="glass rounded-xl p-3 md:col-span-2">
-              <div className="text-white/30 text-xs mb-1">LinkedIn</div>
-              <a href={cv.linkedin} className="text-violet-400 hover:text-violet-300 text-sm font-semibold break-all">{cv.linkedin}</a>
+              <div className="text-foreground/30 text-xs mb-1">LinkedIn</div>
+              <a href={cv.linkedin} className="text-violet-600 hover:text-violet-700 text-sm font-semibold break-all">{cv.linkedin}</a>
             </div>
           )}
         </div>
         {cv.summary && (
           <div className="glass rounded-xl p-3 mt-4">
-            <div className="text-white/30 text-xs mb-1">Summary</div>
-            <p className="text-white/70 text-sm leading-relaxed">{cv.summary}</p>
+            <div className="text-foreground/30 text-xs mb-1">Summary</div>
+            <p className="text-foreground/70 text-sm leading-relaxed">{cv.summary}</p>
           </div>
         )}
       </Section>
@@ -120,10 +120,10 @@ export default function MyCVPage() {
         <div className="space-y-4">
           {cv.workExperiences?.map((exp, i) => (
             <div key={i} className="glass rounded-xl p-4 border-l-2" style={{ borderColor: "rgba(139,92,246,0.4)" }}>
-              <p className="text-white font-bold text-sm">{exp.role || "—"}</p>
-              <p className="text-violet-300 text-xs font-semibold mt-0.5">{exp.company || "—"}</p>
-              <p className="text-white/30 text-xs mt-1">{exp.startDate} – {exp.endDate}</p>
-              {exp.description && <p className="text-white/50 text-sm mt-2 leading-relaxed">{exp.description}</p>}
+              <p className="text-foreground font-bold text-sm">{exp.role || "—"}</p>
+              <p className="text-violet-700 text-xs font-semibold mt-0.5">{exp.company || "—"}</p>
+              <p className="text-foreground/30 text-xs mt-1">{exp.startDate} – {exp.endDate}</p>
+              {exp.description && <p className="text-foreground/50 text-sm mt-2 leading-relaxed">{exp.description}</p>}
             </div>
           ))}
         </div>
@@ -133,9 +133,9 @@ export default function MyCVPage() {
         <div className="space-y-3">
           {cv.education?.map((edu, i) => (
             <div key={i} className="glass rounded-xl p-4 border-l-2" style={{ borderColor: "rgba(6,182,212,0.4)" }}>
-              <p className="text-white font-bold text-sm">{edu.degree || "—"}</p>
-              <p className="text-cyan-300 text-xs font-semibold mt-0.5">{edu.school || "—"}</p>
-              <p className="text-white/30 text-xs mt-1">{edu.year || "—"}</p>
+              <p className="text-foreground font-bold text-sm">{edu.degree || "—"}</p>
+              <p className="text-cyan-700 text-xs font-semibold mt-0.5">{edu.school || "—"}</p>
+              <p className="text-foreground/30 text-xs mt-1">{edu.year || "—"}</p>
             </div>
           ))}
         </div>
@@ -144,26 +144,26 @@ export default function MyCVPage() {
       <Section title="Skills">
         {cv.techSkills?.length > 0 && (
           <div className="mb-4">
-            <p className="text-white/30 text-xs mb-2 font-semibold uppercase tracking-wider">Technical</p>
+            <p className="text-foreground/30 text-xs mb-2 font-semibold uppercase tracking-wider">Technical</p>
             <div className="flex flex-wrap gap-2">
               {cv.techSkills.map((s) => (
-                <span key={s} className="px-3 py-1 rounded-xl text-xs font-semibold border bg-violet-500/15 text-violet-300 border-violet-500/25">{s}</span>
+                <span key={s} className="px-3 py-1 rounded-xl text-xs font-semibold border bg-violet-500/15 text-violet-700 border-violet-500/25">{s}</span>
               ))}
             </div>
           </div>
         )}
         {cv.softSkills?.length > 0 && (
           <div>
-            <p className="text-white/30 text-xs mb-2 font-semibold uppercase tracking-wider">Soft Skills</p>
+            <p className="text-foreground/30 text-xs mb-2 font-semibold uppercase tracking-wider">Soft Skills</p>
             <div className="flex flex-wrap gap-2">
               {cv.softSkills.map((s) => (
-                <span key={s} className="px-3 py-1 rounded-xl text-xs font-semibold border bg-cyan-500/15 text-cyan-300 border-cyan-500/25">{s}</span>
+                <span key={s} className="px-3 py-1 rounded-xl text-xs font-semibold border bg-cyan-500/15 text-cyan-700 border-cyan-500/25">{s}</span>
               ))}
             </div>
           </div>
         )}
         {!cv.techSkills?.length && !cv.softSkills?.length && (
-          <p className="text-white/30 text-sm">No skills added yet.</p>
+          <p className="text-foreground/30 text-sm">No skills added yet.</p>
         )}
       </Section>
 
@@ -182,8 +182,8 @@ export default function MyCVPage() {
             { label: "Locations", value: cv.preferredLocations },
           ].map((f) => (
             <div key={f.label} className="glass rounded-xl p-3">
-              <div className="text-white/30 text-xs mb-1">{f.label}</div>
-              <div className="text-white/80 text-sm font-semibold capitalize">{f.value || "—"}</div>
+              <div className="text-foreground/30 text-xs mb-1">{f.label}</div>
+              <div className="text-foreground/80 text-sm font-semibold capitalize">{f.value || "—"}</div>
             </div>
           ))}
         </div>
@@ -191,30 +191,30 @@ export default function MyCVPage() {
 
       <RevealItem>
       <TiltCard className="glass rounded-2xl p-6 border border-red-500/20" max={4}>
-        <h2 className="text-sm font-semibold text-red-400/80 uppercase tracking-widest mb-2">Danger Zone</h2>
-        <p className="text-white/40 text-sm mb-4">
+        <h2 className="text-sm font-semibold text-red-600/80 uppercase tracking-widest mb-2">Danger Zone</h2>
+        <p className="text-foreground/40 text-sm mb-4">
           Permanently delete your account, CV, applications, and payment history. This can&apos;t be undone.
         </p>
         {!confirmingDelete ? (
           <button
             onClick={() => setConfirmingDelete(true)}
-            className="btn-glass px-4 py-2 rounded-xl text-sm font-semibold text-red-400 hover:text-red-300"
+            className="btn-glass px-4 py-2 rounded-xl text-sm font-semibold text-red-600 hover:text-red-700"
           >
             Delete My Account
           </button>
         ) : (
           <div className="flex items-center gap-3">
-            <span className="text-white/50 text-sm">Are you sure? This is permanent.</span>
+            <span className="text-foreground/50 text-sm">Are you sure? This is permanent.</span>
             <button
               onClick={handleDeleteAccount}
               disabled={deleting}
-              className="px-4 py-2 rounded-xl bg-red-500/20 border border-red-500/30 text-red-300 text-sm font-semibold disabled:opacity-50"
+              className="px-4 py-2 rounded-xl bg-red-500/20 border border-red-500/30 text-red-700 text-sm font-semibold disabled:opacity-50"
             >
               {deleting ? "Deleting..." : "Yes, delete everything"}
             </button>
             <button
               onClick={() => setConfirmingDelete(false)}
-              className="btn-glass px-4 py-2 rounded-xl text-sm font-semibold text-white/50"
+              className="btn-glass px-4 py-2 rounded-xl text-sm font-semibold text-foreground/50"
             >
               Cancel
             </button>

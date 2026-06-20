@@ -18,17 +18,17 @@ interface Application {
 }
 
 const columns: { status: Status; color: string; glow: string }[] = [
-  { status: "Applied", color: "border-white/15 bg-white/3", glow: "rgba(255,255,255,0.05)" },
+  { status: "Applied", color: "border-foreground/15 bg-foreground/3", glow: "rgba(255,255,255,0.05)" },
   { status: "Interview", color: "border-cyan-500/25 bg-cyan-500/5", glow: "rgba(6,182,212,0.1)" },
   { status: "Offer", color: "border-emerald-500/25 bg-emerald-500/5", glow: "rgba(52,211,153,0.1)" },
   { status: "Rejected", color: "border-red-500/20 bg-red-500/3", glow: "rgba(239,68,68,0.05)" },
 ];
 
 const statusColors: Record<Status, string> = {
-  Applied: "text-white/60 bg-white/8 border-white/15",
-  Interview: "text-cyan-300 bg-cyan-500/15 border-cyan-500/25",
-  Offer: "text-emerald-300 bg-emerald-500/15 border-emerald-500/25",
-  Rejected: "text-red-400 bg-red-500/10 border-red-500/20",
+  Applied: "text-foreground/60 bg-foreground/8 border-foreground/15",
+  Interview: "text-cyan-700 bg-cyan-500/15 border-cyan-500/25",
+  Offer: "text-emerald-700 bg-emerald-500/15 border-emerald-500/25",
+  Rejected: "text-red-600 bg-red-500/10 border-red-500/20",
 };
 
 const nextStatuses: Record<Status, Status | null> = {
@@ -80,7 +80,7 @@ export default function Tracker() {
   if (!email) {
     return (
       <div className="flex flex-col items-center justify-center h-64 space-y-4 text-center">
-        <p className="text-white/50">Build your CV first to start tracking applications.</p>
+        <p className="text-foreground/50">Build your CV first to start tracking applications.</p>
         <Link href="/create-cv" className="btn-primary px-6 py-3 rounded-2xl text-sm font-bold">Build Your CV</Link>
       </div>
     );
@@ -91,16 +91,16 @@ export default function Tracker() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-black text-white">Application Tracker</h1>
-        <p className="text-white/40 text-sm mt-1">Track your applications from submission to offer.</p>
+        <h1 className="text-3xl font-black text-foreground">Application Tracker</h1>
+        <p className="text-foreground/40 text-sm mt-1">Track your applications from submission to offer.</p>
       </div>
 
       {error && (
-        <div className="glass rounded-2xl p-5 text-red-400 text-sm border border-red-500/20">{error}</div>
+        <div className="glass rounded-2xl p-5 text-red-600 text-sm border border-red-500/20">{error}</div>
       )}
 
       {!loading && apps.length === 0 && !error && (
-        <div className="glass rounded-2xl p-8 text-center text-white/40 text-sm space-y-3">
+        <div className="glass rounded-2xl p-8 text-center text-foreground/40 text-sm space-y-3">
           <p>No applications yet — applying to a job from the Jobs tab adds it here automatically.</p>
           <Link href="/dashboard/jobs" className="btn-primary inline-block px-6 py-3 rounded-2xl text-sm font-bold">Find Jobs</Link>
         </div>
@@ -116,7 +116,7 @@ export default function Tracker() {
                 <RevealItem key={col.status}>
                   <TiltCard className="glass rounded-2xl p-4 text-center" max={8} style={{ boxShadow: `0 8px 32px ${col.glow}` }}>
                     <div className={`text-3xl font-black ${statusColors[col.status].split(" ")[0]}`}>{count}</div>
-                    <div className="text-white/40 text-xs mt-1">{col.status}</div>
+                    <div className="text-foreground/40 text-xs mt-1">{col.status}</div>
                   </TiltCard>
                 </RevealItem>
               );
@@ -124,12 +124,12 @@ export default function Tracker() {
           </RevealGroup>
 
           <div className="glass rounded-xl p-3 flex items-center gap-3">
-            <div className="text-emerald-400 font-black text-2xl">{responseRate}%</div>
+            <div className="text-emerald-600 font-black text-2xl">{responseRate}%</div>
             <div>
-              <div className="text-white/70 text-sm font-semibold">Response rate</div>
-              <div className="text-white/30 text-xs">Share of your applications that moved past &quot;Applied&quot;</div>
+              <div className="text-foreground/70 text-sm font-semibold">Response rate</div>
+              <div className="text-foreground/30 text-xs">Share of your applications that moved past &quot;Applied&quot;</div>
             </div>
-            <div className="ml-auto flex-1 max-w-32 h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+            <div className="ml-auto flex-1 max-w-32 h-2 rounded-full overflow-hidden" style={{ background: "rgba(0,0,0,0.05)" }}>
               <motion.div
                 className="h-full rounded-full"
                 style={{ background: "linear-gradient(90deg, #7c3aed, #6366f1)" }}
@@ -148,7 +148,7 @@ export default function Tracker() {
                 <div key={col.status} className={`rounded-2xl p-3 border ${col.color}`} style={{ minHeight: "300px" }}>
                   <div className="flex items-center justify-between mb-3 px-1">
                     <span className={`text-sm font-bold px-2 py-1 rounded-lg border ${statusColors[col.status]}`}>{col.status}</span>
-                    <span className="text-white/30 text-sm font-bold">{colApps.length}</span>
+                    <span className="text-foreground/30 text-sm font-bold">{colApps.length}</span>
                   </div>
 
                   <div className="space-y-2">
@@ -172,18 +172,18 @@ export default function Tracker() {
                                 {app.company[0]?.toUpperCase()}
                               </div>
                               <div className="min-w-0">
-                                <div className="text-white/80 text-xs font-bold truncate">{app.company}</div>
-                                <div className="text-white/30 text-xs truncate">{app.role}</div>
+                                <div className="text-foreground/80 text-xs font-bold truncate">{app.company}</div>
+                                <div className="text-foreground/30 text-xs truncate">{app.role}</div>
                               </div>
                             </div>
                             <div className="flex items-center justify-between">
-                              <span className="text-emerald-400 text-xs font-semibold">{app.salary || "—"}</span>
-                              <span className="text-white/25 text-xs">{app.created_at.slice(0, 10)}</span>
+                              <span className="text-emerald-600 text-xs font-semibold">{app.salary || "—"}</span>
+                              <span className="text-foreground/25 text-xs">{app.created_at.slice(0, 10)}</span>
                             </div>
                             {next && (
                               <button
                                 onClick={() => move(app.id, next)}
-                                className="mt-2 w-full text-xs py-1.5 rounded-lg btn-glass text-white/40 hover:text-white/70 transition-all"
+                                className="mt-2 w-full text-xs py-1.5 rounded-lg btn-glass text-foreground/40 hover:text-foreground/70 transition-all"
                               >
                                 Move to {next} →
                               </button>
@@ -193,7 +193,7 @@ export default function Tracker() {
                       })}
                     </AnimatePresence>
                     {colApps.length === 0 && (
-                      <div className="text-center py-8 text-white/20 text-sm">Empty</div>
+                      <div className="text-center py-8 text-foreground/20 text-sm">Empty</div>
                     )}
                   </div>
                 </div>

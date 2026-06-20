@@ -37,7 +37,7 @@ export default function Navbar() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
-          <span className="font-bold text-white text-lg tracking-tight">
+          <span className="font-bold text-foreground text-lg tracking-tight">
             JobFinder<span className="gradient-text">AI</span>
           </span>
         </Link>
@@ -48,12 +48,12 @@ export default function Navbar() {
               key={item.href}
               href={item.href}
               onMouseEnter={() => setHovered(item.href)}
-              className="relative text-sm text-white/50 hover:text-white transition-colors px-4 py-2 rounded-xl"
+              className="relative text-sm text-foreground/50 hover:text-foreground transition-colors px-4 py-2 rounded-xl"
             >
               {hovered === item.href && (
                 <motion.span
                   layoutId="nav-hover-pill"
-                  className="absolute inset-0 rounded-xl bg-white/8"
+                  className="absolute inset-0 rounded-xl bg-foreground/8"
                   transition={{ type: "spring", stiffness: 400, damping: 35 }}
                 />
               )}
@@ -63,7 +63,7 @@ export default function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Link href="/login" className="text-sm text-white/50 hover:text-white transition-colors px-4 py-2">
+          <Link href="/login" className="text-sm text-foreground/50 hover:text-foreground transition-colors px-4 py-2">
             Log In
           </Link>
           <Link href="/create-cv" className="btn-primary text-sm font-semibold px-5 py-2.5 rounded-xl">
@@ -71,7 +71,7 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <button className="md:hidden text-white/60 hover:text-white" onClick={() => setOpen(!open)} aria-label="Toggle menu">
+        <button className="md:hidden text-foreground/60 hover:text-foreground" onClick={() => setOpen(!open)} aria-label="Toggle menu">
           {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -90,7 +90,7 @@ export default function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="block py-2.5 px-4 text-white/60 hover:text-white rounded-xl hover:bg-white/5 text-sm transition-all"
+                  className="block py-2.5 px-4 text-foreground/60 hover:text-foreground rounded-xl hover:bg-foreground/5 text-sm transition-all"
                   onClick={() => setOpen(false)}
                 >
                   {item.label}
@@ -98,7 +98,7 @@ export default function Navbar() {
               ))}
               <Link
                 href="/login"
-                className="block py-2.5 px-4 text-white/60 hover:text-white rounded-xl hover:bg-white/5 text-sm transition-all"
+                className="block py-2.5 px-4 text-foreground/60 hover:text-foreground rounded-xl hover:bg-foreground/5 text-sm transition-all"
                 onClick={() => setOpen(false)}
               >
                 Log In

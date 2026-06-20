@@ -8,12 +8,12 @@ export default async function AdminMessages() {
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
-        <h1 className="text-3xl font-black text-white">Messages</h1>
-        <p className="text-white/40 text-sm mt-1">{messages.length} message{messages.length === 1 ? "" : "s"} from the Contact Us form.</p>
+        <h1 className="text-3xl font-black text-foreground">Messages</h1>
+        <p className="text-foreground/40 text-sm mt-1">{messages.length} message{messages.length === 1 ? "" : "s"} from the Contact Us form.</p>
       </div>
 
       {messages.length === 0 ? (
-        <p className="text-white/30 text-sm">No messages yet.</p>
+        <p className="text-foreground/30 text-sm">No messages yet.</p>
       ) : (
         <RevealGroup className="space-y-3" stagger={0.05}>
           {messages.map((m) => (
@@ -21,12 +21,12 @@ export default async function AdminMessages() {
               <TiltCard className="glass rounded-2xl p-5" max={5}>
                 <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
                   <div>
-                    <span className="text-white font-semibold text-sm">{m.name || "Anonymous"}</span>
-                    <span className="text-white/40 text-xs ml-2">{m.email}</span>
+                    <span className="text-foreground font-semibold text-sm">{m.name || "Anonymous"}</span>
+                    <span className="text-foreground/40 text-xs ml-2">{m.email}</span>
                   </div>
-                  <span className="text-white/25 text-xs">{m.created_at}</span>
+                  <span className="text-foreground/25 text-xs">{m.created_at}</span>
                 </div>
-                <p className="text-white/60 text-sm whitespace-pre-wrap">{m.message}</p>
+                <p className="text-foreground/60 text-sm whitespace-pre-wrap">{m.message}</p>
               </TiltCard>
             </RevealItem>
           ))}

@@ -29,7 +29,7 @@ export function TiltCard({
   const rotateY = useSpring(useTransform(px, [0, 1], [-max, max]), spring);
   const background = useTransform([px, py], (latest) => {
     const [x, y] = latest as [number, number];
-    return `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(255,255,255,0.16), transparent 60%)`;
+    return `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(124,58,237,0.1), transparent 60%)`;
   });
 
   const handleMove = (e: MouseEvent<HTMLDivElement>) => {

@@ -81,7 +81,7 @@ export default function Checkout() {
   };
 
   return (
-    <div className="min-h-screen text-white flex items-center justify-center px-4 py-16 relative" style={{ background: "#050508" }}>
+    <div className="min-h-screen text-foreground flex items-center justify-center px-4 py-16 relative" style={{ background: "#ffffff" }}>
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="animate-blob absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full opacity-[0.12]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
       </div>
@@ -94,17 +94,17 @@ export default function Checkout() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <span className="text-white font-bold">JobFinder<span className="gradient-text">AI</span></span>
+            <span className="text-foreground font-bold">JobFinder<span className="gradient-text">AI</span></span>
           </div>
 
           <div className="iridescent-border rounded-2xl p-5 mb-6">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-white font-bold">JobFinder AI - 7-Day Access</span>
+              <span className="text-foreground font-bold">JobFinder AI - 7-Day Access</span>
               <span className="text-4xl font-black gradient-text"><PriceTag /></span>
             </div>
             <div className="flex items-center justify-between">
-              <p className="text-white/40 text-sm">One-time payment - valid for 7 days</p>
-              <p className="text-white/30 text-xs"><LocalizedPrice /></p>
+              <p className="text-foreground/40 text-sm">One-time payment - valid for 7 days</p>
+              <p className="text-foreground/30 text-xs"><LocalizedPrice /></p>
             </div>
           </div>
           <div className="flex justify-end mb-2">
@@ -125,20 +125,20 @@ export default function Checkout() {
               "30-day money back guarantee",
             ].map((item) => (
               <div key={item} className="flex items-center gap-3">
-                <svg className="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="text-white/60 text-sm">{item}</span>
+                <span className="text-foreground/60 text-sm">{item}</span>
               </div>
             ))}
           </div>
 
-          <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-            <span className="text-white/40">Total</span>
-            <span className="text-xl font-black text-white">{localizedPrice}</span>
+          <div className="pt-4 border-t border-foreground/5 flex items-center justify-between">
+            <span className="text-foreground/40">Total</span>
+            <span className="text-xl font-black text-foreground">{localizedPrice}</span>
           </div>
 
-          <div className="mt-5 flex items-center gap-2 text-white/25 text-xs">
+          <div className="mt-5 flex items-center gap-2 text-foreground/25 text-xs">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
@@ -147,8 +147,8 @@ export default function Checkout() {
         </div>
 
         <div className="glass-strong rounded-3xl p-8 flex flex-col">
-          <h2 className="text-2xl font-black text-white mb-1">Secure Checkout</h2>
-          <p className="text-white/40 text-sm mb-8">
+          <h2 className="text-2xl font-black text-foreground mb-1">Secure Checkout</h2>
+          <p className="text-foreground/40 text-sm mb-8">
             {expired ? "Your 7-day access has expired. Renew to keep going." : "You'll be redirected to Cashfree to pay - we never see or store your card details."}
           </p>
 
@@ -158,11 +158,11 @@ export default function Checkout() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-            <p className="text-white/30 text-xs text-center max-w-xs">Powered by Cashfree - UPI, cards, netbanking, and wallets are handled on the next screen.</p>
+            <p className="text-foreground/30 text-xs text-center max-w-xs">Powered by Cashfree - UPI, cards, netbanking, and wallets are handled on the next screen.</p>
           </div>
 
           {error && (
-            <div className="glass rounded-xl px-4 py-3 text-red-400 text-sm border border-red-500/20 mb-4">
+            <div className="glass rounded-xl px-4 py-3 text-red-600 text-sm border border-red-500/20 mb-4">
               {error}
             </div>
           )}
@@ -187,9 +187,9 @@ export default function Checkout() {
             </button>
           </TapScale>
 
-          <p className="text-white/20 text-xs text-center mt-6">
+          <p className="text-foreground/20 text-xs text-center mt-6">
             By purchasing you agree to our{" "}
-            <span className="text-violet-400">Terms of Service</span>.
+            <span className="text-violet-600">Terms of Service</span>.
             30-day money back guarantee, no questions asked.
           </p>
         </div>

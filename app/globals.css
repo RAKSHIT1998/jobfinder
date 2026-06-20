@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050508;
-  --foreground: #f0f0ff;
+  --background: #ffffff;
+  --foreground: #15131f;
 }
 
 @theme inline {
@@ -19,45 +19,47 @@ body {
   min-height: 100vh;
 }
 
-/* Liquid Glass System - blur radius kept modest (vs. the 40-60px originally used)
-   since backdrop-filter is one of the more expensive properties to composite,
-   and this app stacks dozens of .glass elements per page. */
+/* Liquid Glass System - light variant: frosted white panels with soft dark
+   shadows for depth, instead of the dark theme's white-highlight-on-black.
+   Blur radius kept modest (vs. the 40-60px originally used) since
+   backdrop-filter is one of the more expensive properties to composite, and
+   this app stacks dozens of .glass elements per page. */
 .glass {
   backdrop-filter: blur(18px) saturate(160%);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(20, 18, 35, 0.08);
+  box-shadow: 0 8px 32px rgba(20, 18, 35, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .glass-strong {
   backdrop-filter: blur(26px) saturate(180%);
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(20, 18, 35, 0.1);
+  box-shadow: 0 16px 48px rgba(20, 18, 35, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .glass-hover {
   transition: all 0.3s ease;
 }
 .glass-hover:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 30px rgba(139, 92, 246, 0.15);
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(20, 18, 35, 0.14);
+  box-shadow: 0 16px 48px rgba(20, 18, 35, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 30px rgba(139, 92, 246, 0.12);
   transform: translateY(-2px);
 }
 
 .glow-purple {
-  box-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.22);
 }
 .glow-cyan {
-  box-shadow: 0 0 40px rgba(6, 182, 212, 0.3);
+  box-shadow: 0 0 40px rgba(6, 182, 212, 0.22);
 }
 .glow-pink {
-  box-shadow: 0 0 40px rgba(236, 72, 153, 0.3);
+  box-shadow: 0 0 40px rgba(236, 72, 153, 0.22);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #c4b5fd, #818cf8);
+  background: linear-gradient(135deg, #7c3aed, #4338ca);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -71,7 +73,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: rgba(167, 139, 250, 0.9);
+  color: rgba(109, 40, 217, 0.95);
 }
 .eyebrow::before {
   content: '';
@@ -82,7 +84,7 @@ body {
 }
 
 .gradient-text-gold {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b, #fde68a);
+  background: linear-gradient(135deg, #b45309, #d97706, #f59e0b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -104,15 +106,15 @@ body {
   100% { background-position: 200% center; }
 }
 .shimmer-line {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  background: linear-gradient(90deg, transparent, rgba(20, 18, 35, 0.06), transparent);
   background-size: 200% 100%;
   animation: shimmer 2.5s infinite;
 }
 
 /* Pulse glow */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.4); }
-  50% { box-shadow: 0 0 60px rgba(139, 92, 246, 0.8), 0 0 100px rgba(139, 92, 246, 0.3); }
+  0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+  50% { box-shadow: 0 0 60px rgba(139, 92, 246, 0.6), 0 0 100px rgba(139, 92, 246, 0.2); }
 }
 .pulse-glow { animation: pulse-glow 2s infinite; }
 
@@ -156,9 +158,9 @@ body {
 
 /* Input glass style */
 .input-glass {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: white;
+  background: rgba(20, 18, 35, 0.03);
+  border: 1px solid rgba(20, 18, 35, 0.1);
+  color: #15131f;
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
   width: 100%;
@@ -166,24 +168,24 @@ body {
   transition: all 0.2s ease;
   backdrop-filter: blur(10px);
 }
-.input-glass::placeholder { color: rgba(255, 255, 255, 0.3); }
+.input-glass::placeholder { color: rgba(20, 18, 35, 0.35); }
 .input-glass:focus {
-  border-color: rgba(139, 92, 246, 0.5);
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  border-color: rgba(124, 58, 237, 0.5);
+  background: rgba(124, 58, 237, 0.04);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
 }
 
 /* Button glass */
 .btn-glass {
   backdrop-filter: blur(20px);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
+  background: rgba(20, 18, 35, 0.04);
+  border: 1px solid rgba(20, 18, 35, 0.1);
+  color: #15131f;
   transition: all 0.2s ease;
 }
 .btn-glass:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(20, 18, 35, 0.07);
+  border-color: rgba(20, 18, 35, 0.16);
 }
 
 .btn-primary {
@@ -203,7 +205,7 @@ body {
 }
 .btn-primary:hover {
   background: linear-gradient(135deg, #6d28d9, #1d4ed8);
-  box-shadow: 0 0 30px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
   transform: translateY(-1px);
 }
 
@@ -226,7 +228,7 @@ body {
   left: -150%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(120deg, transparent, rgba(20, 18, 35, 0.06), transparent);
   transform: skewX(-20deg);
   transition: left 0.7s ease;
   pointer-events: none;
@@ -236,14 +238,16 @@ body {
 }
 
 /* Faint film-grain texture - cheap depth cue that keeps large flat glass
-   panels from looking like solid color fills. */
+   panels from looking like solid color fills. Multiply (not the dark
+   theme's overlay) since the noise needs to darken a light page, not
+   lighten a dark one. */
 .grain-overlay {
   position: fixed;
   inset: 0;
   z-index: 999;
   pointer-events: none;
-  opacity: 0.035;
-  mix-blend-mode: overlay;
+  opacity: 0.025;
+  mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 

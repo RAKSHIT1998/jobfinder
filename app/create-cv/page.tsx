@@ -233,11 +233,11 @@ export default function CreateCV() {
   const strengthLabel = pct >= 70 ? "Strong" : pct >= 40 ? "Decent" : "Just getting started";
 
   const inputClass = "input-glass";
-  const labelClass = "block text-sm font-medium text-white/50 mb-2";
-  const errorClass = "text-xs text-red-400 mt-1.5";
+  const labelClass = "block text-sm font-medium text-foreground/50 mb-2";
+  const errorClass = "text-xs text-red-600 mt-1.5";
 
   return (
-    <Spotlight className="min-h-screen text-white py-8 px-4 bg-[#050508]" color="124,58,237">
+    <Spotlight className="min-h-screen text-foreground py-8 px-4 bg-white" color="124,58,237">
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[520px] h-[520px] rounded-full opacity-[0.12]" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(90px)" }} />
       </div>
@@ -245,18 +245,18 @@ export default function CreateCV() {
         {/* Header */}
         <div className="flex items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-white/40 hover:text-white transition-colors text-sm">← Back</Link>
+            <Link href="/" className="text-foreground/40 hover:text-foreground transition-colors text-sm">← Back</Link>
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-400 flex items-center justify-center">
                 <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <span className="text-white font-bold">JobFinder<span className="gradient-text">AI</span></span>
+              <span className="text-foreground font-bold">JobFinder<span className="gradient-text">AI</span></span>
             </div>
           </div>
           {saved && (
-            <span key={saveKey} className="text-xs text-emerald-400 font-medium animate-saved-pulse flex items-center gap-1">
+            <span key={saveKey} className="text-xs text-emerald-600 font-medium animate-saved-pulse flex items-center gap-1">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
               Saved
             </span>
@@ -265,11 +265,11 @@ export default function CreateCV() {
 
         {/* Progress */}
         <div className="mb-8">
-          <div className="flex justify-between text-xs text-white/30 mb-2">
+          <div className="flex justify-between text-xs text-foreground/30 mb-2">
             <span>Step {step} of {STEPS.length}</span>
-            <span className="text-white/60">{STEPS[step - 1]}</span>
+            <span className="text-foreground/60">{STEPS[step - 1]}</span>
           </div>
-          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(20, 18, 35, 0.06)" }}>
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{ width: `${(step / STEPS.length) * 100}%`, background: "linear-gradient(90deg, #7c3aed, #06b6d4)" }}
@@ -281,10 +281,10 @@ export default function CreateCV() {
                 key={i}
                 className={`flex-1 text-center text-xs py-1.5 rounded-lg transition-all ${
                   i + 1 === step
-                    ? "bg-violet-500/20 text-violet-300 border border-violet-500/30"
+                    ? "bg-violet-500/20 text-violet-700 border border-violet-500/30"
                     : i + 1 < step
-                    ? "text-emerald-400"
-                    : "text-white/20"
+                    ? "text-emerald-600"
+                    : "text-foreground/20"
                 }`}
               >
                 {i + 1 < step ? <span className="animate-pop inline-block">✓</span> : i + 1}
@@ -294,10 +294,10 @@ export default function CreateCV() {
 
           {/* CV strength meter */}
           <div className="flex items-center justify-between mt-4 mb-1.5">
-            <span className="text-xs text-white/30">CV Strength</span>
+            <span className="text-xs text-foreground/30">CV Strength</span>
             <span className="text-xs font-semibold" style={{ color: strengthColor }}>{pct}% · {strengthLabel}</span>
           </div>
-          <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+          <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(20, 18, 35, 0.06)" }}>
             <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: strengthColor }} />
           </div>
         </div>
@@ -309,7 +309,7 @@ export default function CreateCV() {
           {step === 1 && (
             <div>
               <h2 className="text-2xl font-bold mb-1">Personal Information</h2>
-              <p className="text-white/40 text-sm mb-6">Tell us about yourself so we can build your profile.</p>
+              <p className="text-foreground/40 text-sm mb-6">Tell us about yourself so we can build your profile.</p>
               <div className="space-y-4">
                 <div>
                   <label className={labelClass}>Full Name *</label>
@@ -324,7 +324,7 @@ export default function CreateCV() {
                 <div>
                   <label className={labelClass}>{isReturningUser ? "Password (leave blank to keep current)" : "Password *"}</label>
                   <input className={inputClass} type="password" placeholder="At least 8 characters" value={password} onChange={(e) => setPassword(e.target.value)} />
-                  <p className="text-xs text-white/30 mt-1">You&apos;ll use this to log back in without rebuilding your CV.</p>
+                  <p className="text-xs text-foreground/30 mt-1">You&apos;ll use this to log back in without rebuilding your CV.</p>
                   {attempted && !passwordValid && <p className={errorClass}>Password must be at least 8 characters.</p>}
                 </div>
                 <div>
@@ -342,7 +342,7 @@ export default function CreateCV() {
                 <div>
                   <div className="flex items-center justify-between">
                     <label className={labelClass}>Professional Summary</label>
-                    <span className="text-xs text-white/20">{cv.summary.length}/300</span>
+                    <span className="text-xs text-foreground/20">{cv.summary.length}/300</span>
                   </div>
                   <textarea
                     className={`${inputClass} resize-none`}
@@ -361,16 +361,16 @@ export default function CreateCV() {
           {step === 2 && (
             <div>
               <h2 className="text-2xl font-bold mb-1">Work Experience</h2>
-              <p className="text-white/40 text-sm mb-6">Add your relevant work history.</p>
+              <p className="text-foreground/40 text-sm mb-6">Add your relevant work history.</p>
               <div className="space-y-6">
                 {cv.workExperiences.map((exp, idx) => (
                   <div key={idx} className="glass rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm font-medium text-white/40">Experience {idx + 1}</span>
+                      <span className="text-sm font-medium text-foreground/40">Experience {idx + 1}</span>
                       {cv.workExperiences.length > 1 && (
                         <button
                           onClick={() => updateCv("workExperiences", cv.workExperiences.filter((_, i) => i !== idx))}
-                          className="text-red-400/70 hover:text-red-400 text-xs transition-colors"
+                          className="text-red-600/70 hover:text-red-600 text-xs transition-colors"
                         >
                           Remove
                         </button>
@@ -412,7 +412,7 @@ export default function CreateCV() {
                 ))}
                 <button
                   onClick={() => updateCv("workExperiences", [...cv.workExperiences, { company: "", role: "", startDate: "", endDate: "", description: "" }])}
-                  className="w-full border border-dashed border-white/10 hover:border-violet-500/50 active:scale-[0.99] text-white/30 hover:text-violet-300 rounded-xl py-3 text-sm transition-all"
+                  className="w-full border border-dashed border-foreground/10 hover:border-violet-500/50 active:scale-[0.99] text-foreground/30 hover:text-violet-700 rounded-xl py-3 text-sm transition-all"
                 >
                   + Add Another Experience
                 </button>
@@ -424,16 +424,16 @@ export default function CreateCV() {
           {step === 3 && (
             <div>
               <h2 className="text-2xl font-bold mb-1">Education</h2>
-              <p className="text-white/40 text-sm mb-6">Add your educational background.</p>
+              <p className="text-foreground/40 text-sm mb-6">Add your educational background.</p>
               <div className="space-y-4">
                 {cv.education.map((edu, idx) => (
                   <div key={idx} className="glass rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm font-medium text-white/40">Education {idx + 1}</span>
+                      <span className="text-sm font-medium text-foreground/40">Education {idx + 1}</span>
                       {cv.education.length > 1 && (
                         <button
                           onClick={() => updateCv("education", cv.education.filter((_, i) => i !== idx))}
-                          className="text-red-400/70 hover:text-red-400 text-xs transition-colors"
+                          className="text-red-600/70 hover:text-red-600 text-xs transition-colors"
                         >
                           Remove
                         </button>
@@ -459,7 +459,7 @@ export default function CreateCV() {
                 ))}
                 <button
                   onClick={() => updateCv("education", [...cv.education, { degree: "", school: "", year: "" }])}
-                  className="w-full border border-dashed border-white/10 hover:border-violet-500/50 active:scale-[0.99] text-white/30 hover:text-violet-300 rounded-xl py-3 text-sm transition-all"
+                  className="w-full border border-dashed border-foreground/10 hover:border-violet-500/50 active:scale-[0.99] text-foreground/30 hover:text-violet-700 rounded-xl py-3 text-sm transition-all"
                 >
                   + Add Another Education
                 </button>
@@ -471,10 +471,10 @@ export default function CreateCV() {
           {step === 4 && (
             <div>
               <h2 className="text-2xl font-bold mb-1">Skills</h2>
-              <p className="text-white/40 text-sm mb-6">Select your technical and soft skills, or add your own - matching works off whatever's here.</p>
+              <p className="text-foreground/40 text-sm mb-6">Select your technical and soft skills, or add your own - matching works off whatever's here.</p>
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-sm font-semibold text-white/60 mb-3">Technical / Job Skills</h3>
+                  <h3 className="text-sm font-semibold text-foreground/60 mb-3">Technical / Job Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {TECH_SKILL_OPTIONS.map((skill) => (
                       <button
@@ -482,17 +482,17 @@ export default function CreateCV() {
                         onClick={() => toggleSkill(skill, "techSkills")}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all hover:scale-105 active:scale-95 ${
                           cv.techSkills.includes(skill)
-                            ? "bg-violet-500/20 border-violet-500/60 text-violet-300"
-                            : "glass text-white/40 hover:text-white/70"
+                            ? "bg-violet-500/20 border-violet-500/60 text-violet-700"
+                            : "glass text-foreground/40 hover:text-foreground/70"
                         }`}
                       >
                         {skill}
                       </button>
                     ))}
                     {cv.techSkills.filter((s) => !TECH_SKILL_OPTIONS.includes(s)).map((skill) => (
-                      <span key={skill} className="animate-pop px-3 py-1.5 rounded-lg text-sm font-medium border bg-violet-500/20 border-violet-500/60 text-violet-300 flex items-center gap-2">
+                      <span key={skill} className="animate-pop px-3 py-1.5 rounded-lg text-sm font-medium border bg-violet-500/20 border-violet-500/60 text-violet-700 flex items-center gap-2">
                         {skill}
-                        <button onClick={() => toggleSkill(skill, "techSkills")} className="text-violet-300/60 hover:text-white">×</button>
+                        <button onClick={() => toggleSkill(skill, "techSkills")} className="text-violet-700/60 hover:text-foreground">×</button>
                       </span>
                     ))}
                   </div>
@@ -504,14 +504,14 @@ export default function CreateCV() {
                       onChange={(e) => setTechSkillInput(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomSkill("techSkills"); } }}
                     />
-                    <button onClick={() => addCustomSkill("techSkills")} className="btn-glass px-4 rounded-xl text-sm font-semibold text-white/60 hover:text-white active:scale-95 transition-all">Add</button>
+                    <button onClick={() => addCustomSkill("techSkills")} className="btn-glass px-4 rounded-xl text-sm font-semibold text-foreground/60 hover:text-foreground active:scale-95 transition-all">Add</button>
                   </div>
                   {cv.techSkills.length > 0 && (
-                    <p className="text-xs text-violet-400 mt-2">{cv.techSkills.length} selected</p>
+                    <p className="text-xs text-violet-600 mt-2">{cv.techSkills.length} selected</p>
                   )}
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-white/60 mb-3">Soft Skills</h3>
+                  <h3 className="text-sm font-semibold text-foreground/60 mb-3">Soft Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {SOFT_SKILL_OPTIONS.map((skill) => (
                       <button
@@ -519,17 +519,17 @@ export default function CreateCV() {
                         onClick={() => toggleSkill(skill, "softSkills")}
                         className={`px-3 py-1.5 rounded-lg text-sm font-medium border transition-all hover:scale-105 active:scale-95 ${
                           cv.softSkills.includes(skill)
-                            ? "bg-cyan-500/20 border-cyan-500/60 text-cyan-300"
-                            : "glass text-white/40 hover:text-white/70"
+                            ? "bg-cyan-500/20 border-cyan-500/60 text-cyan-700"
+                            : "glass text-foreground/40 hover:text-foreground/70"
                         }`}
                       >
                         {skill}
                       </button>
                     ))}
                     {cv.softSkills.filter((s) => !SOFT_SKILL_OPTIONS.includes(s)).map((skill) => (
-                      <span key={skill} className="animate-pop px-3 py-1.5 rounded-lg text-sm font-medium border bg-cyan-500/20 border-cyan-500/60 text-cyan-300 flex items-center gap-2">
+                      <span key={skill} className="animate-pop px-3 py-1.5 rounded-lg text-sm font-medium border bg-cyan-500/20 border-cyan-500/60 text-cyan-700 flex items-center gap-2">
                         {skill}
-                        <button onClick={() => toggleSkill(skill, "softSkills")} className="text-cyan-300/60 hover:text-white">×</button>
+                        <button onClick={() => toggleSkill(skill, "softSkills")} className="text-cyan-700/60 hover:text-foreground">×</button>
                       </span>
                     ))}
                   </div>
@@ -541,7 +541,7 @@ export default function CreateCV() {
                       onChange={(e) => setSoftSkillInput(e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomSkill("softSkills"); } }}
                     />
-                    <button onClick={() => addCustomSkill("softSkills")} className="btn-glass px-4 rounded-xl text-sm font-semibold text-white/60 hover:text-white active:scale-95 transition-all">Add</button>
+                    <button onClick={() => addCustomSkill("softSkills")} className="btn-glass px-4 rounded-xl text-sm font-semibold text-foreground/60 hover:text-foreground active:scale-95 transition-all">Add</button>
                   </div>
                 </div>
               </div>
@@ -552,7 +552,7 @@ export default function CreateCV() {
           {step === 5 && (
             <div>
               <h2 className="text-2xl font-bold mb-1">Job Preferences</h2>
-              <p className="text-white/40 text-sm mb-6">Tell us what you&apos;re looking for.</p>
+              <p className="text-foreground/40 text-sm mb-6">Tell us what you&apos;re looking for.</p>
               <div className="space-y-4">
                 <div>
                   <label className={labelClass}>Target Job Roles</label>
@@ -567,12 +567,12 @@ export default function CreateCV() {
                   <div className="flex items-center justify-between mb-2">
                     <label className={labelClass + " mb-0"}>Salary Range (Annual)</label>
                     <select
-                      className="bg-transparent text-white/50 text-xs border border-white/10 rounded-lg px-2 py-1 outline-none"
+                      className="bg-transparent text-foreground/50 text-xs border border-foreground/10 rounded-lg px-2 py-1 outline-none"
                       value={cv.salaryCurrency || country.currency}
                       onChange={(e) => updateCv("salaryCurrency", e.target.value)}
                     >
                       {CURRENCY_OPTIONS.map((c) => (
-                        <option key={c} value={c} className="bg-black">{c}</option>
+                        <option key={c} value={c} className="bg-white">{c}</option>
                       ))}
                     </select>
                   </div>
@@ -597,13 +597,13 @@ export default function CreateCV() {
                     </div>
                   </div>
                   {cv.salaryMin && cv.salaryMax && (
-                    <p className={`text-xs mt-1 ${salaryOutOfOrder ? "text-amber-400" : "text-white/30"}`}>
+                    <p className={`text-xs mt-1 ${salaryOutOfOrder ? "text-amber-600" : "text-foreground/30"}`}>
                       {salaryOutOfOrder
                         ? "Max should be higher than min."
                         : `${formatCurrency(parseFloat(cv.salaryMin), cv.salaryCurrency || country.currency, country.locale)} - ${formatCurrency(parseFloat(cv.salaryMax), cv.salaryCurrency || country.currency, country.locale)} per year`}
                     </p>
                   )}
-                  <p className="text-xs text-white/20 mt-1">We use this to highlight live postings that actually clear your minimum.</p>
+                  <p className="text-xs text-foreground/20 mt-1">We use this to highlight live postings that actually clear your minimum.</p>
                 </div>
                 <div>
                   <label className={labelClass}>Work Type</label>
@@ -614,8 +614,8 @@ export default function CreateCV() {
                         onClick={() => updateCv("workType", type)}
                         className={`flex-1 py-2.5 rounded-lg border text-sm font-medium capitalize transition-all hover:scale-105 active:scale-95 ${
                           cv.workType === type
-                            ? "bg-violet-500/20 border-violet-500/60 text-violet-300"
-                            : "glass text-white/40 hover:text-white/70"
+                            ? "bg-violet-500/20 border-violet-500/60 text-violet-700"
+                            : "glass text-foreground/40 hover:text-foreground/70"
                         }`}
                       >
                         {type}
@@ -633,7 +633,7 @@ export default function CreateCV() {
                     multi
                     includeRemote
                   />
-                  <p className="text-xs text-white/20 mt-1">Onsite/hybrid roles outside these get ranked lower - remote roles are unaffected.</p>
+                  <p className="text-xs text-foreground/20 mt-1">Onsite/hybrid roles outside these get ranked lower - remote roles are unaffected.</p>
                 </div>
               </div>
             </div>
@@ -643,58 +643,58 @@ export default function CreateCV() {
           {step === 6 && (
             <div>
               <h2 className="text-2xl font-bold mb-1">Review Your CV</h2>
-              <p className="text-white/40 text-sm mb-6">Everything look good? You can go back to edit.</p>
+              <p className="text-foreground/40 text-sm mb-6">Everything look good? You can go back to edit.</p>
               <div className="space-y-6 text-sm">
                 <div className="glass rounded-xl p-4">
-                  <h3 className="font-semibold text-violet-300 mb-3">Personal Info</h3>
-                  <div className="space-y-1 text-white/70">
-                    <p><span className="text-white/30">Name:</span> {cv.name || "—"}</p>
-                    <p><span className="text-white/30">Email:</span> {cv.email || "—"}</p>
-                    <p><span className="text-white/30">Phone:</span> {cv.phone || "—"}</p>
-                    <p><span className="text-white/30">Location:</span> {cv.location || "—"}</p>
-                    <p><span className="text-white/30">LinkedIn:</span> {cv.linkedin || "—"}</p>
-                    {cv.summary && <p><span className="text-white/30">Summary:</span> {cv.summary}</p>}
+                  <h3 className="font-semibold text-violet-700 mb-3">Personal Info</h3>
+                  <div className="space-y-1 text-foreground/70">
+                    <p><span className="text-foreground/30">Name:</span> {cv.name || "—"}</p>
+                    <p><span className="text-foreground/30">Email:</span> {cv.email || "—"}</p>
+                    <p><span className="text-foreground/30">Phone:</span> {cv.phone || "—"}</p>
+                    <p><span className="text-foreground/30">Location:</span> {cv.location || "—"}</p>
+                    <p><span className="text-foreground/30">LinkedIn:</span> {cv.linkedin || "—"}</p>
+                    {cv.summary && <p><span className="text-foreground/30">Summary:</span> {cv.summary}</p>}
                   </div>
                 </div>
                 <div className="glass rounded-xl p-4">
-                  <h3 className="font-semibold text-violet-300 mb-3">Work Experience</h3>
+                  <h3 className="font-semibold text-violet-700 mb-3">Work Experience</h3>
                   {cv.workExperiences.map((exp, i) => (
                     <div key={i} className="mb-3 last:mb-0">
-                      <p className="text-white font-medium">{exp.role || "—"} at {exp.company || "—"}</p>
-                      <p className="text-white/40">{exp.startDate} – {exp.endDate}</p>
+                      <p className="text-foreground font-medium">{exp.role || "—"} at {exp.company || "—"}</p>
+                      <p className="text-foreground/40">{exp.startDate} – {exp.endDate}</p>
                     </div>
                   ))}
                 </div>
                 <div className="glass rounded-xl p-4">
-                  <h3 className="font-semibold text-violet-300 mb-3">Education</h3>
+                  <h3 className="font-semibold text-violet-700 mb-3">Education</h3>
                   {cv.education.map((edu, i) => (
                     <div key={i} className="mb-3 last:mb-0">
-                      <p className="text-white font-medium">{edu.degree || "—"}</p>
-                      <p className="text-white/40">{edu.school || "—"} · {edu.year || "—"}</p>
+                      <p className="text-foreground font-medium">{edu.degree || "—"}</p>
+                      <p className="text-foreground/40">{edu.school || "—"} · {edu.year || "—"}</p>
                     </div>
                   ))}
                 </div>
                 <div className="glass rounded-xl p-4">
-                  <h3 className="font-semibold text-violet-300 mb-3">Skills</h3>
+                  <h3 className="font-semibold text-violet-700 mb-3">Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {[...cv.techSkills, ...cv.softSkills].map((s) => (
-                      <span key={s} className="glass text-white/60 px-2 py-0.5 rounded-lg text-xs">{s}</span>
+                      <span key={s} className="glass text-foreground/60 px-2 py-0.5 rounded-lg text-xs">{s}</span>
                     ))}
-                    {cv.techSkills.length === 0 && cv.softSkills.length === 0 && <span className="text-white/30">No skills added</span>}
+                    {cv.techSkills.length === 0 && cv.softSkills.length === 0 && <span className="text-foreground/30">No skills added</span>}
                   </div>
                 </div>
                 <div className="glass rounded-xl p-4">
-                  <h3 className="font-semibold text-violet-300 mb-3">Job Preferences</h3>
-                  <div className="space-y-1 text-white/70">
-                    <p><span className="text-white/30">Roles:</span> {cv.targetRoles || "—"}</p>
+                  <h3 className="font-semibold text-violet-700 mb-3">Job Preferences</h3>
+                  <div className="space-y-1 text-foreground/70">
+                    <p><span className="text-foreground/30">Roles:</span> {cv.targetRoles || "—"}</p>
                     <p>
-                      <span className="text-white/30">Salary:</span>{" "}
+                      <span className="text-foreground/30">Salary:</span>{" "}
                       {cv.salaryMin && cv.salaryMax
                         ? `${formatCurrency(parseFloat(cv.salaryMin), cv.salaryCurrency || country.currency, country.locale)} - ${formatCurrency(parseFloat(cv.salaryMax), cv.salaryCurrency || country.currency, country.locale)}`
                         : "—"}
                     </p>
-                    <p><span className="text-white/30">Work type:</span> {cv.workType}</p>
-                    <p><span className="text-white/30">Locations:</span> {cv.preferredLocations || "—"}</p>
+                    <p><span className="text-foreground/30">Work type:</span> {cv.workType}</p>
+                    <p><span className="text-foreground/30">Locations:</span> {cv.preferredLocations || "—"}</p>
                   </div>
                 </div>
               </div>
@@ -707,7 +707,7 @@ export default function CreateCV() {
             {step > 1 && (
               <button
                 onClick={() => { setAttempted(false); setStep(step - 1); }}
-                className="flex-1 btn-glass py-3 rounded-xl text-sm font-semibold text-white/60 hover:text-white active:scale-[0.98] transition-all"
+                className="flex-1 btn-glass py-3 rounded-xl text-sm font-semibold text-foreground/60 hover:text-foreground active:scale-[0.98] transition-all"
               >
                 ← Back
               </button>

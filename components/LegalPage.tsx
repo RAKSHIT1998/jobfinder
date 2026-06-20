@@ -12,7 +12,7 @@ export default function LegalPage({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen" style={{ background: "#050508" }}>
+    <div className="min-h-screen" style={{ background: "#ffffff" }}>
       <Navbar />
 
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -21,9 +21,9 @@ export default function LegalPage({
 
       <main className="relative pt-36 pb-24 px-4">
         <Reveal className="max-w-3xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl font-black text-white mb-2">{title}</h1>
-          <p className="text-white/30 text-sm mb-10">Last updated: {updated}</p>
-          <div className="glass-strong rounded-3xl p-8 sm:p-10 space-y-8 text-white/60 text-sm leading-relaxed [&_h2]:text-white [&_h2]:font-bold [&_h2]:text-lg [&_h2]:mb-2 [&_section]:space-y-2">
+          <h1 className="text-4xl sm:text-5xl font-black text-foreground mb-2">{title}</h1>
+          <p className="text-foreground/30 text-sm mb-10">Last updated: {updated}</p>
+          <div className="glass-strong rounded-3xl p-8 sm:p-10 space-y-8 text-foreground/60 text-sm leading-relaxed [&_h2]:text-foreground [&_h2]:font-bold [&_h2]:text-lg [&_h2]:mb-2 [&_section]:space-y-2">
             {children}
           </div>
         </Reveal>
