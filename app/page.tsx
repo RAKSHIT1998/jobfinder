@@ -9,6 +9,8 @@ import { fetchAllJobs } from "@/lib/jobSources";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/Reveal";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { HeroEntrance, TapScale } from "@/components/motion/HeroEntrance";
+import { TiltCard } from "@/components/motion/TiltCard";
+import { Spotlight } from "@/components/motion/Spotlight";
 
 export const revalidate = 900;
 
@@ -50,7 +52,8 @@ export default async function Home() {
         <div className="animate-blob absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #6366f1, transparent)", filter: "blur(90px)" }} />
       </div>
 
-      <section className="relative pt-36 pb-24 px-4">
+      <section className="relative">
+      <Spotlight className="pt-36 pb-24 px-4" color="124,58,237">
         <div className="max-w-5xl mx-auto text-center">
           <HeroEntrance>
             <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-sm text-white/60 mb-8">
@@ -104,6 +107,7 @@ export default async function Home() {
             </div>
           </HeroEntrance>
         </div>
+      </Spotlight>
       </section>
 
       <section id="how-it-works" className="relative py-24 px-4">
@@ -117,7 +121,7 @@ export default async function Home() {
           <RevealGroup className="grid grid-cols-1 md:grid-cols-3 gap-6" stagger={0.12}>
             {steps.map((step, i) => (
               <RevealItem key={i}>
-                <div className="glass glass-hover rounded-3xl p-8 relative h-full">
+                <TiltCard className="glass glass-hover rounded-3xl p-8 h-full" max={6}>
                   <div className="text-6xl font-black gradient-text mb-5 leading-none">{step.num}</div>
                   <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
                   <p className="text-white/40 text-sm leading-relaxed">{step.desc}</p>
@@ -126,7 +130,7 @@ export default async function Home() {
                       <ArrowRight className="w-3.5 h-3.5" />
                     </div>
                   )}
-                </div>
+                </TiltCard>
               </RevealItem>
             ))}
           </RevealGroup>
@@ -144,13 +148,13 @@ export default async function Home() {
           <RevealGroup className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" stagger={0.06}>
             {features.map((f, i) => (
               <RevealItem key={i}>
-                <div className="glass glass-hover rounded-2xl p-6 group h-full">
+                <TiltCard className="glass glass-hover rounded-2xl p-6 group h-full" max={10}>
                   <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-4 transition-colors group-hover:bg-violet-500/20">
                     <f.Icon className="w-5 h-5 text-violet-300" strokeWidth={1.75} />
                   </div>
                   <h3 className="text-white font-bold mb-2 text-sm group-hover:text-violet-200 transition-colors">{f.title}</h3>
                   <p className="text-white/40 text-xs leading-relaxed">{f.desc}</p>
-                </div>
+                </TiltCard>
               </RevealItem>
             ))}
           </RevealGroup>
@@ -164,7 +168,7 @@ export default async function Home() {
             <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">One price. Everything included.</h2>
             <p className="text-white/40 text-lg mb-12">No hidden fees. No nonsense.</p>
 
-            <div className="iridescent-border rounded-3xl p-px">
+            <TiltCard className="iridescent-border rounded-3xl p-px" max={5}>
               <div className="glass-strong shine-sweep rounded-3xl p-10 relative overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 opacity-20 pointer-events-none" style={{ background: "radial-gradient(circle, #7c3aed, transparent)", filter: "blur(40px)" }} />
 
@@ -210,7 +214,7 @@ export default async function Home() {
                   <p className="text-white/25 text-xs mt-4">Secure payment - instant access - renew anytime</p>
                 </div>
               </div>
-            </div>
+            </TiltCard>
           </Reveal>
         </div>
       </section>
