@@ -182,7 +182,7 @@ export default function Checkout() {
                   Opening Cashfree...
                 </span>
               ) : (
-                `Pay ${localizedPrice} - Get 7-Day Access`
+                `Pay ${localizedPrice} - Get Instant Access`
               )}
             </button>
           </TapScale>

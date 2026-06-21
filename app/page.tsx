@@ -108,7 +108,7 @@ export default async function Home() {
               </div>
               <div className="glass rounded-2xl px-5 py-3 text-center">
                 <div className="text-2xl font-black gradient-text"><PriceTag /></div>
-                <div className="text-xs text-foreground/40 mt-0.5">Flat weekly price</div>
+                <div className="text-xs text-foreground/40 mt-0.5">One-time, flat price</div>
               </div>
             </div>
           </HeroEntrance>
@@ -216,7 +216,7 @@ export default async function Home() {
 
                   <TapScale className="block">
                     <Link href="/create-cv" className="btn-primary w-full block text-center py-4 rounded-2xl text-base font-bold">
-                      Get 7 Days for <PriceTag />
+                      Get Access for <PriceTag />
                     </Link>
                   </TapScale>
                   <p className="text-foreground/40 text-xs mt-4">Secure payment - instant access - renew anytime</p>
@@ -242,7 +242,7 @@ export default async function Home() {
               </p>
               <TapScale>
                 <Link href="/create-cv" className="btn-primary inline-flex items-center gap-2 text-lg font-bold px-10 py-4 rounded-2xl relative">
-                  Build Your CV - Get 7 Days for <PriceTag />
+                  Build Your CV - Get Access for <PriceTag />
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </TapScale>

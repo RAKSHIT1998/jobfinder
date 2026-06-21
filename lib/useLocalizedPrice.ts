@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useCountry } from "./useCountry";
+import { ACCESS_PRICE_USD } from "./currency";
 
 interface LocalizedPrice {
   amount: number;
@@ -10,16 +11,16 @@ interface LocalizedPrice {
   loading: boolean;
 }
 
-/** Live-converts the fixed $10 access price into the visitor's detected/selected currency. */
+/** Live-converts the fixed access price into the visitor's detected/selected currency. */
 export function useLocalizedPrice(): LocalizedPrice {
   const { country, loading: countryLoading } = useCountry();
-  const [amount, setAmount] = useState(10);
+  const [amount, setAmount] = useState(ACCESS_PRICE_USD);
   const [currency, setCurrency] = useState("USD");
   const [priceLoading, setPriceLoading] = useState(true);
 
   useEffect(() => {
     if (country.currency === "USD") {
-      setAmount(10);
+      setAmount(ACCESS_PRICE_USD);
       setCurrency("USD");
       setPriceLoading(false);
       return;
@@ -33,7 +34,7 @@ export function useLocalizedPrice(): LocalizedPrice {
         setCurrency(data.currency);
       })
       .catch(() => {
-        setAmount(10);
+        setAmount(ACCESS_PRICE_USD);
         setCurrency("USD");
       })
       .finally(() => setPriceLoading(false));

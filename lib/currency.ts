@@ -1,8 +1,8 @@
 const INR_LOCALE = "en-IN";
 
-// Canonical product price — every visitor pays the same $10, converted live
+// Canonical product price — every visitor pays the same $5, converted live
 // into whatever currency they're actually being charged in.
-export const ACCESS_PRICE_USD = 10;
+export const ACCESS_PRICE_USD = 5;
 
 export function formatInr(amount: number, fractionDigits = 0): string {
   return new Intl.NumberFormat(INR_LOCALE, {
