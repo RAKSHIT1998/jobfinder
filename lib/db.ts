@@ -66,6 +66,8 @@ export function ensureIndexes(): Promise<void> {
         ),
         db.collection("payments").createIndex({ userId: 1 }),
         db.collection("applications").createIndex({ userId: 1 }),
+        db.collection("page_views").createIndex({ createdAt: -1 }),
+        db.collection("page_views").createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
       ]);
     })();
   }
@@ -119,6 +121,18 @@ interface ContactMessageDoc {
   createdAt: string;
 }
 
+interface PageViewDoc {
+  _id: ObjectId;
+  path: string;
+  visitorId: string;
+  referrer: string | null;
+  createdAt: string;
+  /** TTL marker (createdAt + 30 days) - keeps the collection from growing unbounded. */
+  expiresAt: Date;
+}
+
+const PAGE_VIEW_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
+
 async function usersCollection(): Promise<Collection<UserDoc>> {
   await ensureIndexes();
   return (await getDb()).collection<UserDoc>("users");
@@ -144,9 +158,14 @@ async function contactMessagesCollection(): Promise<Collection<ContactMessageDoc
   return (await getDb()).collection<ContactMessageDoc>("contact_messages");
 }
 
+async function pageViewsCollection(): Promise<Collection<PageViewDoc>> {
+  await ensureIndexes();
+  return (await getDb()).collection<PageViewDoc>("page_views");
+}
+
 /** "YYYY-MM-DD HH:MM:SS" in UTC - matches the format the app's date-parsing code already expects everywhere. */
-export function nowStamp(): string {
-  return new Date().toISOString().slice(0, 19).replace("T", " ");
+export function nowStamp(date: Date = new Date()): string {
+  return date.toISOString().slice(0, 19).replace("T", " ");
 }
 
 export function isValidObjectId(id: string): boolean {
@@ -535,4 +554,56 @@ export async function getAdminUserDetail(userId: string): Promise<AdminUserDetai
     getApplicationsByUserId(userId),
   ]);
   return { user, cv: cv ?? null, payments, applications };
+}
+
+/** Fire-and-forget pageview log written from `proxy.ts` for every public, non-prefetch navigation. */
+export async function recordPageView(params: { path: string; visitorId: string; referrer: string | null }): Promise<void> {
+  const pageViews = await pageViewsCollection();
+  const now = new Date();
+  await pageViews.insertOne({
+    _id: new ObjectId(),
+    path: params.path,
+    visitorId: params.visitorId,
+    referrer: params.referrer,
+    createdAt: nowStamp(now),
+    expiresAt: new Date(now.getTime() + PAGE_VIEW_RETENTION_MS),
+  });
+}
+
+export interface TrafficSnapshot {
+  activeNow: number;
+  viewsLast5Min: number;
+  viewsLast24h: number;
+  topPaths: { path: string; count: number }[];
+  recent: { path: string; createdAt: string; referrer: string | null }[];
+}
+
+export async function getTrafficSnapshot(): Promise<TrafficSnapshot> {
+  const pageViews = await pageViewsCollection();
+  const now = Date.now();
+  const since5Min = nowStamp(new Date(now - 5 * 60 * 1000));
+  const since24h = nowStamp(new Date(now - 24 * 60 * 60 * 1000));
+
+  const [activeVisitorIds, viewsLast5Min, viewsLast24h, topPaths, recentDocs] = await Promise.all([
+    pageViews.distinct("visitorId", { createdAt: { $gte: since5Min } }),
+    pageViews.countDocuments({ createdAt: { $gte: since5Min } }),
+    pageViews.countDocuments({ createdAt: { $gte: since24h } }),
+    pageViews
+      .aggregate<{ _id: string; count: number }>([
+        { $match: { createdAt: { $gte: since24h } } },
+        { $group: { _id: "$path", count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 5 },
+      ])
+      .toArray(),
+    pageViews.find().sort({ createdAt: -1 }).limit(20).toArray(),
+  ]);
+
+  return {
+    activeNow: activeVisitorIds.length,
+    viewsLast5Min,
+    viewsLast24h,
+    topPaths: topPaths.map((p) => ({ path: p._id, count: p.count })),
+    recent: recentDocs.map((d) => ({ path: d.path, createdAt: d.createdAt, referrer: d.referrer })),
+  };
 }

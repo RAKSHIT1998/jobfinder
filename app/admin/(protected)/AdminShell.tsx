@@ -4,12 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { BarChart3, Users, Mail, X, Menu } from "lucide-react";
+import { BarChart3, Users, Mail, Activity, X, Menu } from "lucide-react";
 import LogoutButton from "./LogoutButton";
 import { Spotlight } from "@/components/motion/Spotlight";
 
 const navItems = [
   { href: "/admin", label: "Overview", Icon: BarChart3 },
+  { href: "/admin/traffic", label: "Traffic", Icon: Activity },
   { href: "/admin/users", label: "Users", Icon: Users },
   { href: "/admin/messages", label: "Messages", Icon: Mail },
 ];
