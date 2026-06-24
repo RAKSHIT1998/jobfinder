@@ -62,12 +62,12 @@ export default async function Home() {
       <Spotlight className="pt-36 pb-24 px-4" color="124,58,237">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.15fr_0.85fr] gap-12 items-center">
           <HeroEntrance className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 text-sm text-foreground/60 mb-8">
+            <Link href="/jobs" className="inline-flex items-center gap-2 glass glass-hover rounded-full px-4 py-2 text-sm text-foreground/60 mb-8">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>
                 Live right now - <span className="text-emerald-600 font-semibold">{jobCount !== null ? `${jobCount} real postings` : "scanning real sources"}</span>
               </span>
-            </div>
+            </Link>
 
             <h1 className="text-6xl sm:text-7xl lg:text-7xl font-black leading-[0.9] tracking-tight mb-8">
               <span className="text-foreground">Your AI </span>

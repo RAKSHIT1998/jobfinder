@@ -28,6 +28,7 @@ export default function Footer() {
             <h4 className="text-foreground/80 font-semibold mb-4 text-sm">Product</h4>
             <ul className="space-y-3">
               {[
+                { href: "/jobs", label: "Browse Jobs" },
                 { href: "/#features", label: "Features" },
                 { href: "/#pricing", label: "Pricing" },
                 { href: "/create-cv", label: "Build CV" },
