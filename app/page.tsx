@@ -89,8 +89,8 @@ export default async function Home() {
                 </Link>
               </TapScale>
               <TapScale>
-                <Link href="#how-it-works" className="btn-glass text-base font-semibold px-8 py-4 rounded-2xl inline-block">
-                  See How It Works
+                <Link href="/upload-cv" className="btn-glass text-base font-semibold px-8 py-4 rounded-2xl inline-block">
+                  Upload My Resume — Free
                 </Link>
               </TapScale>
             </div>

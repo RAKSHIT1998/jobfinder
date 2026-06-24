@@ -114,8 +114,8 @@ export default async function JobCategoryPage({ params }: Props) {
               {jobs.length} live {cat.description} right now, pulled from real job boards and refreshed
               continuously — no expired listings left up for search traffic.
             </p>
-            <Link href="/create-cv" className="btn-primary inline-flex items-center gap-2 text-sm font-bold px-6 py-3 rounded-2xl">
-              Match These Jobs to My CV
+            <Link href="/upload-cv" className="btn-primary inline-flex items-center gap-2 text-sm font-bold px-6 py-3 rounded-2xl">
+              Upload My Resume — Free
               <ArrowRight className="w-4 h-4" />
             </Link>
           </Reveal>
@@ -200,8 +200,8 @@ export default async function JobCategoryPage({ params }: Props) {
                 Build your CV once and our AI scores every live {cat.label.toLowerCase()} posting against your
                 real skills — so you only see the roles worth applying to.
               </p>
-              <Link href="/create-cv" className="btn-primary inline-flex items-center gap-2 text-lg font-bold px-10 py-4 rounded-2xl relative">
-                Build Your CV — Free to Start
+              <Link href="/upload-cv" className="btn-primary inline-flex items-center gap-2 text-lg font-bold px-10 py-4 rounded-2xl relative">
+                Upload My Resume — Free
                 <ArrowRight className="w-5 h-5" />
               </Link>
             </div>

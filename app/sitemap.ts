@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: SITE_URL, lastModified: now, changeFrequency: "daily", priority: 1 },
     { url: `${SITE_URL}/jobs`, lastModified: now, changeFrequency: "hourly", priority: 0.9 },
+    { url: `${SITE_URL}/upload-cv`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     ...JOB_CATEGORIES.map((cat) => ({
       url: `${SITE_URL}/jobs/${cat.slug}`,
       lastModified: now,

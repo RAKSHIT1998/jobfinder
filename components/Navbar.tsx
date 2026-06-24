@@ -8,6 +8,7 @@ import PriceTag from "./PriceTag";
 
 const navLinks = [
   { href: "/jobs", label: "Browse Jobs" },
+  { href: "/upload-cv", label: "Upload CV" },
   { href: "/#how-it-works", label: "How it works" },
   { href: "/#features", label: "Features" },
   { href: "/#pricing", label: "Pricing" },

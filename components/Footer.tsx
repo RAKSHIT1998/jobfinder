@@ -29,6 +29,7 @@ export default function Footer() {
             <ul className="space-y-3">
               {[
                 { href: "/jobs", label: "Browse Jobs" },
+                { href: "/upload-cv", label: "Upload CV" },
                 { href: "/#features", label: "Features" },
                 { href: "/#pricing", label: "Pricing" },
                 { href: "/create-cv", label: "Build CV" },
