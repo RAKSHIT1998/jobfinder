@@ -216,7 +216,11 @@ export default function CreateCV() {
           await fetch("/api/cv", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...cv, password: password || undefined }),
+            body: JSON.stringify({
+              ...cv,
+              password: password || undefined,
+              ref: localStorage.getItem("jobfinder_ref") || undefined,
+            }),
           });
         } catch {
           // Checkout will redirect to login if the session didn't get set.

@@ -33,6 +33,8 @@ export async function GET(req: NextRequest) {
   if (!data) return NextResponse.json({ error: "No CV found for this account yet." }, { status: 404 });
 
   const cv = JSON.parse(data) as CVProfile;
+  // First listed target role, used to label shareable result cards.
+  const role = (cv.targetRoles || "").split(/[,\n/]/)[0]?.trim() || null;
 
   let jobs;
   try {
@@ -49,12 +51,12 @@ export async function GET(req: NextRequest) {
 
   if (result.min === null || result.max === null || result.median === null) {
     const desired = await convertDesiredRange(cv, "USD").catch(() => null);
-    return NextResponse.json({ ...result, currency: "USD", desired });
+    return NextResponse.json({ ...result, currency: "USD", desired, role });
   }
 
   if (currency === "USD") {
     const desired = await convertDesiredRange(cv, "USD").catch(() => null);
-    return NextResponse.json({ ...result, currency: "USD", desired });
+    return NextResponse.json({ ...result, currency: "USD", desired, role });
   }
 
   const [min, max, median, desired] = await Promise.all([
@@ -67,7 +69,7 @@ export async function GET(req: NextRequest) {
   if (min === null || max === null || median === null) {
     // Currency not covered by the exchange rate provider — fall back to USD.
     const desiredUsd = await convertDesiredRange(cv, "USD").catch(() => null);
-    return NextResponse.json({ ...result, currency: "USD", desired: desiredUsd });
+    return NextResponse.json({ ...result, currency: "USD", desired: desiredUsd, role });
   }
 
   return NextResponse.json({
@@ -77,5 +79,6 @@ export async function GET(req: NextRequest) {
     median: Math.round(median),
     currency,
     desired,
+    role,
   });
 }

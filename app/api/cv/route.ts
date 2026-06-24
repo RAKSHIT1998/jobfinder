@@ -1,18 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { upsertUser, getUserByEmail, setUserPassword, upsertCv, getCvDataByEmail } from "@/lib/db";
+import { upsertUser, getUserByEmail, setUserPassword, upsertCv, getCvDataByEmail, recordReferral } from "@/lib/db";
 import { hashPassword, setSessionCookie } from "@/lib/auth";
 import { sendRegistrationEmail } from "@/lib/registrationEmail";
 import type { CVProfile } from "@/lib/matching";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { email, name, password, ...cvFields } = body;
+  // `ref` is the inviter's code (if this signup came from a share link); kept
+  // out of cvFields so it never lands in the stored CV JSON.
+  const { email, name, password, ref, ...cvFields } = body;
   if (!email) {
     return NextResponse.json({ error: "email is required" }, { status: 400 });
   }
 
   const existingUser = await getUserByEmail(email);
   const user = await upsertUser(email, name);
+
+  // Only brand-new accounts can credit a referral, and only once.
+  if (!existingUser && typeof ref === "string" && ref.trim()) {
+    await recordReferral({ newUserId: user.id, code: ref.trim().toUpperCase() }).catch((err) =>
+      console.error("[api/cv] referral credit failed:", err)
+    );
+  }
 
   if (password) {
     if (!existingUser?.password_hash) {

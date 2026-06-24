@@ -1,6 +1,8 @@
 import dns from "dns";
+import { randomBytes } from "crypto";
 import { Collection, Db, MongoClient, ObjectId } from "mongodb";
-import { ACCESS_DURATION_MS } from "./access";
+import { ACCESS_DURATION_MS, REFERRAL_BONUS_MS, MAX_BONUS_ACCESS_MS } from "./access";
+import type { SharePayload } from "./shareTypes";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -59,6 +61,10 @@ export function ensureIndexes(): Promise<void> {
       const db = await getDb();
       await Promise.all([
         db.collection("users").createIndex({ email: 1 }, { unique: true }),
+        db.collection("users").createIndex(
+          { referralCode: 1 },
+          { unique: true, partialFilterExpression: { referralCode: { $type: "string" } } }
+        ),
         db.collection("cvs").createIndex({ userId: 1 }, { unique: true }),
         db.collection("payments").createIndex(
           { paymentProvider: 1, paymentRef: 1 },
@@ -68,6 +74,7 @@ export function ensureIndexes(): Promise<void> {
         db.collection("applications").createIndex({ userId: 1 }),
         db.collection("page_views").createIndex({ createdAt: -1 }),
         db.collection("page_views").createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
+        db.collection("shares").createIndex({ slug: 1 }, { unique: true }),
       ]);
     })();
   }
@@ -80,6 +87,12 @@ interface UserDoc {
   name: string | null;
   passwordHash: string | null;
   createdAt: string;
+  /** This user's own invite code (generated lazily on first request). */
+  referralCode?: string;
+  /** The user whose code this account signed up with (set once, ever). */
+  referredBy?: ObjectId;
+  /** "YYYY-MM-DD HH:MM:SS" UTC until which referral bonus access is active. */
+  bonusAccessUntil?: string;
 }
 
 interface CvDoc {
@@ -133,6 +146,14 @@ interface PageViewDoc {
 
 const PAGE_VIEW_RETENTION_MS = 30 * 24 * 60 * 60 * 1000;
 
+/** A public, shareable result snapshot (salary/match/skills "viral card"). */
+interface ShareDoc {
+  _id: ObjectId;
+  slug: string;
+  payload: SharePayload;
+  createdAt: string;
+}
+
 async function usersCollection(): Promise<Collection<UserDoc>> {
   await ensureIndexes();
   return (await getDb()).collection<UserDoc>("users");
@@ -163,9 +184,19 @@ async function pageViewsCollection(): Promise<Collection<PageViewDoc>> {
   return (await getDb()).collection<PageViewDoc>("page_views");
 }
 
+async function sharesCollection(): Promise<Collection<ShareDoc>> {
+  await ensureIndexes();
+  return (await getDb()).collection<ShareDoc>("shares");
+}
+
 /** "YYYY-MM-DD HH:MM:SS" in UTC - matches the format the app's date-parsing code already expects everywhere. */
 export function nowStamp(date: Date = new Date()): string {
   return date.toISOString().slice(0, 19).replace("T", " ");
+}
+
+/** Inverse of nowStamp: parses a stored UTC stamp back into a Date. */
+function parseStamp(stamp: string): Date {
+  return new Date(stamp.replace(" ", "T") + "Z");
 }
 
 export function isValidObjectId(id: string): boolean {
@@ -313,12 +344,22 @@ export async function getLatestPayment(userId: string): Promise<{ created_at: st
   return doc ? { created_at: doc.createdAt } : undefined;
 }
 
-/** Server-side source of truth for paywall access - never trust a client-supplied paid flag. */
-export async function getAccessStatus(userId: string): Promise<{ paid: boolean; paidAt: Date | null }> {
+/** Server-side source of truth for paywall access - never trust a client-supplied paid flag.
+ * Access is granted by either an in-window payment OR active referral bonus days. */
+export async function getAccessStatus(
+  userId: string
+): Promise<{ paid: boolean; paidAt: Date | null; bonusUntil: Date | null }> {
+  const userDoc = isValidObjectId(userId)
+    ? await (await usersCollection()).findOne({ _id: new ObjectId(userId) })
+    : null;
+  const bonusUntil = userDoc?.bonusAccessUntil ? parseStamp(userDoc.bonusAccessUntil) : null;
+  const bonusActive = bonusUntil ? Date.now() < bonusUntil.getTime() : false;
+
   const payment = await getLatestPayment(userId);
-  if (!payment) return { paid: false, paidAt: null };
-  const paidAt = new Date(payment.created_at.replace(" ", "T") + "Z");
-  return { paid: Date.now() - paidAt.getTime() < ACCESS_DURATION_MS, paidAt };
+  const paidAt = payment ? parseStamp(payment.created_at) : null;
+  const paymentActive = paidAt ? Date.now() - paidAt.getTime() < ACCESS_DURATION_MS : false;
+
+  return { paid: paymentActive || bonusActive, paidAt, bonusUntil };
 }
 
 export async function getLatestPaymentByEmail(email: string): Promise<PaymentRow | undefined> {
@@ -606,4 +647,116 @@ export async function getTrafficSnapshot(): Promise<TrafficSnapshot> {
     topPaths: topPaths.map((p) => ({ path: p._id, count: p.count })),
     recent: recentDocs.map((d) => ({ path: d.path, createdAt: d.createdAt, referrer: d.referrer })),
   };
+}
+
+/** ~8-char URL-safe slug (6 random bytes, base64url). */
+function newShareSlug(): string {
+  return randomBytes(6).toString("base64url");
+}
+
+/** Persists a result snapshot and returns its public slug (for /r/<slug>). */
+export async function createShare(payload: SharePayload): Promise<string> {
+  const shares = await sharesCollection();
+  // Retry on the astronomically-rare slug collision (unique index throws 11000).
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const slug = newShareSlug();
+    try {
+      await shares.insertOne({ _id: new ObjectId(), slug, payload, createdAt: nowStamp() });
+      return slug;
+    } catch (err) {
+      if (err && typeof err === "object" && (err as { code?: number }).code === 11000) continue;
+      throw err;
+    }
+  }
+  throw new Error("Could not allocate a share link — please try again.");
+}
+
+export async function getShareBySlug(slug: string): Promise<SharePayload | null> {
+  const shares = await sharesCollection();
+  const doc = await shares.findOne({ slug });
+  return doc ? doc.payload : null;
+}
+
+// ----- Referrals -------------------------------------------------------------
+
+/** Readable 8-char invite code from [0-9A-F]. */
+function newReferralCode(): string {
+  return randomBytes(6).toString("hex").toUpperCase().slice(0, 8);
+}
+
+/** Returns the user's invite code, generating + persisting one on first call. */
+export async function getOrCreateReferralCode(userId: string): Promise<string | null> {
+  if (!isValidObjectId(userId)) return null;
+  const users = await usersCollection();
+  const existing = await users.findOne({ _id: new ObjectId(userId) });
+  if (!existing) return null;
+  if (existing.referralCode) return existing.referralCode;
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const code = newReferralCode();
+    try {
+      await users.updateOne({ _id: existing._id }, { $set: { referralCode: code } });
+      return code;
+    } catch (err) {
+      if (err && typeof err === "object" && (err as { code?: number }).code === 11000) continue;
+      throw err;
+    }
+  }
+  return null;
+}
+
+/** Extends a user's bonus access window by `ms`, capped to bound abuse. */
+export async function grantBonusAccess(userId: string, ms: number): Promise<void> {
+  if (!isValidObjectId(userId)) return;
+  const users = await usersCollection();
+  const doc = await users.findOne({ _id: new ObjectId(userId) });
+  if (!doc) return;
+  const now = Date.now();
+  const current = doc.bonusAccessUntil ? parseStamp(doc.bonusAccessUntil).getTime() : 0;
+  // Stack onto whatever access is still live, but never beyond the ceiling.
+  const extended = Math.min(Math.max(now, current) + ms, now + MAX_BONUS_ACCESS_MS);
+  await users.updateOne({ _id: doc._id }, { $set: { bonusAccessUntil: nowStamp(new Date(extended)) } });
+}
+
+/** Credits a referral when a brand-new user signs up with someone's code.
+ * Idempotent and abuse-guarded; returns whether the reward was applied. */
+export async function recordReferral(params: { newUserId: string; code: string }): Promise<boolean> {
+  if (!isValidObjectId(params.newUserId)) return false;
+  const users = await usersCollection();
+  const newUser = await users.findOne({ _id: new ObjectId(params.newUserId) });
+  if (!newUser || newUser.referredBy) return false; // unknown or already referred
+
+  const referrer = await users.findOne({ referralCode: params.code });
+  if (!referrer || referrer._id.equals(newUser._id)) return false; // bad code or self-referral
+
+  // Claim the referral atomically — the filter guards against a double credit
+  // if two signup requests race for the same new account.
+  const claim = await users.updateOne(
+    { _id: newUser._id, referredBy: { $exists: false } },
+    { $set: { referredBy: referrer._id } }
+  );
+  if (claim.modifiedCount !== 1) return false;
+
+  await Promise.all([
+    grantBonusAccess(newUser._id.toString(), REFERRAL_BONUS_MS),
+    grantBonusAccess(referrer._id.toString(), REFERRAL_BONUS_MS),
+  ]);
+  return true;
+}
+
+export interface ReferralStats {
+  code: string | null;
+  referrals: number;
+  bonusUntil: string | null;
+}
+
+/** Invite code + how many friends joined + current bonus window, for the UI. */
+export async function getReferralStats(email: string): Promise<ReferralStats | null> {
+  const user = await getUserByEmail(email);
+  if (!user) return null;
+  const code = await getOrCreateReferralCode(user.id);
+  const users = await usersCollection();
+  const referrals = await users.countDocuments({ referredBy: new ObjectId(user.id) });
+  const doc = await users.findOne({ _id: new ObjectId(user.id) });
+  return { code, referrals, bonusUntil: doc?.bonusAccessUntil ?? null };
 }

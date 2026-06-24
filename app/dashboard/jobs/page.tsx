@@ -6,6 +6,7 @@ import { RotateCw, MapPin, ExternalLink, CheckCircle2, Check, X } from "lucide-r
 import { tokenize } from "@/lib/matching";
 import { StaggerGroup as RevealGroup, StaggerItem as RevealItem } from "@/components/motion/Reveal";
 import { TiltCard } from "@/components/motion/TiltCard";
+import ShareResult from "@/components/ShareResult";
 
 const ANYWHERE_WORDS = new Set(["anywhere", "any", "flexible", "open"]);
 
@@ -217,6 +218,22 @@ export default function Jobs() {
               {f.label}
             </button>
           ))}
+        </div>
+      )}
+
+      {!loading && jobs.length > 0 && (
+        <div className="iridescent-border rounded-2xl p-px">
+          <div className="glass-strong rounded-2xl p-5 flex items-center justify-between flex-wrap gap-4">
+            <div className="min-w-0">
+              <p className="text-foreground/30 text-xs uppercase tracking-widest mb-1">Your top match</p>
+              <p className="text-lg font-black text-foreground truncate">
+                <span className="gradient-text">{jobs[0].match}% match</span> · {jobs[0].title} at {jobs[0].company}
+              </p>
+            </div>
+            <ShareResult
+              payload={{ kind: "match", role: jobs[0].title, company: jobs[0].company, score: jobs[0].match }}
+            />
+          </div>
         </div>
       )}
 

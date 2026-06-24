@@ -6,6 +6,7 @@ import { Target } from "lucide-react";
 import { useCountry } from "@/lib/useCountry";
 import { FadeIn as Reveal, StaggerGroup as RevealGroup, StaggerItem as RevealItem } from "@/components/motion/Reveal";
 import { TiltCard } from "@/components/motion/TiltCard";
+import ShareResult from "@/components/ShareResult";
 
 interface SalaryIntel {
   analyzedCount: number;
@@ -15,6 +16,7 @@ interface SalaryIntel {
   median: number | null;
   currency: string;
   desired: { min: number; max: number } | null;
+  role: string | null;
 }
 
 const negotiationScript = [
@@ -97,6 +99,20 @@ export default function Salary() {
                       <span className="glass px-3 py-1.5 rounded-xl text-xs text-violet-700 font-semibold inline-flex items-center gap-1.5">
                         <Target className="w-3.5 h-3.5" /> {data.disclosedCount} of {data.analyzedCount} matching postings disclosed pay
                       </span>
+                    </div>
+                    <div className="mt-6">
+                      <ShareResult
+                        payload={{
+                          kind: "salary",
+                          role: data.role ?? "",
+                          currency: data.currency,
+                          min: data.min,
+                          max: data.max,
+                          median: data.median!,
+                          disclosedCount: data.disclosedCount,
+                          analyzedCount: data.analyzedCount,
+                        }}
+                      />
                     </div>
                   </>
                 ) : (

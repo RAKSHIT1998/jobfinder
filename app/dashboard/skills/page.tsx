@@ -5,6 +5,12 @@ import Link from "next/link";
 import { FadeIn as Reveal, StaggerGroup as RevealGroup, StaggerItem as RevealItem } from "@/components/motion/Reveal";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { TiltCard } from "@/components/motion/TiltCard";
+import ShareResult from "@/components/ShareResult";
+
+/** First listed target role from the stored CV, used to label share cards. */
+function firstRole(parsed: { targetRoles?: string } | null): string {
+  return (parsed?.targetRoles || "").split(/[,\n/]/)[0]?.trim() || "";
+}
 
 interface SkillGap {
   skill: string;
@@ -21,14 +27,17 @@ interface SkillsGapResult {
 
 export default function Skills() {
   const [email, setEmail] = useState<string | null>(null);
+  const [role, setRole] = useState<string>("");
   const [data, setData] = useState<SkillsGapResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const stored = typeof window !== "undefined" ? localStorage.getItem("jobfinder_cv") : null;
-    const cvEmail = stored ? JSON.parse(stored).email : null;
+    const parsed = stored ? JSON.parse(stored) : null;
+    const cvEmail = parsed?.email ?? null;
     setEmail(cvEmail);
+    setRole(firstRole(parsed));
     if (!cvEmail) {
       setLoading(false);
       return;
@@ -127,6 +136,25 @@ export default function Skills() {
             </TiltCard>
           </RevealItem>
         </RevealGroup>
+      )}
+
+      {!loading && data && data.analyzedCount > 0 && data.coveragePercent !== null && (
+        <Reveal className="glass rounded-2xl p-5 flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <p className="text-foreground/30 text-xs uppercase tracking-widest mb-1">Show off your coverage</p>
+            <p className="text-foreground/60 text-sm max-w-md">
+              Your CV covers {data.coveragePercent}% of what matching live postings ask for — share it.
+            </p>
+          </div>
+          <ShareResult
+            payload={{
+              kind: "skills",
+              role,
+              coveragePercent: data.coveragePercent,
+              topGaps: data.gaps.map((g) => g.skill).slice(0, 6),
+            }}
+          />
+        </Reveal>
       )}
 
       {!loading && data && data.gaps.length > 0 && (

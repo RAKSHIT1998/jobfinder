@@ -7,6 +7,7 @@ import { Brain, PenLine, BarChart3, Wallet } from "lucide-react";
 import { StaggerGroup as RevealGroup, StaggerItem as RevealItem } from "@/components/motion/Reveal";
 import { AnimatedCounter } from "@/components/motion/AnimatedCounter";
 import { TiltCard } from "@/components/motion/TiltCard";
+import ReferralCard from "@/components/ReferralCard";
 
 interface ScoredJob {
   id: string;
@@ -94,6 +95,8 @@ export default function Dashboard() {
           </RevealItem>
         ))}
       </RevealGroup>
+
+      <ReferralCard />
 
       <div>
         <h2 className="text-sm font-semibold text-foreground/50 uppercase tracking-widest mb-3">Quick Actions</h2>
